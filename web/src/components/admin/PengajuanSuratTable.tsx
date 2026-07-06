@@ -25,14 +25,30 @@ export default function PengajuanSuratTable({ data, onUpdateStatus }: Props) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  // Optimistic local status map — diupdate langsung saat user pilih, tanpa tunggu server
+  const [localStatuses, setLocalStatuses] = useState<Record<string, StatusSurat>>(() =>
+    Object.fromEntries(data.map((r) => [r.id, r.status])),
+  );
+
+  const enriched = data.map((row) => ({ ...row, status: localStatuses[row.id] ?? row.status }));
+
   const filtered =
-    filterStatus === 'Semua' ? data : data.filter((row) => row.status === filterStatus);
+    filterStatus === 'Semua' ? enriched : enriched.filter((row) => row.status === filterStatus);
 
   function handleStatusChange(id: string, status: StatusSurat) {
+    // Update UI langsung (optimistic)
+    setLocalStatuses((prev) => ({ ...prev, [id]: status }));
     setLoadingId(id);
+
     startTransition(async () => {
-      await onUpdateStatus(id, status);
-      setLoadingId(null);
+      try {
+        await onUpdateStatus(id, status);
+      } catch {
+        // Rollback jika server gagal
+        setLocalStatuses((prev) => ({ ...prev, [id]: data.find((r) => r.id === id)!.status }));
+      } finally {
+        setLoadingId(null);
+      }
     });
   }
 
@@ -52,7 +68,7 @@ export default function PengajuanSuratTable({ data, onUpdateStatus }: Props) {
           >
             {s}
             <span className="ml-1.5 opacity-70">
-              ({s === 'Semua' ? data.length : data.filter((r) => r.status === s).length})
+              ({s === 'Semua' ? enriched.length : enriched.filter((r) => r.status === s).length})
             </span>
           </button>
         ))}
@@ -123,7 +139,7 @@ export default function PengajuanSuratTable({ data, onUpdateStatus }: Props) {
                       <Spinner />
                     ) : (
                       <select
-                        value={row.status}
+                        value={localStatuses[row.id] ?? row.status}
                         onChange={(e) => handleStatusChange(row.id, e.target.value as StatusSurat)}
                         disabled={isPending}
                         className="text-xs border border-gray-200 rounded-md px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] disabled:opacity-50"
@@ -144,7 +160,7 @@ export default function PengajuanSuratTable({ data, onUpdateStatus }: Props) {
       </div>
 
       <p className="mt-3 text-xs text-[var(--color-text-muted)]">
-        Menampilkan {filtered.length} dari {data.length} pengajuan
+        Menampilkan {filtered.length} dari {enriched.length} pengajuan
       </p>
     </div>
   );
