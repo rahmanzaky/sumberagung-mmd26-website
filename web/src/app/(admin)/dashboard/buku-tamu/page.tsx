@@ -1,16 +1,28 @@
-export default function BukuTamuPage() {
+import { getBukuTamu } from '@/lib/apps-script';
+import BukuTamuTable from '@/components/admin/BukuTamuTable';
+
+export default async function BukuTamuPage() {
+  const data = await getBukuTamu();
+
+  const totalBulanIni = data.filter((b) => {
+    const bulanIni = new Date().toISOString().slice(0, 7);
+    return b.tanggal.startsWith(bulanIni);
+  }).length;
+
   return (
     <div>
-      <h1 className="font-[var(--font-lora)] text-2xl font-bold text-[var(--color-primary)] mb-2">
-        Buku Tamu Digital
-      </h1>
-      <p className="text-[var(--color-text-muted)] text-sm mb-8">
-        Data kunjungan warga ke kantor desa.
-      </p>
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h1 className="font-[var(--font-lora)] text-2xl font-bold text-[var(--color-primary)] mb-1">
+            Buku Tamu Digital
+          </h1>
+          <p className="text-[var(--color-text-muted)] text-sm">
+            Total {data.length} kunjungan tercatat &mdash; {totalBulanIni} kunjungan bulan ini.
+          </p>
+        </div>
+      </div>
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <p className="text-[var(--color-text-muted)] italic text-sm">
-          Tabel data buku tamu akan ditampilkan di sini.
-        </p>
+        <BukuTamuTable data={data} />
       </div>
     </div>
   );
