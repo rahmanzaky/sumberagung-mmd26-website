@@ -73,3 +73,14 @@ Semua endpoint diakses **server-side only** dari Next.js (tidak pernah dari brow
 - Format tanggal selalu `YYYY-MM-DD` (ISO 8601)
 - Format jam selalu `HH:mm` (24 jam)
 - Field `nik` adalah Nomor Induk Kependudukan (16 digit)
+
+---
+
+## Layanan Baru (Dalam Tahap Pengembangan / TBD)
+Kontrak JSON untuk endpoint berikut belum didefinisikan secara resmi dan akan ditambahkan pada iterasi selanjutnya:
+- **Kependudukan:** GET/POST data demografi warga.
+- **Presensi:** POST *check-in* harian perangkat desa.
+- **Konten:** GET/POST update teks profil desa, sejarah desa, dll.
+- **Pengguna:** GET/POST hak akses admin.
+- **Galeri:** GET/POST daftar gambar dokumentasi kegiatan.
+- **Pengaturan:** GET/POST konfigurasi situs web (jam kerja otomatis, dsb).

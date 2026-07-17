@@ -15,20 +15,28 @@ sumberagung-mmd26-website/
 
 - [API Contract](docs/api-contract.md) — Format JSON antara frontend dan Apps Script
 
-## Bagian Website
+## Spesifikasi Sistem (Bagian Website)
 
-### 1. Company Profile (Publik)
-Halaman yang bisa diakses siapa saja:
-- **Beranda** — Sambutan, highlight desa
-- **Profil Desa** — Sejarah, visi-misi, struktur pemerintahan
-- **Potensi Desa** — UMKM dan wisata lokal
-- **Berita & Kegiatan** — Informasi terkini dari desa
-- **Kontak** — Alamat dan informasi kontak
+### 1. Halaman Publik (Warga/Umum)
+Halaman informasi dan layanan digital yang bisa diakses siapa saja:
+- **Beranda** — Identitas desa, demografi ringkas, aktivitas terbaru, dan video profil.
+- **Sejarah Desa** — Timeline interaktif berisi foto & narasi sejarah desa.
+- **Profil Desa** — Visi, misi, data geografis, dan demografis.
+- **Struktur Organisasi** — Bagan organisasi pemerintahan desa beserta foto perangkat.
+- **Buku Tamu** — Form digital untuk mencatat kunjungan.
+- **Pengajuan Surat Online** — Form pengajuan persuratan. Diproses saat jam kerja (08.00–13.00 WIB) dengan *follow-up* via WhatsApp.
 
-### 2. Admin Dashboard (Privat)
-Hanya bisa diakses perangkat desa dengan akun Google yang terdaftar:
-- **Buku Tamu Digital** — Pantau data kunjungan warga
-- **Pengajuan Surat** — Kelola status pengajuan surat warga
+### 2. Admin Panel (Perangkat Desa)
+Hanya bisa diakses perangkat desa dengan akun terdaftar:
+- **Dashboard** — Ringkasan statistik desa.
+- **Manajemen Surat** — Verifikasi dan update status pengajuan surat warga.
+- **Manajemen Kependudukan** — Kelola data warga/penduduk desa.
+- **Manajemen Konten** — Kelola teks profil, sejarah, dll.
+- **Manajemen Presensi** — *Check-in* kehadiran harian staf/perangkat desa.
+- **Buku Tamu (Admin)** — Pantau rekap data kunjungan warga.
+- **Manajemen Pengguna** — Kelola akun staf/admin.
+- **Manajemen Galeri** — Kelola album foto kegiatan desa.
+- **Pengaturan (Super Admin)** — Konfigurasi sistem, navigasi, dan *backups*.
 
 ## Setup Pengembangan
 
