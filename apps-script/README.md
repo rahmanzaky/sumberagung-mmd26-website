@@ -2,12 +2,17 @@
 
 File `.gs` di folder ini adalah source backup untuk dua Web App yang digunakan sebagai REST API backend.
 
-## File
+## File & Layanan
 
-| File | Fungsi |
-|---|---|
-| `bukuTamu.gs` | Endpoint Buku Tamu Digital |
-| `pengajuanSurat.gs` | Endpoint Pengajuan Surat + Update Status |
+| File | Fungsi | Status |
+|---|---|---|
+| `bukuTamu.gs` | Endpoint Buku Tamu Digital (GET, POST) | Selesai |
+| `pengajuanSurat.gs` | Endpoint Pengajuan Surat + Update Status | Selesai |
+| `kependudukan.gs` | Endpoint Data Penduduk | *TBD (Akan Datang)* |
+| `presensi.gs` | Endpoint Presensi Perangkat Desa | *TBD (Akan Datang)* |
+| `konten.gs` | Endpoint Manajemen Konten Halaman | *TBD (Akan Datang)* |
+| `pengguna.gs` | Endpoint Manajemen Akun Admin | *TBD (Akan Datang)* |
+| `galeri.gs` | Endpoint Album Foto | *TBD (Akan Datang)* |
 
 ## Cara Deploy
 
