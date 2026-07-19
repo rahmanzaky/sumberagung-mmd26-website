@@ -19,3 +19,21 @@
   /* Deep dark */
   --color-surface-deep: #111f47;
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+.sembunyikan-scrollbar {
+  /* Firefox */
+  scrollbar-width: none;
+  /* Internet Explorer & Edge lama */
+  -ms-overflow-style: none;
+}
+
+/* Chrome, Edge, Safari */
+.sembunyikan-scrollbar::-webkit-scrollbar {
+  display: none;
+}
