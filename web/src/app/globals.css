@@ -10,6 +10,7 @@
   --color-primary: #1e3f8f;
   --color-primary-dark: #142a6b;
   --color-primary-light: #2f55a7;
+  --color-primary-deepdark: #1A2D5D;
 
   /* Emas */
   --color-accent: #f7c948;
@@ -36,4 +37,9 @@
 /* Chrome, Edge, Safari */
 .sembunyikan-scrollbar::-webkit-scrollbar {
   display: none;
+::-webkit-scrollbar {
+  display: none;
+}
+html {
+  scrollbar-width: none;
 }
