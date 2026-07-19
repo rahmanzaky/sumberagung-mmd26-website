@@ -1,3 +1,5 @@
+import { IconLonceng } from '@/shared/components/icons';
+
 function initials(name: string) {
   return name
     .split(' ')
@@ -21,7 +23,7 @@ export default function Topbar({ name, role = 'Administrator Desa' }: TopbarProp
         aria-label="Notifikasi"
         className="relative w-9 h-9 flex items-center justify-center rounded-full text-white/80 hover:bg-white/10 transition-colors"
       >
-        <span aria-hidden>🔔</span>
+        <IconLonceng className="w-5 h-5" />
         <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--color-gold)] ring-2 ring-[var(--color-primary)]" />
       </button>
 

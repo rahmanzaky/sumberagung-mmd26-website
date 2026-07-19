@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import Button from '@/shared/components/ui/Button';
 import Spinner from '@/shared/components/ui/Spinner';
+import { IconCentang } from '@/shared/components/icons';
 
 type Props = {
   namaLengkap: string;
@@ -32,8 +33,8 @@ export default function TombolAbsen({ namaLengkap, sudahAbsen, jamAbsen, onAbsen
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center text-lg">
-            ✅
+          <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+            <IconCentang className="w-5 h-5 text-green-600" />
           </div>
           <div>
             <p className="text-sm font-medium text-[var(--color-text-base)]">

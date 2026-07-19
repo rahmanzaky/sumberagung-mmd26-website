@@ -2,17 +2,29 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  IconDashboard,
+  IconSurat,
+  IconKependudukan,
+  IconAbsensi,
+  IconBukuTamu,
+  IconKonten,
+  IconGaleri,
+  IconPengguna,
+  IconPengaturan,
+  IconKeluar,
+} from '@/shared/components/icons';
 
 const menuItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: '📊' },
-  { href: '/dashboard/pengajuan-surat', label: 'Manajemen Surat', icon: '📄' },
-  { href: '/dashboard/kependudukan', label: 'Kependudukan', icon: '👥' },
-  { href: '/dashboard/presensi', label: 'Absensi Staf', icon: '🕒' },
-  { href: '/dashboard/buku-tamu', label: 'Buku Tamu', icon: '📋' },
-  { href: '/dashboard/konten', label: 'Konten Website', icon: '📝' },
-  { href: '/dashboard/galeri', label: 'Galeri', icon: '🖼️' },
-  { href: '/dashboard/pengguna', label: 'Pengguna', icon: '🧑‍💻' },
-  { href: '/dashboard/pengaturan', label: 'Pengaturan', icon: '⚙️' },
+  { href: '/dashboard', label: 'Dashboard', Icon: IconDashboard },
+  { href: '/dashboard/pengajuan-surat', label: 'Manajemen Surat', Icon: IconSurat },
+  { href: '/dashboard/kependudukan', label: 'Kependudukan', Icon: IconKependudukan },
+  { href: '/dashboard/presensi', label: 'Absensi Staf', Icon: IconAbsensi },
+  { href: '/dashboard/buku-tamu', label: 'Buku Tamu', Icon: IconBukuTamu },
+  { href: '/dashboard/konten', label: 'Konten Website', Icon: IconKonten },
+  { href: '/dashboard/galeri', label: 'Galeri', Icon: IconGaleri },
+  { href: '/dashboard/pengguna', label: 'Pengguna', Icon: IconPengguna },
+  { href: '/dashboard/pengaturan', label: 'Pengaturan', Icon: IconPengaturan },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -47,13 +59,21 @@ export default function Sidebar() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors border-l-2 ${
+                  className={`group flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors border-l-2 ${
                     active
                       ? 'bg-[var(--color-primary-light)] text-[var(--color-gold-light)] border-[var(--color-gold)] font-medium'
                       : 'text-white/80 border-transparent hover:bg-[var(--color-primary-light)] hover:text-white'
                   }`}
                 >
-                  <span>{item.icon}</span>
+                  {/* Ikon sengaja lebih redup daripada label saat tidak aktif,
+                      dan ikut jadi emas saat aktif (fill="currentColor"). */}
+                  <item.Icon
+                    className={`w-5 h-5 shrink-0 transition-colors ${
+                      active
+                        ? 'text-[var(--color-gold)]'
+                        : 'text-white/45 group-hover:text-white/80'
+                    }`}
+                  />
                   <span>{item.label}</span>
                 </Link>
               </li>
@@ -66,9 +86,9 @@ export default function Sidebar() {
         <form action="/api/auth/signout" method="POST">
           <button
             type="submit"
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-white/70 hover:bg-[var(--color-primary-light)] hover:text-white transition-colors"
+            className="group w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-white/70 hover:bg-[var(--color-primary-light)] hover:text-white transition-colors"
           >
-            <span>🚪</span>
+            <IconKeluar className="w-5 h-5 shrink-0 text-white/45 group-hover:text-white/80 transition-colors" />
             <span>Keluar Sesi</span>
           </button>
         </form>

@@ -2,6 +2,7 @@ import { getBukuTamu } from '@/repository/buku-tamu/action';
 import { getPengajuanSurat } from '@/repository/pengajuan-surat/action';
 import { getRekapKehadiran } from '@/repository/presensi/action';
 import StatCard from '../component/StatCard';
+import { IconMasuk, IconPengguna, IconPeringatan } from '@/shared/components/icons';
 import PengajuanTerbaru from '../component/PengajuanTerbaru';
 import KunjunganChart from '../component/KunjunganChart';
 import PengajuanChart from '../component/PengajuanChart';
@@ -39,21 +40,21 @@ export default async function DashboardContainer() {
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <StatCard
-          icon="📥"
+          icon={<IconMasuk className="w-5 h-5" />}
           label="Pengajuan Surat Baru"
           value={pengajuanBaru}
           topLabel="Hari Ini"
           tone="default"
         />
         <StatCard
-          icon="👥"
+          icon={<IconPengguna className="w-5 h-5" />}
           label="Status Kehadiran Perangkat"
           value={kehadiran}
           topLabel="Hadir"
           tone="gold"
         />
         <StatCard
-          icon="⚠️"
+          icon={<IconPeringatan className="w-5 h-5" />}
           label="Peringatan Sistem Baru"
           value={peringatanSistem}
           topLabel="Penting"

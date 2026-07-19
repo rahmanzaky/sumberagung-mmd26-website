@@ -5,6 +5,7 @@ import type { FotoGaleri, FotoGaleriInput } from '@/repository/galeri/dto';
 import { KATEGORI_GALERI, urlFotoLangsung } from '@/repository/galeri/dto';
 import Button from '@/shared/components/ui/Button';
 import Spinner from '@/shared/components/ui/Spinner';
+import { IconGaleri } from '@/shared/components/icons';
 
 function formatTanggal(iso: string) {
   return new Date(iso).toLocaleDateString('id-ID', {
@@ -186,9 +187,7 @@ export default function GaleriManager({ data, onSimpan, onHapus }: Props) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-3xl opacity-30" aria-hidden>
-                    🖼️
-                  </span>
+                  <IconGaleri className="w-9 h-9 text-[var(--color-primary)]/25" />
                 )}
               </div>
               <figcaption className="p-3">

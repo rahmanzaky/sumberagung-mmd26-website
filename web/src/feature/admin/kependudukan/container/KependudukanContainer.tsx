@@ -1,5 +1,6 @@
 import { getKependudukan, simpanKependudukanAction } from '@/repository/kependudukan/action';
 import StatCard from '@/feature/admin/dashboard/component/StatCard';
+import { IconPengguna, IconRumah, IconPeta } from '@/shared/components/icons';
 import KependudukanManager from '../component/KependudukanManager';
 import TrenPendudukChart from '../component/TrenPendudukChart';
 
@@ -25,21 +26,21 @@ export default async function KependudukanContainer() {
       {terbaru && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <StatCard
-            icon="🧑‍🤝‍🧑"
+            icon={<IconPengguna className="w-5 h-5" />}
             label="Total Penduduk"
             value={angka(terbaru.totalPenduduk)}
             topLabel={`Tahun ${terbaru.tahun}`}
             tone="default"
           />
           <StatCard
-            icon="🏠"
+            icon={<IconRumah className="w-5 h-5" />}
             label="Kepala Keluarga"
             value={angka(terbaru.jumlahKK)}
             topLabel="KK"
             tone="gold"
           />
           <StatCard
-            icon="🗺️"
+            icon={<IconPeta className="w-5 h-5" />}
             label="Jumlah RT / RW"
             value={`${terbaru.jumlahRt} / ${terbaru.jumlahRw}`}
             topLabel="Wilayah"
