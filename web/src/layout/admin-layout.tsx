@@ -6,12 +6,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const session = await auth();
   const name = session?.user?.name ?? session?.user?.email ?? 'Admin Desa';
 
+  // h-screen + overflow-hidden mengunci viewport, sehingga sidebar dan main
+  // masing-masing punya scroll sendiri (scroll di nav tidak menggeser konten).
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full">
         <Topbar name={name} />
-        <main className="flex-1 bg-[var(--color-surface)] p-8 overflow-auto">{children}</main>
+        <main className="flex-1 min-h-0 bg-[var(--color-surface)] p-8 overflow-y-auto overscroll-contain">
+          {children}
+        </main>
       </div>
     </div>
   );

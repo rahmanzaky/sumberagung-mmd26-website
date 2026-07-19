@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { requireAdmin } from '@/lib/guard';
 import type { PengajuanSurat, StatusSurat } from './dto';
 
 const dummyPengajuanSurat: PengajuanSurat[] = [
@@ -139,6 +140,7 @@ export async function updateStatusSurat(id: string, status: StatusSurat): Promis
 }
 
 export async function updateStatusAction(id: string, status: StatusSurat) {
+  await requireAdmin();
   await updateStatusSurat(id, status);
   revalidatePath('/dashboard/pengajuan-surat');
   revalidatePath('/dashboard');

@@ -1,5 +1,6 @@
 import { getBukuTamu } from '@/repository/buku-tamu/action';
 import { getPengajuanSurat } from '@/repository/pengajuan-surat/action';
+import { getRekapKehadiran } from '@/repository/presensi/action';
 import StatCard from '../component/StatCard';
 import PengajuanTerbaru from '../component/PengajuanTerbaru';
 import KunjunganChart from '../component/KunjunganChart';
@@ -15,13 +16,17 @@ function tanggalHariIni() {
 }
 
 export default async function DashboardContainer() {
-  const [bukuTamu, pengajuan] = await Promise.all([getBukuTamu(), getPengajuanSurat()]);
+  const [bukuTamu, pengajuan, rekap] = await Promise.all([
+    getBukuTamu(),
+    getPengajuanSurat(),
+    getRekapKehadiran(),
+  ]);
 
   const pengajuanBaru = pengajuan.filter((p) => p.status === 'Baru').length;
-  // Status kehadiran & peringatan sistem menunggu backend Presensi/Monitoring (TBD) —
-  // sementara memakai nilai placeholder agar tata letak sesuai desain.
-  const kehadiran = '45/48';
-  const peringatanSistem = 3;
+  const kehadiran = `${rekap.hadir}/${rekap.total}`;
+  // Peringatan sistem = hal yang butuh perhatian admin hari ini:
+  // perangkat alpha + pengajuan surat yang masih mengendap di status "Baru".
+  const peringatanSistem = rekap.alpha + pengajuanBaru;
 
   return (
     <div>

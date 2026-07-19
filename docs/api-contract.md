@@ -91,9 +91,82 @@ Semua endpoint diakses **server-side only** dari Next.js (tidak pernah dari brow
 
 ---
 
+## GET Presensi
+
+**URL:** `APPS_SCRIPT_PRESENSI_URL` (dari env)
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "string",
+      "nama": "string",
+      "jabatan": "string",
+      "tanggal": "YYYY-MM-DD",
+      "jamMasuk": "HH:mm",
+      "jamPulang": "HH:mm",
+      "status": "Hadir" | "Izin" | "Sakit" | "Alpha",
+      "keterangan": "string"
+    }
+  ]
+}
+```
+
+`jamMasuk` / `jamPulang` dikirim sebagai string kosong `""` bila belum absen.
+
+---
+
+## POST Update Status Presensi
+
+**URL:** `APPS_SCRIPT_PRESENSI_URL` (sama dengan GET, dibedakan oleh method)
+
+**Request:**
+```json
+{ "id": "string", "status": "string", "keterangan": "string" }
+```
+
+**Response:**
+```json
+{ "success": true }
+```
+
+---
+
+## GET Kependudukan
+
+**URL:** `APPS_SCRIPT_KEPENDUDUKAN_URL` (dari env)
+
+Read-only — rekap diperbarui langsung di Spreadsheet oleh operator desa,
+sehingga endpoint ini tidak punya POST. Satu baris = satu dusun.
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "string",
+      "dusun": "string",
+      "jumlahKK": 0,
+      "lakiLaki": 0,
+      "perempuan": 0,
+      "balita": 0,
+      "anak": 0,
+      "dewasa": 0,
+      "lansia": 0
+    }
+  ]
+}
+```
+
+Semua field jumlah dikirim sebagai **number**, bukan string.
+
+---
+
 ## Catatan
 
-- Nilai `status` yang valid: `"Baru"`, `"Diproses"`, `"Selesai"`, `"Ditolak"`
+- Nilai `status` surat yang valid: `"Baru"`, `"Diproses"`, `"Selesai"`, `"Ditolak"`
+- Nilai `status` presensi yang valid: `"Hadir"`, `"Izin"`, `"Sakit"`, `"Alpha"`
 - Format tanggal selalu `YYYY-MM-DD` (ISO 8601)
 - Format jam selalu `HH:mm` (24 jam)
 - Field `nik` adalah Nomor Induk Kependudukan (16 digit)
@@ -102,8 +175,6 @@ Semua endpoint diakses **server-side only** dari Next.js (tidak pernah dari brow
 
 ## Layanan Baru (Dalam Tahap Pengembangan / TBD)
 Kontrak JSON untuk endpoint berikut belum didefinisikan secara resmi dan akan ditambahkan pada iterasi selanjutnya:
-- **Kependudukan:** GET/POST data demografi warga.
-- **Presensi:** POST *check-in* harian perangkat desa.
 - **Konten:** GET/POST update teks profil desa, sejarah desa, dll.
 - **Pengguna:** GET/POST hak akses admin.
 - **Galeri:** GET/POST daftar gambar dokumentasi kegiatan.

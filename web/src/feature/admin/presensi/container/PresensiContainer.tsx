@@ -1,4 +1,14 @@
-export default function PresensiContainer() {
+import { getPresensi, updateStatusPresensiAction } from '@/repository/presensi/action';
+import PresensiTable from '../component/PresensiTable';
+
+export default async function PresensiContainer() {
+  const data = await getPresensi();
+
+  // Tanggal unik, terbaru dulu — dipakai sebagai opsi filter di tabel.
+  const tanggalTersedia = [...new Set(data.map((p) => p.tanggal))].sort((a, b) =>
+    b.localeCompare(a),
+  );
+
   return (
     <div>
       <div className="mb-6">
@@ -10,7 +20,11 @@ export default function PresensiContainer() {
         </p>
       </div>
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <p className="text-sm text-gray-500 italic">Modul presensi sedang dalam pengembangan...</p>
+        <PresensiTable
+          data={data}
+          tanggalTersedia={tanggalTersedia}
+          onUpdateStatus={updateStatusPresensiAction}
+        />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { requireAdmin } from '@/lib/guard';
 import type { BukuTamuEntry, BukuTamuInput } from './dto';
 
 const dummyBukuTamu: BukuTamuEntry[] = [
@@ -147,6 +148,7 @@ export async function createBukuTamu(input: BukuTamuInput): Promise<void> {
 }
 
 export async function createBukuTamuAction(input: BukuTamuInput) {
+  await requireAdmin();
   await createBukuTamu(input);
   revalidatePath('/dashboard/buku-tamu');
   revalidatePath('/dashboard');

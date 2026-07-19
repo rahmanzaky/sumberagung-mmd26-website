@@ -23,7 +23,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 shrink-0 bg-[var(--color-primary)] text-white flex flex-col min-h-screen">
+    <aside className="w-64 shrink-0 bg-[var(--color-primary)] text-white flex flex-col h-full overflow-hidden">
       {/* Wordmark */}
       <div className="px-5 py-5 border-b border-white/10">
         <p className="font-[var(--font-lora)] text-xl font-bold text-[var(--color-gold)]">
@@ -39,7 +39,7 @@ export default function Sidebar() {
         <p className="text-xs text-white/70 mt-0.5">Portal Administrasi Desa</p>
       </div>
 
-      <nav className="flex-1 px-3 py-2 overflow-y-auto">
+      <nav className="flex-1 min-h-0 px-3 py-2 overflow-y-auto overscroll-contain">
         <ul className="space-y-1">
           {menuItems.map((item) => {
             const active = isActive(pathname, item.href);
