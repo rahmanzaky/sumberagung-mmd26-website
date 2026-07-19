@@ -2,7 +2,7 @@
 
 @theme inline {
   --font-sans: var(--font-jakarta);
-  --font-serif: var(--font-playfair);
+  --font-serif: var(--font-fraunces);
 }
 
 @theme {
@@ -10,7 +10,7 @@
   --color-primary: #1e3f8f;
   --color-primary-dark: #142a6b;
   --color-primary-light: #2f55a7;
-  
+
   /* Emas */
   --color-accent: #f7c948;
   --color-accent-light: #fbd97a;

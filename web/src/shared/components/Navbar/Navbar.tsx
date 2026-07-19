@@ -7,27 +7,6 @@ import { useEffect, useState } from 'react';
 
 import { ajukanSuratHref, loginHref, navLinks } from './nav-links';
 
-/** Ikon dokumen pada tombol "Ajukan Surat". */
-function DocumentIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9" />
-      <path d="M14 3v5a1 1 0 0 0 1 1h5" />
-      <path d="M9 13h5" />
-      <path d="M9 17h3" />
-    </svg>
-  );
-}
-
 export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -60,7 +39,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-[var(--color-primary-dark)] via-[var(--color-primary-light)] to-[var(--color-primary-dark)] shadow-lg shadow-black/15">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:h-24 lg:px-8">
+      <div className="flex h-20 w-full items-center justify-between gap-6 px-6 sm:px-8 lg:h-24 lg:px-12">
         {/* Logo */}
         <Link
           href="/"
@@ -68,14 +47,14 @@ export default function Navbar() {
           className={`flex shrink-0 items-center gap-2.5 rounded-md ${focusRing}`}
         >
           <Image
-            src="/vercel.svg"
+            src="/sumberagung-logo.png"
             alt=""
-            width={40}
-            height={40}
+            width={512}
+            height={512}
             priority
-            className="h-8 w-8 lg:h-10 lg:w-10"
+            className="h-9 w-auto lg:h-11"
           />
-          <span className="font-serif text-2xl leading-none tracking-wide text-[var(--color-accent)] lg:text-[2rem]">
+          <span className="font-serif text-2xl font-semibold leading-[1.25] tracking-[-0.05em] text-[var(--color-accent)] lg:text-[2rem]">
             Sumberagung
           </span>
         </Link>
@@ -121,7 +100,13 @@ export default function Navbar() {
             className={`inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] px-6 py-3 text-[13px] font-bold uppercase tracking-[0.12em] text-[var(--color-primary-dark)] shadow-md transition duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-accent-light)] hover:shadow-lg active:translate-y-0 motion-reduce:transform-none motion-reduce:transition-none ${focusRing}`}
           >
             Ajukan Surat
-            <DocumentIcon className="h-4 w-4" />
+            <Image
+              src="/ajukan-surat-logo.svg"
+              alt=""
+              width={18}
+              height={18}
+              className="h-4 w-4"
+            />
           </Link>
         </div>
 
@@ -157,7 +142,7 @@ export default function Navbar() {
         hidden={!isMenuOpen}
         className="border-t border-white/10 bg-[var(--color-primary-dark)] lg:hidden"
       >
-        <nav aria-label="Navigasi utama (mobile)" className="px-4 py-4 sm:px-6">
+        <nav aria-label="Navigasi utama (mobile)" className="px-6 py-4 sm:px-8">
           <ul className="flex flex-col">
             {navLinks.map((link) => {
               const active = isActive(link.href);
@@ -168,8 +153,8 @@ export default function Navbar() {
                     href={link.href}
                     aria-current={active ? 'page' : undefined}
                     className={`flex items-center gap-3 rounded-md px-2 py-3.5 text-sm font-medium uppercase tracking-[0.14em] transition-colors ${focusRing} ${active
-                        ? 'text-[var(--color-accent)]'
-                        : 'text-white/85 hover:bg-white/5 hover:text-white'
+                      ? 'text-[var(--color-accent)]'
+                      : 'text-white/85 hover:bg-white/5 hover:text-white'
                       }`}
                   >
                     <span
@@ -197,7 +182,14 @@ export default function Navbar() {
               className={`inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-accent)] px-6 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-primary-dark)] shadow-md transition-colors hover:bg-[var(--color-accent-light)] ${focusRing}`}
             >
               Ajukan Surat
-              <DocumentIcon className="h-4 w-4" />
+              <Image
+                src="/ajukan-surat-logo.svg"
+                alt=""
+                width={18}
+                height={18}
+                unoptimized
+                className="h-4 w-4"
+              />
             </Link>
           </div>
         </nav>

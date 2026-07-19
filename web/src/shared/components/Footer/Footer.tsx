@@ -67,7 +67,7 @@ export default function Footer() {
         className="h-1.5 bg-gradient-to-r from-[var(--color-primary-dark)] via-[var(--color-primary-light)] to-[var(--color-primary-dark)]"
       />
 
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
+      <div className="w-full px-6 py-12 sm:px-8 lg:px-12 lg:py-14">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           {/* Kolom 1 — identitas desa */}
           <div className="lg:col-span-5">
@@ -77,13 +77,13 @@ export default function Footer() {
               className={`inline-flex items-center gap-2.5 rounded-md ${focusRing}`}
             >
               <Image
-                src="/vercel.svg"
+                src="/sumberagung-logo.png"
                 alt=""
-                width={36}
-                height={36}
-                className="h-8 w-8"
+                width={512}
+                height={512}
+                className="h-9 w-auto"
               />
-              <span className="font-serif text-2xl leading-none tracking-wide text-[var(--color-accent)] lg:text-3xl">
+              <span className="font-serif text-2xl font-semibold leading-[1.25] tracking-[-0.05em] text-[var(--color-accent)] lg:text-3xl">
                 Sumberagung
               </span>
             </Link>
