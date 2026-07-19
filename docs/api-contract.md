@@ -16,13 +16,37 @@ Semua endpoint diakses **server-side only** dari Next.js (tidak pernah dari brow
     {
       "id": "string",
       "nama": "string",
+      "instansi": "string",
       "keperluan": "string",
-      "bertemuDengan": "string",
+      "noWhatsapp": "string",
       "tanggal": "YYYY-MM-DD",
       "jam": "HH:mm"
     }
   ]
 }
+```
+
+---
+
+## POST Buku Tamu (Tamu Baru)
+
+**URL:** `APPS_SCRIPT_BUKU_TAMU_URL` (sama dengan GET, dibedakan oleh method)
+
+**Request:**
+```json
+{
+  "nama": "string",
+  "instansi": "string",
+  "keperluan": "string",
+  "noWhatsapp": "string",
+  "tanggal": "YYYY-MM-DD",
+  "jam": "HH:mm"
+}
+```
+
+**Response:**
+```json
+{ "success": true, "id": "string" }
 ```
 
 ---

@@ -1,22 +1,28 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Primary: hijau tua pemerintahan */
-  --color-primary: #2d6a4f;
-  --color-primary-light: #40916c;
-  --color-primary-dark: #1b4332;
+  /* Primary: navy pemerintahan (warna utama desain) */
+  --color-primary: #1a2d5d;
+  --color-primary-light: #2a4178;
+  --color-primary-dark: #12203f;
 
-  /* Accent: hijau muda */
-  --color-accent: #74c69d;
-  --color-accent-light: #b7e4c7;
+  /* Gold: aksen brand — logo, judul serif, tombol utama (kontras baik di atas navy) */
+  --color-gold: #c9a227;
+  --color-gold-light: #e3c766;
+  /* Gold gelap untuk teks di atas latar terang (kontras aman untuk judul) */
+  --color-gold-dark: #9a7b1f;
 
-  /* Earth: coklat tanah */
-  --color-earth: #b5835a;
-  --color-earth-light: #d4a373;
+  /* Accent = gold (dipakai token lama pada Navbar/Footer/login di atas navy) */
+  --color-accent: #c9a227;
+  --color-accent-light: #e3c766;
 
-  /* Surface: latar netral krem */
-  --color-surface: #f8f5f0;
-  --color-surface-dark: #ede9e2;
+  /* Earth: bronze pelengkap (variasi stat card & chart) */
+  --color-earth: #b08d57;
+  --color-earth-light: #cdb07e;
+
+  /* Surface: latar netral cool-gray agar serasi dengan navy */
+  --color-surface: #f6f7f9;
+  --color-surface-dark: #eceef2;
 
   /* Text */
   --color-text-base: #1a1a1a;

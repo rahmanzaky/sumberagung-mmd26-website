@@ -29,7 +29,7 @@ export default function KunjunganChart({ data }: { data: BukuTamuEntry[] }) {
             contentStyle={{ fontSize: 12, borderRadius: 8 }}
             formatter={(v) => [v, 'Kunjungan']}
           />
-          <Bar dataKey="jumlah" fill="#2D6A4F" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="jumlah" fill="#1A2D5D" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

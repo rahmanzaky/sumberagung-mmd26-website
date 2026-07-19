@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 import type { PengajuanSurat } from '@/repository/pengajuan-surat/dto';
 
-const COLORS = ['#2D6A4F', '#74C69D', '#B5835A', '#40916C', '#D4A373', '#1B4332'];
+const COLORS = ['#1A2D5D', '#C9A227', '#2A4178', '#E3C766', '#B08D57', '#12203F'];
 
 function buildChartData(data: PengajuanSurat[]) {
   const counts: Record<string, number> = {};

@@ -1,56 +1,63 @@
 import { getBukuTamu } from '@/repository/buku-tamu/action';
 import { getPengajuanSurat } from '@/repository/pengajuan-surat/action';
 import StatCard from '../component/StatCard';
+import PengajuanTerbaru from '../component/PengajuanTerbaru';
 import KunjunganChart from '../component/KunjunganChart';
 import PengajuanChart from '../component/PengajuanChart';
 
-function getBulanIni() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+function tanggalHariIni() {
+  return new Date().toLocaleDateString('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 }
 
 export default async function DashboardContainer() {
   const [bukuTamu, pengajuan] = await Promise.all([getBukuTamu(), getPengajuanSurat()]);
 
-  const bulanIni = getBulanIni();
-  const kunjunganBulanIni = bukuTamu.filter((b) => b.tanggal.startsWith(bulanIni)).length;
   const pengajuanBaru = pengajuan.filter((p) => p.status === 'Baru').length;
-  const pengajuanDiproses = pengajuan.filter((p) => p.status === 'Diproses').length;
-  const pengajuanSelesai = pengajuan.filter((p) => p.status === 'Selesai').length;
+  // Status kehadiran & peringatan sistem menunggu backend Presensi/Monitoring (TBD) —
+  // sementara memakai nilai placeholder agar tata letak sesuai desain.
+  const kehadiran = '45/48';
+  const peringatanSistem = 3;
 
   return (
     <div>
-      <h1 className="font-[var(--font-lora)] text-2xl font-bold text-[var(--color-primary)] mb-1">
-        Ringkasan
+      <h1 className="font-[var(--font-lora)] text-2xl font-bold text-[var(--color-gold-dark)] mb-1">
+        Ringkasan Hari Ini
       </h1>
-      <p className="text-[var(--color-text-muted)] text-sm mb-8">Data terkini Desa Sumberagung.</p>
+      <p className="text-[var(--color-text-muted)] text-sm mb-8 capitalize">{tanggalHariIni()}</p>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <StatCard
-          label="Kunjungan Bulan Ini"
-          value={kunjunganBulanIni}
-          sub="Buku tamu digital"
-          accent="primary"
-        />
-        <StatCard
-          label="Pengajuan Baru"
+          icon="📥"
+          label="Pengajuan Surat Baru"
           value={pengajuanBaru}
-          sub="Menunggu diproses"
-          accent="earth"
+          topLabel="Hari Ini"
+          tone="default"
         />
         <StatCard
-          label="Sedang Diproses"
-          value={pengajuanDiproses}
-          sub="Dalam penanganan"
-          accent="accent"
+          icon="👥"
+          label="Status Kehadiran Perangkat"
+          value={kehadiran}
+          topLabel="Hadir"
+          tone="gold"
         />
         <StatCard
-          label="Selesai"
-          value={pengajuanSelesai}
-          sub="Surat selesai dikeluarkan"
-          accent="primary"
+          icon="⚠️"
+          label="Peringatan Sistem Baru"
+          value={peringatanSistem}
+          topLabel="Penting"
+          tone="danger"
         />
+      </div>
+
+      {/* Pengajuan Terbaru */}
+      <div className="mb-8">
+        <PengajuanTerbaru data={pengajuan} />
       </div>
 
       {/* Charts */}
