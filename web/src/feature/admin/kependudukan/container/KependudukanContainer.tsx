@@ -1,7 +1,20 @@
-import { getKependudukan, simpanKependudukanAction } from '@/repository/kependudukan/action';
+import {
+  getKependudukan,
+  getDistribusiUsia,
+  getTingkatPendidikan,
+  simpanKependudukanAction,
+  simpanDistribusiUsiaAction,
+  hapusDistribusiUsiaAction,
+  pindahDistribusiUsiaAction,
+  simpanPendidikanAction,
+  hapusPendidikanAction,
+  pindahPendidikanAction,
+} from '@/repository/kependudukan/action';
 import StatCard from '@/feature/admin/dashboard/component/StatCard';
 import { IconPengguna, IconRumah, IconPeta } from '@/shared/components/icons';
 import KependudukanManager from '../component/KependudukanManager';
+import DistribusiUsiaManager from '../component/DistribusiUsiaManager';
+import PendidikanManager from '../component/PendidikanManager';
 import TrenPendudukChart from '../component/TrenPendudukChart';
 
 function angka(n: number) {
@@ -9,7 +22,11 @@ function angka(n: number) {
 }
 
 export default async function KependudukanContainer() {
-  const data = await getKependudukan();
+  const [data, distribusiUsia, pendidikan] = await Promise.all([
+    getKependudukan(),
+    getDistribusiUsia(),
+    getTingkatPendidikan(),
+  ]);
   const terbaru = data[0] ?? null;
 
   return (
@@ -65,11 +82,43 @@ export default async function KependudukanContainer() {
         )}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
         <h3 className="text-sm font-semibold text-[var(--color-text-base)] mb-4">
           Riwayat Data per Tahun
         </h3>
         <KependudukanManager data={data} onSimpan={simpanKependudukanAction} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h3 className="text-sm font-semibold text-[var(--color-text-base)] mb-1">
+            Distribusi Usia &amp; Gender
+          </h3>
+          <p className="text-xs text-[var(--color-text-muted)] mb-4">
+            Tabel yang tampil di halaman Demografi. Kolom jumlah dihitung otomatis.
+          </p>
+          <DistribusiUsiaManager
+            data={distribusiUsia}
+            onSimpan={simpanDistribusiUsiaAction}
+            onHapus={hapusDistribusiUsiaAction}
+            onPindah={pindahDistribusiUsiaAction}
+          />
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h3 className="text-sm font-semibold text-[var(--color-text-base)] mb-1">
+            Tingkat Pendidikan
+          </h3>
+          <p className="text-xs text-[var(--color-text-muted)] mb-4">
+            Grafik batang persentase pada halaman Demografi.
+          </p>
+          <PendidikanManager
+            data={pendidikan}
+            onSimpan={simpanPendidikanAction}
+            onHapus={hapusPendidikanAction}
+            onPindah={pindahPendidikanAction}
+          />
+        </div>
       </div>
     </div>
   );

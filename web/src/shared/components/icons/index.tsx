@@ -221,3 +221,38 @@ export function IconCentang(props: IconProps) {
     </Svg>
   );
 }
+
+/** Profil desa — kartu identitas dengan foto & baris teks. */
+export function IconProfil(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H4Zm4 4.5a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5ZM5.5 15c.4-1.3 1.35-2 2.5-2s2.1.7 2.5 2a.5.5 0 0 1-.48.65H5.98A.5.5 0 0 1 5.5 15ZM13.5 8.5a1 1 0 0 0 0 2H18a1 1 0 1 0 0-2h-4.5Zm0 3.5a1 1 0 1 0 0 2H18a1 1 0 1 0 0-2h-4.5Z"
+      />
+    </Svg>
+  );
+}
+
+/** Sejarah — jam dengan panah putar balik. */
+export function IconSejarah(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 4a8 8 0 1 1-7.6 10.5 1 1 0 0 1 1.9-.62A6 6 0 1 0 6.6 8H9a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1V4a1 1 0 1 1 2 0v2.06A8 8 0 0 1 12 4Z" />
+      <path d="M12 7a1 1 0 0 1 1 1v3.6l2.3 1.3a1 1 0 1 1-1 1.74l-2.8-1.6a1 1 0 0 1-.5-.87V8a1 1 0 0 1 1-1Z" />
+    </Svg>
+  );
+}
+
+/** Struktur organisasi — bagan hierarki. */
+export function IconStruktur(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="9" y="2" width="6" height="5" rx="1.2" />
+      <rect x="2" y="17" width="6" height="5" rx="1.2" />
+      <rect x="16" y="17" width="6" height="5" rx="1.2" />
+      <path d="M11 7h2v3.5h4.5a1 1 0 0 1 1 1V17h-2v-4h-9v4H4.5v-5.5a1 1 0 0 1 1-1H11V7Z" />
+    </Svg>
+  );
+}

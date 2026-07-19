@@ -60,6 +60,23 @@ const HEADERS_KONTEN = [
 const HEADERS_GALERI = ['id', 'judul', 'urlFoto', 'kategori', 'tanggalUnggah', 'diunggahOleh'];
 const HEADERS_PENGATURAN = ['kunci', 'nilai'];
 
+// --- Sheet CMS halaman publik ---
+const SHEET_BERANDA = 'Beranda'; // kunci-nilai
+const SHEET_PROFIL_VISI = 'ProfilVisi'; // kunci-nilai
+const SHEET_GEOGRAFI = 'Geografi'; // kunci-nilai
+const SHEET_MISI = 'Misi';
+const SHEET_SEJARAH = 'Sejarah';
+const SHEET_STRUKTUR = 'Struktur';
+const SHEET_DISTRIBUSI_USIA = 'DistribusiUsia';
+const SHEET_PENDIDIKAN = 'Pendidikan';
+
+const HEADERS_KV = ['kunci', 'nilai'];
+const HEADERS_MISI = ['id', 'teks', 'urutan'];
+const HEADERS_SEJARAH = ['id', 'era', 'subjudul', 'narasi', 'urlFoto', 'sisi', 'urutan'];
+const HEADERS_STRUKTUR = ['id', 'namaJabatan', 'namaPejabat', 'urlFoto', 'level', 'urutan'];
+const HEADERS_DISTRIBUSI_USIA = ['id', 'rentang', 'wilayah', 'lakiLaki', 'perempuan', 'urutan'];
+const HEADERS_PENDIDIKAN = ['id', 'jenjang', 'persentase', 'urutan'];
+
 function setupSpreadsheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   ensureSheet_(ss, SHEET_BUKU_TAMU, HEADERS_BUKU_TAMU);
@@ -70,6 +87,17 @@ function setupSpreadsheet() {
   ensureSheet_(ss, SHEET_KONTEN, HEADERS_KONTEN);
   ensureSheet_(ss, SHEET_GALERI, HEADERS_GALERI);
   ensureSheet_(ss, SHEET_PENGATURAN, HEADERS_PENGATURAN);
+
+  // Sheet CMS halaman publik
+  ensureSheet_(ss, SHEET_BERANDA, HEADERS_KV);
+  ensureSheet_(ss, SHEET_PROFIL_VISI, HEADERS_KV);
+  ensureSheet_(ss, SHEET_GEOGRAFI, HEADERS_KV);
+  ensureSheet_(ss, SHEET_MISI, HEADERS_MISI);
+  ensureSheet_(ss, SHEET_SEJARAH, HEADERS_SEJARAH);
+  ensureSheet_(ss, SHEET_STRUKTUR, HEADERS_STRUKTUR);
+  ensureSheet_(ss, SHEET_DISTRIBUSI_USIA, HEADERS_DISTRIBUSI_USIA);
+  ensureSheet_(ss, SHEET_PENDIDIKAN, HEADERS_PENDIDIKAN);
+
   isiPengaturanAwal_(ss);
   SpreadsheetApp.getActiveSpreadsheet().toast('Setup selesai — tab & header siap.', 'Sumberagung', 5);
 }

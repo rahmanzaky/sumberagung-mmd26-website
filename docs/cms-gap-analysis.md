@@ -15,13 +15,16 @@ mengedit kode.**
 
 | Lapisan | Status |
 |---|---|
-| Panel admin (9 modul) | Selesai — lihat `api-contract.md` |
-| Halaman publik (6 halaman) | **Semua masih stub** "sedang dalam pengembangan" |
-| CMS untuk isi halaman publik | **Sebagian besar belum ada** — rinciannya di bawah |
+| Panel admin — modul layanan (surat, buku tamu, absensi, pengguna) | Selesai |
+| Panel admin — **CMS halaman publik** (7 modul baru) | **Selesai** (update 2026-07-20) |
+| Halaman publik (6 halaman) | **Masih stub** — belum dibangun (dikerjakan setelah CMS) |
 
-Modul `Konten Website` yang sudah ada **hanya** menangani berita & kegiatan
-(3 kartu "Jejak Langkah & Geliat Desa" di Beranda). Modul itu tidak menyentuh
-hero, visi-misi, sejarah, geografis, struktur organisasi, atau demografi rinci.
+> **Update 2026-07-20.** Seluruh CMS di tabel §2 sudah dibangun dengan data
+> contoh dan tersambung ke server action + Apps Script backup. Yang belum:
+> halaman publiknya sendiri (dikerjakan pada tahap berikutnya sesuai keputusan
+> "semua CMS dulu"). Modul `Konten & Berita` yang lama tetap menangani berita &
+> kegiatan; hero, visi-misi, sejarah, geografi, struktur, dan demografi rinci
+> kini punya modulnya masing-masing.
 
 ---
 
@@ -133,23 +136,32 @@ menambah era baru seiring waktu.
 
 ---
 
-## 3. Yang perlu dibangun
+## 3. Status pembangunan
 
-Diurutkan dari yang paling menghambat:
-
-| # | Pekerjaan | Kenapa duluan |
+| # | Pekerjaan | Status |
 |---|---|---|
-| 1 | **6 halaman publik** dari stub → sesuai mockup | Tanpa ini CMS tidak ada yang dikendalikan |
-| 2 | Modul **Beranda** (hero, seksi, video, footer) | Halaman paling sering dilihat |
-| 3 | Modul **Profil** (visi & misi) | Konten statis, cepat |
-| 4 | Modul **Geografi** (koordinat, batas, luas lahan) | Dipakai 2 halaman |
-| 5 | Perluas **Kependudukan** (usia × gender, pendidikan) | Menambah kolom, bukan modul baru |
-| 6 | Modul **Sejarah** (timeline CRUD + urutan) | Butuh pengaturan urutan |
-| 7 | Modul **Struktur Organisasi** (bagan + foto) | Paling rumit — ada hierarki |
-| 8 | Perluas **Pengaturan** (footer, navigasi, logo) | Penyempurnaan |
+| 1 | Modul **Beranda** (hero, seksi, video, footer) | ✅ Selesai |
+| 2 | Modul **Profil** (visi & misi) | ✅ Selesai |
+| 3 | Modul **Geografi** (koordinat, batas, luas lahan) | ✅ Selesai |
+| 4 | Perluas **Kependudukan** (usia × gender, pendidikan) | ✅ Selesai |
+| 5 | Modul **Sejarah** (timeline CRUD + urutan) | ✅ Selesai |
+| 6 | Modul **Struktur Organisasi** (bagan + foto) | ✅ Selesai |
+| 7 | Perluas **Pengaturan** (footer, navigasi, logo) | ✅ Selesai |
+| 8 | **6 halaman publik** dari stub → sesuai mockup | ⏳ Belum — tahap berikutnya |
 
 Di luar CMS, yang masih tertunda dari SRS: notifikasi WhatsApp otomatis
 (SK-F-06 / SRS 4.2) dan field `alamat` + `noWa` pada Pengajuan Surat.
+
+### Pola arsitektur yang dipakai
+
+Supaya 7 modul konsisten & mudah dirawat, ada beberapa bagian bersama:
+
+- `lib/kv-content.ts` — get/post record "satu kolom kunci-nilai" (Beranda, Geografi, Profil-visi, Pengaturan).
+- `lib/ordered.ts` — logika tukar-urutan & nomor urut berikutnya untuk daftar berurut.
+- `shared/components/cms/RecordForm.tsx` — form Pola A (satu record), dipakai Beranda/Profil/Geografi.
+- `shared/components/cms/OrderedListManager.tsx` — daftar Pola B dengan tambah/ubah/hapus + ↑↓, dipakai Misi/Sejarah/Distribusi Usia/Pendidikan.
+- `shared/components/cms/CmsHeader.tsx` — header + tombol "Lihat Halaman".
+- Struktur Organisasi memakai manajer khusus (bukan `OrderedListManager`) karena urutannya 2 dimensi: per-level lalu dalam level.
 
 ---
 

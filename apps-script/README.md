@@ -20,6 +20,14 @@ File `.gs` di folder ini adalah source backup untuk Web App yang digunakan sebag
 | `konten.gs` | Endpoint Konten Berita & Kegiatan (GET, POST simpan/hapus/status) | Selesai |
 | `galeri.gs` | Endpoint Galeri Foto (GET, POST simpan/hapus) | Selesai |
 | `pengaturan.gs` | Endpoint Konfigurasi Situs (GET, POST upsert kunci-nilai) | Selesai |
+| `beranda.gs` | CMS Beranda (GET, POST upsert kunci-nilai) | Selesai |
+| `profilVisi.gs` | CMS Profil — Visi (GET, POST upsert kunci-nilai) | Selesai |
+| `misi.gs` | CMS Profil — Misi (GET, POST simpan/hapus, berurut) | Selesai |
+| `geografi.gs` | CMS Geografi (GET, POST upsert kunci-nilai) | Selesai |
+| `sejarah.gs` | CMS Sejarah — Timeline (GET, POST simpan/hapus, berurut) | Selesai |
+| `struktur.gs` | CMS Struktur Organisasi (GET, POST simpan/hapus, berurut) | Selesai |
+| `distribusiUsia.gs` | CMS Demografi — Distribusi Usia (GET, POST, berurut) | Selesai |
+| `pendidikan.gs` | CMS Demografi — Tingkat Pendidikan (GET, POST, berurut) | Selesai |
 
 ## Struktur Spreadsheet (Template)
 

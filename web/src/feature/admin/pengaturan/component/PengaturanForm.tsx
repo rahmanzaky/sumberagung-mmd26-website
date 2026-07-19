@@ -15,6 +15,20 @@ const GRUP_IDENTITAS: (keyof Pengaturan)[] = [
 ];
 const GRUP_KONTAK: (keyof Pengaturan)[] = ['emailResmi', 'noWaResmi'];
 const GRUP_JAM: (keyof Pengaturan)[] = ['jamLayananMulai', 'jamLayananSelesai'];
+const GRUP_SITUS: (keyof Pengaturan)[] = ['namaSitus', 'urlLogo'];
+const GRUP_NAV: (keyof Pengaturan)[] = [
+  'navHome',
+  'navProfil',
+  'navSejarah',
+  'navStruktur',
+  'navBukuTamu',
+];
+const GRUP_FOOTER: (keyof Pengaturan)[] = [
+  'footerTautan1',
+  'footerTautan2',
+  'footerTautan3',
+  'footerTautan4',
+];
 
 type Props = {
   awal: Pengaturan;
@@ -102,6 +116,45 @@ export default function PengaturanForm({ awal, bolehUbah, onSimpan }: Props) {
             label={LABEL_PENGATURAN[k]}
             value={form[k]}
             type="time"
+            disabled={!bolehUbah}
+            onChange={(v) => setForm({ ...form, [k]: v })}
+          />
+        ))}
+      </Seksi>
+
+      <Seksi judul="Identitas Situs" keterangan="Wordmark & logo yang tampil di navbar dan footer.">
+        {GRUP_SITUS.map((k) => (
+          <Field
+            key={k}
+            label={LABEL_PENGATURAN[k]}
+            value={form[k]}
+            disabled={!bolehUbah}
+            onChange={(v) => setForm({ ...form, [k]: v })}
+          />
+        ))}
+      </Seksi>
+
+      <Seksi
+        judul="Label Menu Navigasi"
+        keterangan="Mengubah tulisan menu di navbar. Halaman tujuannya tetap sama."
+      >
+        {GRUP_NAV.map((k) => (
+          <Field
+            key={k}
+            label={LABEL_PENGATURAN[k]}
+            value={form[k]}
+            disabled={!bolehUbah}
+            onChange={(v) => setForm({ ...form, [k]: v })}
+          />
+        ))}
+      </Seksi>
+
+      <Seksi judul="Footer — Tautan Cepat">
+        {GRUP_FOOTER.map((k) => (
+          <Field
+            key={k}
+            label={LABEL_PENGATURAN[k]}
+            value={form[k]}
             disabled={!bolehUbah}
             onChange={(v) => setForm({ ...form, [k]: v })}
           />

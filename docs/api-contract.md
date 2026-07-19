@@ -367,6 +367,32 @@ di sheet dibiarkan apa adanya. Khusus Super Admin (`requireSuperAdmin()`).
 
 ---
 
+## Endpoint CMS Halaman Publik
+
+Modul-modul ini mengelola isi halaman publik (docs/cms-gap-analysis.md). Dua
+bentuk sheet:
+
+- **Kunci-nilai** (2 kolom `kunci`, `nilai`) — satu record.
+  GET → `{ data: { <kunci>: <nilai> } }`; POST objek kunci-nilai (upsert per kunci) → `{ success }`.
+- **Daftar berurut** (kolom `id … urutan`) — banyak record.
+  GET → `{ data: Item[] }`; POST `{ aksi: "simpan", id, … }` (upsert; id kosong = baru) atau `{ aksi: "hapus", id }` → `{ success, id? }`.
+
+| Env URL | Sheet | Bentuk | Kolom / kunci utama |
+|---|---|---|---|
+| `APPS_SCRIPT_BERANDA_URL` | `Beranda` | kunci-nilai | hero*, kegiatan*, video*, footerTagline |
+| `APPS_SCRIPT_PROFIL_VISI_URL` | `ProfilVisi` | kunci-nilai | halamanJudul, halamanSubteks, visiKutipan |
+| `APPS_SCRIPT_MISI_URL` | `Misi` | daftar | id, teks, urutan |
+| `APPS_SCRIPT_GEOGRAFI_URL` | `Geografi` | kunci-nilai | koordinat, ketinggian, batas*, luas* |
+| `APPS_SCRIPT_SEJARAH_URL` | `Sejarah` | daftar | id, era, subjudul, narasi, urlFoto, sisi, urutan |
+| `APPS_SCRIPT_STRUKTUR_URL` | `Struktur` | daftar | id, namaJabatan, namaPejabat, urlFoto, level, urutan |
+| `APPS_SCRIPT_DISTRIBUSI_USIA_URL` | `DistribusiUsia` | daftar | id, rentang, wilayah, lakiLaki, perempuan, urutan |
+| `APPS_SCRIPT_PENDIDIKAN_URL` | `Pendidikan` | daftar | id, jenjang, persentase, urutan |
+
+Reorder (tombol ↑↓) tidak punya aksi khusus: server menukar nilai `urutan` dua
+item lalu memanggil `aksi: "simpan"` untuk keduanya.
+
+---
+
 ## Catatan
 
 - Nilai `status` surat yang valid: `"Baru"`, `"Diproses"`, `"Selesai"`, `"Ditolak"`
