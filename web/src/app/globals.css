@@ -3,22 +3,28 @@
 @theme inline {
   --font-sans: var(--font-jakarta);
   --font-serif: var(--font-fraunces);
+
+  
+  --font-lora: var(--font-fraunces);
 }
 
 @theme {
-  /* Biru*/
+  /* Biru */
   --color-primary: #1e3f8f;
   --color-primary-dark: #142a6b;
   --color-primary-light: #2f55a7;
-  --color-primary-deepdark: #1A2D5D;
+  --color-primary-deepdark: #1a2d5d;
 
   /* Emas */
   --color-accent: #f7c948;
   --color-accent-light: #fbd97a;
   --color-accent-dark: #d9a92b;
 
-  /* Deep dark */
+  /* Navy paling gelap — latar footer */
   --color-surface-deep: #111f47;
+
+  /* Teks sekunder di atas latar terang */
+  --color-text-muted: #64748b;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -27,19 +33,20 @@
   }
 }
 
-.sembunyikan-scrollbar {
-  /* Firefox */
+html {
   scrollbar-width: none;
-  /* Internet Explorer & Edge lama */
   -ms-overflow-style: none;
 }
 
-/* Chrome, Edge, Safari */
-.sembunyikan-scrollbar::-webkit-scrollbar {
-  display: none;
 ::-webkit-scrollbar {
   display: none;
 }
-html {
+
+.sembunyikan-scrollbar {
   scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sembunyikan-scrollbar::-webkit-scrollbar {
+  display: none;
 }
