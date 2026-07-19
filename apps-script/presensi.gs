@@ -1,4 +1,4 @@
-// Presensi Perangkat Desa — Google Apps Script Web App
+// Absensi Digital Perangkat Desa — Google Apps Script Web App
 // Deploy: script.google.com → paste kode ini → Deploy > New deployment > Web App
 // Format request/response HARUS cocok dengan docs/api-contract.md
 // Lihat apps-script/README.md untuk panduan lengkap.
@@ -6,17 +6,8 @@
 // Isi dengan ID Spreadsheet backend (bagian /d/<ID>/edit dari URL).
 // Boleh dikosongkan jika script ini ter-bind langsung ke Spreadsheet-nya.
 const SPREADSHEET_ID = '';
-const SHEET_NAME = 'Presensi';
-const HEADERS = [
-  'id',
-  'nama',
-  'jabatan',
-  'tanggal',
-  'jamMasuk',
-  'jamPulang',
-  'status',
-  'keterangan',
-];
+const SHEET_NAME = 'Absensi';
+const HEADERS = ['id', 'username', 'tanggal', 'jamMasuk', 'keterangan'];
 
 function getSheet_() {
   const ss = SPREADSHEET_ID
@@ -33,30 +24,23 @@ function jsonResponse_(obj) {
   );
 }
 
-// Konversi nilai sel tanggal → 'YYYY-MM-DD'; jamMasuk/jamPulang → 'HH:mm'.
+// Konversi nilai sel tanggal → "YYYY-MM-DD"; jamMasuk → "HH:mm".
 function normalizeCell_(header, value) {
   if (value instanceof Date) {
     if (header === 'tanggal') {
-      return Utilities.formatDate(
-        value,
-        Session.getScriptTimeZone(),
-        'yyyy-MM-dd',
-      );
+      return Utilities.formatDate(value, Session.getScriptTimeZone(), 'yyyy-MM-dd');
     }
-    if (header === 'jamMasuk' || header === 'jamPulang') {
+    if (header === 'jamMasuk') {
       return Utilities.formatDate(value, Session.getScriptTimeZone(), 'HH:mm');
     }
   }
   return value === null || value === undefined ? '' : String(value);
 }
 
-// GET → { data: PresensiEntry[] }
-function doGet() {
-  const sheet = getSheet_();
+function bacaSemua_(sheet) {
   const values = sheet.getDataRange().getValues();
-  const rows = values.slice(1); // buang header
-
-  const data = rows
+  return values
+    .slice(1) // buang header
     .filter((row) => String(row[0]).trim() !== '') // baris dengan id kosong = diabaikan
     .map((row) => {
       const entry = {};
@@ -65,31 +49,40 @@ function doGet() {
       });
       return entry;
     });
-
-  return jsonResponse_({ data: data });
 }
 
-// POST { id, status, keterangan } → { success }
-// Mengubah status kehadiran satu baris (dipakai admin dari dashboard Absensi).
+// GET → { data: AbsensiEntry[] }
+function doGet() {
+  return jsonResponse_({ data: bacaSemua_(getSheet_()) });
+}
+
+// POST { username, tanggal, jamMasuk, keterangan } → { success, id }
+// Menolak absensi kedua di tanggal yang sama (SK-NF-11).
+// Validasi ini WAJIB ada di sini, bukan cuma di frontend — endpoint bisa
+// dipanggil langsung tanpa lewat UI.
 function doPost(e) {
   try {
     const body = JSON.parse(e.postData.contents);
-    const sheet = getSheet_();
-    const values = sheet.getDataRange().getValues();
-
-    const kolomStatus = HEADERS.indexOf('status') + 1;
-    const kolomKeterangan = HEADERS.indexOf('keterangan') + 1;
-
-    // Baris 1 = header, jadi indeks data ke-i ada di baris i+2.
-    for (let i = 1; i < values.length; i++) {
-      if (String(values[i][0]) === String(body.id)) {
-        sheet.getRange(i + 1, kolomStatus).setValue(body.status);
-        sheet.getRange(i + 1, kolomKeterangan).setValue(body.keterangan || '');
-        return jsonResponse_({ success: true });
-      }
+    if (!body.username || !body.tanggal) {
+      return jsonResponse_({ success: false, error: 'username dan tanggal wajib diisi' });
     }
 
-    return jsonResponse_({ success: false, error: 'ID tidak ditemukan: ' + body.id });
+    const sheet = getSheet_();
+    const sudahAda = bacaSemua_(sheet).some(
+      (a) => a.username === String(body.username) && a.tanggal === String(body.tanggal),
+    );
+    if (sudahAda) {
+      return jsonResponse_({ success: false, error: 'Absensi hari ini sudah tercatat.' });
+    }
+
+    const id = 'ab-' + new Date().getTime();
+    const row = HEADERS.map((header) => {
+      if (header === 'id') return id;
+      return body[header] === undefined || body[header] === null ? '' : body[header];
+    });
+
+    sheet.appendRow(row);
+    return jsonResponse_({ success: true, id: id });
   } catch (err) {
     return jsonResponse_({ success: false, error: String(err) });
   }

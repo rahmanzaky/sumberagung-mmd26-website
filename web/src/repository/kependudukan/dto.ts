@@ -1,24 +1,29 @@
-// Satu baris = rekap kependudukan satu dusun.
-export type KependudukanDusun = {
-  id: string;
-  dusun: string;
-  jumlahKK: number;
+// Sheet 6 — Data Kependudukan (SRS 3.1).
+// Satu baris = statistik satu tahun. Field mengikuti SRS persis.
+export type KependudukanTahun = {
+  tahun: number; // primary key
+  totalPenduduk: number;
   lakiLaki: number;
   perempuan: number;
-  balita: number; // 0–5 th
-  anak: number; // 6–17 th
-  dewasa: number; // 18–59 th
-  lansia: number; // 60 th ke atas
+  jumlahKK: number;
+  jumlahRt: number;
+  jumlahRw: number;
 };
 
-// Agregat seluruh desa — dipakai untuk stat card di halaman Kependudukan.
-export type RingkasanKependudukan = {
-  totalPenduduk: number;
-  totalKK: number;
-  lakiLaki: number;
-  perempuan: number;
-  balita: number;
-  anak: number;
-  dewasa: number;
-  lansia: number;
+export const FIELD_ANGKA = [
+  'totalPenduduk',
+  'lakiLaki',
+  'perempuan',
+  'jumlahKK',
+  'jumlahRt',
+  'jumlahRw',
+] as const;
+
+export const LABEL_FIELD: Record<(typeof FIELD_ANGKA)[number], string> = {
+  totalPenduduk: 'Total Penduduk',
+  lakiLaki: 'Laki-laki',
+  perempuan: 'Perempuan',
+  jumlahKK: 'Jumlah KK',
+  jumlahRt: 'Jumlah RT',
+  jumlahRw: 'Jumlah RW',
 };

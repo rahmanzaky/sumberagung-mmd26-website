@@ -1,4 +1,14 @@
-export default function ManajemenPenggunaContainer() {
+import {
+  getPengguna,
+  simpanPenggunaAction,
+  hapusPenggunaAction,
+} from '@/repository/pengguna/action';
+import { requireAdmin } from '@/lib/guard';
+import PenggunaManager from '../component/PenggunaManager';
+
+export default async function ManajemenPenggunaContainer() {
+  const [data, saya] = await Promise.all([getPengguna(), requireAdmin()]);
+
   return (
     <div>
       <div className="mb-6">
@@ -10,9 +20,12 @@ export default function ManajemenPenggunaContainer() {
         </p>
       </div>
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <p className="text-sm text-gray-500 italic">
-          Modul manajemen pengguna sedang dalam pengembangan...
-        </p>
+        <PenggunaManager
+          data={data}
+          bolehKelola={saya.role === 'Super Admin'}
+          onSimpan={simpanPenggunaAction}
+          onHapus={hapusPenggunaAction}
+        />
       </div>
     </div>
   );

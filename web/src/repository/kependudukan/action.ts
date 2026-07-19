@@ -1,53 +1,38 @@
 'use server';
 
-import type { KependudukanDusun, RingkasanKependudukan } from './dto';
+import { revalidatePath } from 'next/cache';
+import { requireAdmin } from '@/lib/guard';
+import type { KependudukanTahun } from './dto';
 
 // Data contoh dipakai selama APPS_SCRIPT_KEPENDUDUKAN_URL belum diisi.
 // Angka di bawah ini ILUSTRATIF — ganti dengan data resmi desa sebelum publikasi.
-const dummyKependudukan: KependudukanDusun[] = [
+const dummyKependudukan: KependudukanTahun[] = [
   {
-    id: 'kp-001',
-    dusun: 'Krajan',
-    jumlahKK: 412,
-    lakiLaki: 689,
-    perempuan: 702,
-    balita: 96,
-    anak: 273,
-    dewasa: 872,
-    lansia: 150,
+    tahun: 2026,
+    totalPenduduk: 4364,
+    lakiLaki: 2154,
+    perempuan: 2210,
+    jumlahKK: 1300,
+    jumlahRt: 28,
+    jumlahRw: 7,
   },
   {
-    id: 'kp-002',
-    dusun: 'Sumber',
-    jumlahKK: 358,
-    lakiLaki: 596,
-    perempuan: 611,
-    balita: 84,
-    anak: 241,
-    dewasa: 756,
-    lansia: 126,
+    tahun: 2025,
+    totalPenduduk: 4318,
+    lakiLaki: 2131,
+    perempuan: 2187,
+    jumlahKK: 1284,
+    jumlahRt: 28,
+    jumlahRw: 7,
   },
   {
-    id: 'kp-003',
-    dusun: 'Rejosari',
-    jumlahKK: 297,
-    lakiLaki: 488,
-    perempuan: 503,
-    balita: 71,
-    anak: 198,
-    dewasa: 618,
-    lansia: 104,
-  },
-  {
-    id: 'kp-004',
-    dusun: 'Tegalrejo',
-    jumlahKK: 233,
-    lakiLaki: 381,
-    perempuan: 394,
-    balita: 55,
-    anak: 152,
-    dewasa: 486,
-    lansia: 82,
+    tahun: 2024,
+    totalPenduduk: 4270,
+    lakiLaki: 2108,
+    perempuan: 2162,
+    jumlahKK: 1265,
+    jumlahRt: 27,
+    jumlahRw: 7,
   },
 ];
 
@@ -57,30 +42,41 @@ async function fetchAppsScript<T>(url: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export async function getKependudukan(): Promise<KependudukanDusun[]> {
+/** Semua tahun, terbaru dulu. */
+export async function getKependudukan(): Promise<KependudukanTahun[]> {
   const url = process.env.APPS_SCRIPT_KEPENDUDUKAN_URL;
-  if (!url) return dummyKependudukan;
+  const data = url
+    ? (await fetchAppsScript<{ data: KependudukanTahun[] }>(url)).data
+    : dummyKependudukan;
 
-  const json = await fetchAppsScript<{ data: KependudukanDusun[] }>(url);
-  return json.data;
+  return [...data].sort((a, b) => b.tahun - a.tahun);
 }
 
-export async function getRingkasanKependudukan(): Promise<RingkasanKependudukan> {
-  const rows = await getKependudukan();
-  const jumlah = (pilih: (row: KependudukanDusun) => number) =>
-    rows.reduce((total, row) => total + pilih(row), 0);
+/** Statistik tahun terbaru — dipakai card angka di halaman Home publik (SK-F-02). */
+export async function getKependudukanTerbaru(): Promise<KependudukanTahun | null> {
+  const semua = await getKependudukan();
+  return semua[0] ?? null;
+}
 
-  const lakiLaki = jumlah((r) => r.lakiLaki);
-  const perempuan = jumlah((r) => r.perempuan);
+export async function simpanKependudukanAction(input: KependudukanTahun) {
+  await requireAdmin();
 
-  return {
-    totalPenduduk: lakiLaki + perempuan,
-    totalKK: jumlah((r) => r.jumlahKK),
-    lakiLaki,
-    perempuan,
-    balita: jumlah((r) => r.balita),
-    anak: jumlah((r) => r.anak),
-    dewasa: jumlah((r) => r.dewasa),
-    lansia: jumlah((r) => r.lansia),
-  };
+  const url = process.env.APPS_SCRIPT_KEPENDUDUKAN_URL;
+  if (!url) {
+    console.warn('[dev] simpanKependudukanAction tanpa APPS_SCRIPT_KEPENDUDUKAN_URL — dilewati');
+    return;
+  }
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+
+  if (!res.ok) throw new Error(`Simpan kependudukan gagal: ${res.status}`);
+  const json = (await res.json()) as { success: boolean; error?: string };
+  if (!json.success) throw new Error(json.error ?? 'Apps Script returned success: false');
+
+  revalidatePath('/dashboard/kependudukan');
+  revalidatePath('/'); // card angka di halaman Home ikut diperbarui
 }

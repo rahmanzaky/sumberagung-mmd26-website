@@ -1,4 +1,9 @@
-export default function GaleriContainer() {
+import { getGaleri, simpanFotoAction, hapusFotoAction } from '@/repository/galeri/action';
+import GaleriManager from '../component/GaleriManager';
+
+export default async function GaleriContainer() {
+  const data = await getGaleri();
+
   return (
     <div>
       <div className="mb-6">
@@ -10,7 +15,7 @@ export default function GaleriContainer() {
         </p>
       </div>
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <p className="text-sm text-gray-500 italic">Modul galeri sedang dalam pengembangan...</p>
+        <GaleriManager data={data} onSimpan={simpanFotoAction} onHapus={hapusFotoAction} />
       </div>
     </div>
   );

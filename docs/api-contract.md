@@ -91,9 +91,9 @@ Semua endpoint diakses **server-side only** dari Next.js (tidak pernah dari brow
 
 ---
 
-## GET Presensi
+## GET Absensi
 
-**URL:** `APPS_SCRIPT_PRESENSI_URL` (dari env)
+**URL:** `APPS_SCRIPT_PRESENSI_URL` (dari env) · Sheet `Absensi` (SRS 3.1 Sheet 3)
 
 **Response:**
 ```json
@@ -101,30 +101,75 @@ Semua endpoint diakses **server-side only** dari Next.js (tidak pernah dari brow
   "data": [
     {
       "id": "string",
-      "nama": "string",
-      "jabatan": "string",
+      "username": "string",
       "tanggal": "YYYY-MM-DD",
       "jamMasuk": "HH:mm",
-      "jamPulang": "HH:mm",
-      "status": "Hadir" | "Izin" | "Sakit" | "Alpha",
       "keterangan": "string"
     }
   ]
 }
 ```
 
-`jamMasuk` / `jamPulang` dikirim sebagai string kosong `""` bila belum absen.
+`username` adalah foreign key ke sheet `PerangkatDesa`. Nama lengkap & jabatan
+digabungkan di sisi Next.js (`getRekapAbsensi`), bukan disimpan ulang di sini.
 
 ---
 
-## POST Update Status Presensi
+## POST Absensi (Absen Sekarang)
 
 **URL:** `APPS_SCRIPT_PRESENSI_URL` (sama dengan GET, dibedakan oleh method)
 
 **Request:**
 ```json
-{ "id": "string", "status": "string", "keterangan": "string" }
+{
+  "username": "string",
+  "tanggal": "YYYY-MM-DD",
+  "jamMasuk": "HH:mm",
+  "keterangan": "string"
+}
 ```
+
+**Response:**
+```json
+{ "success": true, "id": "string" }
+```
+
+Menolak absensi kedua pada tanggal yang sama untuk username yang sama
+(SK-NF-11) dengan `{ "success": false, "error": "Absensi hari ini sudah tercatat." }`.
+
+---
+
+## GET Kependudukan
+
+**URL:** `APPS_SCRIPT_KEPENDUDUKAN_URL` (dari env) · Sheet `Kependudukan` (SRS 3.1 Sheet 6)
+
+Satu baris = statistik satu tahun. Semua field dikirim sebagai **number**.
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "tahun": 2026,
+      "totalPenduduk": 4364,
+      "lakiLaki": 2154,
+      "perempuan": 2210,
+      "jumlahKK": 1300,
+      "jumlahRt": 28,
+      "jumlahRw": 7
+    }
+  ]
+}
+```
+
+---
+
+## POST Kependudukan
+
+**URL:** `APPS_SCRIPT_KEPENDUDUKAN_URL` (sama dengan GET, dibedakan oleh method)
+
+**Request:** objek `KependudukanTahun` lengkap. Bersifat **upsert** —
+baris dengan `tahun` yang sama akan ditimpa.
 
 **Response:**
 ```json
@@ -133,12 +178,61 @@ Semua endpoint diakses **server-side only** dari Next.js (tidak pernah dari brow
 
 ---
 
-## GET Kependudukan
+## GET Pengguna (Perangkat Desa)
 
-**URL:** `APPS_SCRIPT_KEPENDUDUKAN_URL` (dari env)
+**URL:** `APPS_SCRIPT_PENGGUNA_URL` (dari env) · Sheet `PerangkatDesa` (SRS 3.1 Sheet 2)
 
-Read-only — rekap diperbarui langsung di Spreadsheet oleh operator desa,
-sehingga endpoint ini tidak punya POST. Satu baris = satu dusun.
+> **Deviasi dari SRS:** kolom `Password` TIDAK dipakai. Login memakai Google
+> OAuth (NextAuth) dan akun dicocokkan lewat kolom `email`, sehingga tidak ada
+> password mentah yang tersimpan di Spreadsheet.
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "username": "string",
+      "namaLengkap": "string",
+      "jabatan": "string",
+      "noWa": "string",
+      "email": "string",
+      "role": "Admin" | "Super Admin"
+    }
+  ]
+}
+```
+
+---
+
+## POST Pengguna
+
+**URL:** `APPS_SCRIPT_PENGGUNA_URL` (sama dengan GET, dibedakan oleh method)
+
+**Request:**
+```json
+{ "aksi": "simpan", "username": "string", "namaLengkap": "string", "jabatan": "string", "noWa": "string", "email": "string", "role": "Admin" }
+```
+```json
+{ "aksi": "hapus", "username": "string" }
+```
+
+`simpan` bersifat upsert berdasarkan `username`. Kedua aksi hanya boleh
+dipanggil Super Admin — dijaga `requireSuperAdmin()` di sisi Next.js.
+
+**Response:**
+```json
+{ "success": true }
+```
+
+---
+
+## GET Konten
+
+**URL:** `APPS_SCRIPT_KONTEN_URL` (dari env) · Sheet `Konten` (SRS 3.1 Sheet 5)
+
+Mengirim **semua** konten termasuk yang `Tersembunyi`. Penyaringan untuk
+halaman publik dilakukan di server Next.js (`getKontenPublik`), supaya draf
+tidak pernah terkirim ke browser.
 
 **Response:**
 ```json
@@ -146,36 +240,158 @@ sehingga endpoint ini tidak punya POST. Satu baris = satu dusun.
   "data": [
     {
       "id": "string",
-      "dusun": "string",
-      "jumlahKK": 0,
-      "lakiLaki": 0,
-      "perempuan": 0,
-      "balita": 0,
-      "anak": 0,
-      "dewasa": 0,
-      "lansia": 0
+      "judul": "string",
+      "deskripsi": "string",
+      "tanggalKegiatan": "YYYY-MM-DD",
+      "kategori": "string",
+      "urlFoto": "string",
+      "status": "Tampil" | "Tersembunyi",
+      "dibuatOleh": "string"
     }
   ]
 }
 ```
 
-Semua field jumlah dikirim sebagai **number**, bukan string.
+---
+
+## POST Konten
+
+**URL:** `APPS_SCRIPT_KONTEN_URL` (sama dengan GET, dibedakan oleh method)
+
+**Request:**
+```json
+{ "aksi": "simpan", "id": "", "judul": "string", "deskripsi": "string", "tanggalKegiatan": "YYYY-MM-DD", "kategori": "string", "urlFoto": "string", "status": "Tampil", "dibuatOleh": "string" }
+```
+```json
+{ "aksi": "hapus", "id": "string" }
+```
+```json
+{ "aksi": "status", "id": "string", "status": "Tersembunyi" }
+```
+
+Pada `simpan`, `id` kosong = konten baru (server membuat id `kt-<timestamp>`);
+`id` terisi = update baris yang ada. `dibuatOleh` diisi server dari sesi login,
+bukan dari form.
+
+**Response:**
+```json
+{ "success": true, "id": "string" }
+```
+
+---
+
+## GET Galeri
+
+**URL:** `APPS_SCRIPT_GALERI_URL` (dari env) · Sheet `Galeri`
+
+Tidak ada di daftar 6 sheet SRS 3.1 — skema turunan dari SK-F-15. Sheet hanya
+menyimpan **tautan** foto; file fisik ada di Google Drive desa.
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "string",
+      "judul": "string",
+      "urlFoto": "string",
+      "kategori": "string",
+      "tanggalUnggah": "YYYY-MM-DD",
+      "diunggahOleh": "string"
+    }
+  ]
+}
+```
+
+---
+
+## POST Galeri
+
+**URL:** `APPS_SCRIPT_GALERI_URL` (sama dengan GET, dibedakan oleh method)
+
+**Request:**
+```json
+{ "aksi": "simpan", "id": "", "judul": "string", "urlFoto": "string", "kategori": "string", "tanggalUnggah": "YYYY-MM-DD", "diunggahOleh": "string" }
+```
+```json
+{ "aksi": "hapus", "id": "string" }
+```
+
+**Response:**
+```json
+{ "success": true, "id": "string" }
+```
+
+---
+
+## GET Pengaturan
+
+**URL:** `APPS_SCRIPT_PENGATURAN_URL` (dari env) · Sheet `Pengaturan`
+
+Berbentuk pasangan kunci-nilai (2 kolom), bukan satu baris per record — supaya
+menambah pengaturan baru cukup menambah baris, tanpa mengubah kolom.
+
+**Response:**
+```json
+{
+  "data": {
+    "namaDesa": "Sumberagung",
+    "kecamatan": "Panggungrejo",
+    "kabupaten": "Blitar",
+    "provinsi": "Jawa Timur",
+    "alamatKantor": "string",
+    "emailResmi": "string",
+    "noWaResmi": "string",
+    "jamLayananMulai": "08:00",
+    "jamLayananSelesai": "13:00"
+  }
+}
+```
+
+Nilai dari sheet ditimpa di atas `PENGATURAN_DEFAULT`, jadi kunci yang belum
+pernah diisi tetap punya nilai wajar.
+
+---
+
+## POST Pengaturan
+
+**URL:** `APPS_SCRIPT_PENGATURAN_URL` (sama dengan GET, dibedakan oleh method)
+
+**Request:** objek kunci-nilai. Setiap kunci yang dikirim di-upsert; kunci lain
+di sheet dibiarkan apa adanya. Khusus Super Admin (`requireSuperAdmin()`).
+
+**Response:**
+```json
+{ "success": true }
+```
 
 ---
 
 ## Catatan
 
 - Nilai `status` surat yang valid: `"Baru"`, `"Diproses"`, `"Selesai"`, `"Ditolak"`
-- Nilai `status` presensi yang valid: `"Hadir"`, `"Izin"`, `"Sakit"`, `"Alpha"`
+- Nilai `status` konten yang valid: `"Tampil"`, `"Tersembunyi"`
+- Nilai `role` yang valid: `"Admin"`, `"Super Admin"`
 - Format tanggal selalu `YYYY-MM-DD` (ISO 8601)
 - Format jam selalu `HH:mm` (24 jam)
 - Field `nik` adalah Nomor Induk Kependudukan (16 digit)
+- Setiap Server Action yang mengubah data memanggil `requireAdmin()` atau
+  `requireSuperAdmin()` lebih dulu — Server Action bisa dipanggil lewat POST
+  langsung, bukan hanya dari UI.
 
 ---
 
-## Layanan Baru (Dalam Tahap Pengembangan / TBD)
-Kontrak JSON untuk endpoint berikut belum didefinisikan secara resmi dan akan ditambahkan pada iterasi selanjutnya:
-- **Konten:** GET/POST update teks profil desa, sejarah desa, dll.
-- **Pengguna:** GET/POST hak akses admin.
-- **Galeri:** GET/POST daftar gambar dokumentasi kegiatan.
-- **Pengaturan:** GET/POST konfigurasi situs web (jam kerja otomatis, dsb).
+## Deviasi dari SRS (perlu dicatat di dokumen akhir)
+
+| Hal | SRS | Implementasi | Alasan |
+|---|---|---|---|
+| Login admin | Username + Password divalidasi ke Sheet `PerangkatDesa` (SK-F-09) | Google OAuth (NextAuth) + whitelist email, kolom `role` di sheet | Menghindari password mentah di Spreadsheet; RBAC (SK-F-17) tetap terpenuhi |
+| Ekspor rekap absensi | "ekspor ke Excel" (SRS 4.1 B) | Ekspor `.csv` (UTF-8 + BOM, langsung terbaca Excel) | Tanpa dependensi library penulis `.xlsx` |
+| Galeri & Pengaturan | Tidak punya sheet sendiri di SRS 3.1 | Sheet `Galeri` & `Pengaturan` baru | Dibutuhkan SK-F-15 dan SK-F-07 |
+
+---
+
+## Layanan yang Belum Dikerjakan
+
+- **Notifikasi WhatsApp otomatis** (SRS 3.2 A, 4.2): gateway Fonnte/Wablas belum diintegrasikan.
+- **Field `alamat` & `noWa` pada Pengajuan Surat**: SRS 3.1 Sheet 1 mensyaratkannya, kode saat ini belum punya (status juga memakai `"Baru"`, bukan `"Pending"` seperti SRS).

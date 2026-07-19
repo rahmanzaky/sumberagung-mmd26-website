@@ -1,6 +1,11 @@
 # Google Apps Script — Panduan Deploy Manual
 
-File `.gs` di folder ini adalah source backup untuk dua Web App yang digunakan sebagai REST API backend.
+File `.gs` di folder ini adalah source backup untuk Web App yang digunakan sebagai REST API backend.
+
+> **Penting:** setiap file layanan di-deploy sebagai **project Apps Script terpisah**
+> (masing-masing punya URL Web App sendiri). Jangan menaruh dua file layanan di satu
+> project — semuanya mendeklarasikan `SHEET_NAME`, `doGet`, dan `doPost`, sehingga
+> akan bentrok di scope global.
 
 ## File & Layanan
 
@@ -9,15 +14,17 @@ File `.gs` di folder ini adalah source backup untuk dua Web App yang digunakan s
 | `setup.gs` | Utility sekali-jalan: buat tab + header Spreadsheet | Selesai |
 | `bukuTamu.gs` | Endpoint Buku Tamu Digital (GET list, POST tamu baru) | Selesai |
 | `pengajuanSurat.gs` | Endpoint Pengajuan Surat (GET list, POST update status) | Selesai |
-| `kependudukan.gs` | Endpoint Data Penduduk | *TBD (Akan Datang)* |
-| `presensi.gs` | Endpoint Presensi Perangkat Desa | *TBD (Akan Datang)* |
-| `konten.gs` | Endpoint Manajemen Konten Halaman | *TBD (Akan Datang)* |
-| `pengguna.gs` | Endpoint Manajemen Akun Admin | *TBD (Akan Datang)* |
-| `galeri.gs` | Endpoint Album Foto | *TBD (Akan Datang)* |
+| `presensi.gs` | Endpoint Absensi Digital (GET rekap, POST absen 1x/hari) | Selesai |
+| `kependudukan.gs` | Endpoint Data Kependudukan per tahun (GET, POST upsert) | Selesai |
+| `pengguna.gs` | Endpoint Akun Perangkat Desa (GET, POST simpan/hapus) | Selesai |
+| `konten.gs` | Endpoint Konten Berita & Kegiatan (GET, POST simpan/hapus/status) | Selesai |
+| `galeri.gs` | Endpoint Galeri Foto (GET, POST simpan/hapus) | Selesai |
+| `pengaturan.gs` | Endpoint Konfigurasi Situs (GET, POST upsert kunci-nilai) | Selesai |
 
 ## Struktur Spreadsheet (Template)
 
-Backend membaca/menulis satu Spreadsheet Google berisi dua tab. Kolom harus
+Backend membaca/menulis satu Spreadsheet Google berisi delapan tab. Nama tab
+mengikuti SRS 3.1 (Sheet 1–6), ditambah `Galeri` & `Pengaturan`. Kolom harus
 **persis** urutan berikut (baris 1 = header):
 
 **Tab `BukuTamu`:**
@@ -32,9 +39,44 @@ Backend membaca/menulis satu Spreadsheet Google berisi dua tab. Kolom harus
 
 - `tanggal`/`tanggalPengajuan`/`tanggalUpdate` → format `YYYY-MM-DD`
 - `jam` → format `HH:mm`
-- `status` → salah satu dari `Baru`, `Diproses`, `Selesai`, `Ditolak`
+**Tab `Absensi`:**
+
+| id | username | tanggal | jamMasuk | keterangan |
+|----|----------|---------|----------|------------|
+
+**Tab `Kependudukan`:**
+
+| tahun | totalPenduduk | lakiLaki | perempuan | jumlahKK | jumlahRt | jumlahRw |
+|-------|---------------|----------|-----------|----------|----------|----------|
+
+**Tab `PerangkatDesa`:**
+
+| username | namaLengkap | jabatan | noWa | email | role |
+|----------|-------------|---------|------|-------|------|
+
+**Tab `Konten`:**
+
+| id | judul | deskripsi | tanggalKegiatan | kategori | urlFoto | status | dibuatOleh |
+|----|-------|-----------|-----------------|----------|---------|--------|------------|
+
+**Tab `Galeri`:**
+
+| id | judul | urlFoto | kategori | tanggalUnggah | diunggahOleh |
+|----|-------|---------|----------|---------------|--------------|
+
+**Tab `Pengaturan`:** (pasangan kunci-nilai, bukan satu baris per record)
+
+| kunci | nilai |
+|-------|-------|
+
+- `status` surat → salah satu dari `Baru`, `Diproses`, `Selesai`, `Ditolak`
+- `status` konten → `Tampil` atau `Tersembunyi`
+- `role` → `Admin` atau `Super Admin`
+- `username` di tab `Absensi` adalah foreign key ke tab `PerangkatDesa`
 
 Tab & header ini dibuat otomatis oleh `setupSpreadsheet()` di `setup.gs`.
+Tab `Pengaturan` sekalian diisi nilai awal, tapi hanya bila masih kosong —
+menjalankan ulang `setupSpreadsheet()` tidak menimpa konfigurasi desa.
 
 ## Cara Setup & Deploy
 
@@ -43,13 +85,22 @@ Tab & header ini dibuat otomatis oleh `setupSpreadsheet()` di `setup.gs`.
 3. Paste `setup.gs`, lalu jalankan fungsi **`setupSpreadsheet`** untuk membuat tab + header.
    - Jika project **ter-bind** ke Spreadsheet (via *Extensions > Apps Script* dari dalam Sheet), biarkan `SPREADSHEET_ID` kosong.
    - Jika project **standalone**, isi `SPREADSHEET_ID` di tiap file `.gs` dengan ID langkah 1.
-4. Untuk tiap layanan (`bukuTamu.gs`, `pengajuanSurat.gs`): paste kodenya, lalu **Deploy > New deployment > Web App**:
+4. Untuk **tiap** layanan (`bukuTamu.gs`, `pengajuanSurat.gs`, `presensi.gs`,
+   `kependudukan.gs`, `pengguna.gs`, `konten.gs`, `galeri.gs`, `pengaturan.gs`):
+   buat project Apps Script **baru & terpisah**, paste satu file saja, lalu
+   **Deploy > New deployment > Web App**:
    - **Execute as**: Me (akun Google desa)
    - **Who has access**: Anyone
 5. Salin URL Web App masing-masing ke `.env.local` di folder `web/`:
    ```
    APPS_SCRIPT_BUKU_TAMU_URL=https://script.google.com/macros/s/...
    APPS_SCRIPT_SURAT_URL=https://script.google.com/macros/s/...
+   APPS_SCRIPT_PRESENSI_URL=https://script.google.com/macros/s/...
+   APPS_SCRIPT_KEPENDUDUKAN_URL=https://script.google.com/macros/s/...
+   APPS_SCRIPT_PENGGUNA_URL=https://script.google.com/macros/s/...
+   APPS_SCRIPT_KONTEN_URL=https://script.google.com/macros/s/...
+   APPS_SCRIPT_GALERI_URL=https://script.google.com/macros/s/...
+   APPS_SCRIPT_PENGATURAN_URL=https://script.google.com/macros/s/...
    ```
 
 > Selama `APPS_SCRIPT_*_URL` kosong, frontend otomatis memakai **data dummy** (lihat `web/src/repository/**/action.ts`), jadi dashboard tetap bisa dipreview tanpa deploy.

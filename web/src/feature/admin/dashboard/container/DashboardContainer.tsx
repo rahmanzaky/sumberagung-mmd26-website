@@ -23,10 +23,11 @@ export default async function DashboardContainer() {
   ]);
 
   const pengajuanBaru = pengajuan.filter((p) => p.status === 'Baru').length;
-  const kehadiran = `${rekap.hadir}/${rekap.total}`;
+  const kehadiran = `${rekap.sudahAbsen}/${rekap.totalPerangkat}`;
   // Peringatan sistem = hal yang butuh perhatian admin hari ini:
-  // perangkat alpha + pengajuan surat yang masih mengendap di status "Baru".
-  const peringatanSistem = rekap.alpha + pengajuanBaru;
+  // perangkat yang belum absen + pengajuan surat yang masih berstatus "Baru".
+  const belumAbsen = rekap.totalPerangkat - rekap.sudahAbsen;
+  const peringatanSistem = belumAbsen + pengajuanBaru;
 
   return (
     <div>
