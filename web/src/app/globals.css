@@ -1,35 +1,51 @@
 @import 'tailwindcss';
 
-@theme {
-  /* Primary: navy pemerintahan (warna utama desain) */
-  --color-primary: #1a2d5d;
-  --color-primary-light: #2a4178;
-  --color-primary-dark: #12203f;
+@theme inline {
+  --font-sans: var(--font-jakarta);
+  --font-serif: var(--font-fraunces);
 
-  /* Gold: aksen brand — logo, judul serif, tombol utama (kontras baik di atas navy) */
-  --color-gold: #c9a227;
-  --color-gold-light: #e3c766;
-  /* Gold gelap untuk teks di atas latar terang (kontras aman untuk judul) */
-  --color-gold-dark: #9a7b1f;
-
-  /* Accent = gold (dipakai token lama pada Navbar/Footer/login di atas navy) */
-  --color-accent: #c9a227;
-  --color-accent-light: #e3c766;
-
-  /* Earth: bronze pelengkap (variasi stat card & chart) */
-  --color-earth: #b08d57;
-  --color-earth-light: #cdb07e;
-
-  /* Surface: latar netral cool-gray agar serasi dengan navy */
-  --color-surface: #f6f7f9;
-  --color-surface-dark: #eceef2;
-
-  /* Text */
-  --color-text-base: #1a1a1a;
-  --color-text-muted: #6b7280;
+  --font-lora: var(--font-fraunces);
 }
 
-body {
-  background-color: var(--color-surface);
-  color: var(--color-text-base);
+@theme {
+  /* Biru */
+  --color-primary: #1e3f8f;
+  --color-primary-dark: #142a6b;
+  --color-primary-light: #2f55a7;
+  --color-primary-deepdark: #1a2d5d;
+
+  /* Emas */
+  --color-accent: #f7c948;
+  --color-accent-light: #fbd97a;
+  --color-accent-dark: #d9a92b;
+
+  /* Navy paling gelap — latar footer */
+  --color-surface-deep: #111f47;
+
+  /* Teks sekunder di atas latar terang */
+  --color-text-muted: #64748b;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.sembunyikan-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sembunyikan-scrollbar::-webkit-scrollbar {
+  display: none;
 }
