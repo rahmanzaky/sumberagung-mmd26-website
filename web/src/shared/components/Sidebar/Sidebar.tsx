@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import {
   IconDashboard,
   IconSurat,
@@ -143,15 +144,13 @@ export default function Sidebar({ role }: { role: Role }) {
       </nav>
 
       <div className="p-3 border-t border-white/10">
-        <form action="/api/auth/signout" method="POST">
-          <button
-            type="submit"
-            className="group w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-white/70 hover:bg-[var(--color-primary-light)] hover:text-white transition-colors"
-          >
-            <IconKeluar className="w-5 h-5 shrink-0 text-white/45 group-hover:text-white/80 transition-colors" />
-            <span>Keluar</span>
-          </button>
-        </form>
+        <button
+          onClick={() => signOut({ callbackUrl: '/login' })}
+          className="group w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-white/70 hover:bg-[var(--color-primary-light)] hover:text-white transition-colors"
+        >
+          <IconKeluar className="w-5 h-5 shrink-0 text-white/45 group-hover:text-white/80 transition-colors" />
+          <span>Keluar</span>
+        </button>
       </div>
     </aside>
   );

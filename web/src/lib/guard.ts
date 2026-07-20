@@ -4,7 +4,7 @@ import type { Pengguna } from '@/repository/pengguna/dto';
 
 // Mengikuti DEV_SKIP_AUTH di proxy.ts — tanpa ini dashboard tidak bisa
 // dipreview saat development. Hapus bareng flag itu sebelum merge ke main.
-const DEV_SKIP_AUTH = process.env.NODE_ENV === 'development';
+const DEV_SKIP_AUTH = false;
 
 const DEV_PENGGUNA: Pengguna = {
   username: 'dev',

@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 // DEV ONLY: skip auth saat development supaya bisa preview dashboard tanpa OAuth
 // Hapus flag ini sebelum merge ke main
-const DEV_SKIP_AUTH = process.env.NODE_ENV === 'development';
+const DEV_SKIP_AUTH = false;
 
 export default auth((req) => {
   if (DEV_SKIP_AUTH) return NextResponse.next();
