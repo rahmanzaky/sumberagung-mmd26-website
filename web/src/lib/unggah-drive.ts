@@ -1,6 +1,8 @@
-// Helper server: teruskan gambar base64 (sudah dikompres di browser) ke Apps
-// Script upload endpoint, kembalikan URL Drive. Sheet menyimpan URL ini;
-// Drive hanya menyimpan filenya.
+// Helper server: teruskan gambar base64 (sudah dikompres di browser) ke backend
+// (resource 'upload'), kembalikan URL Drive. Sheet menyimpan URL ini; Drive
+// hanya menyimpan filenya.
+
+import { kirimResource } from '@/lib/apps-script';
 
 export type GambarUnggah = {
   dataBase64: string;
@@ -11,27 +13,10 @@ export type GambarUnggah = {
 };
 
 /**
- * Mengunggah satu gambar ke Drive lewat APPS_SCRIPT_UPLOAD_URL.
- * Mengembalikan URL Drive, atau string kosong bila endpoint belum dikonfigurasi
- * (mode dev) supaya alur tetap jalan tanpa backend.
+ * Mengunggah satu gambar ke Drive. Mengembalikan URL Drive, atau string kosong
+ * bila backend belum dikonfigurasi (mode dev) supaya alur tetap jalan.
  */
 export async function unggahGambar(gambar: GambarUnggah): Promise<string> {
-  const url = process.env.APPS_SCRIPT_UPLOAD_URL;
-  if (!url) {
-    console.warn('[dev] unggahGambar tanpa APPS_SCRIPT_UPLOAD_URL — dilewati');
-    return '';
-  }
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ publik: false, ...gambar }),
-  });
-
-  if (!res.ok) throw new Error(`Unggah gambar gagal: ${res.status}`);
-  const json = (await res.json()) as { success: boolean; url?: string; error?: string };
-  if (!json.success || !json.url) {
-    throw new Error(json.error ?? 'Unggah gambar gagal di Apps Script.');
-  }
-  return json.url;
+  const hasil = await kirimResource('upload', { publik: false, ...gambar });
+  return hasil.url ?? '';
 }

@@ -2,9 +2,10 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireAdmin, requireSuperAdmin } from '@/lib/guard';
+import { ambilResource, kirimResource } from '@/lib/apps-script';
 import type { Pengguna, PenggunaInput } from './dto';
 
-// Data contoh dipakai selama APPS_SCRIPT_PENGGUNA_URL belum diisi.
+// Data contoh dipakai selama backend belum dikonfigurasi.
 const dummyPengguna: Pengguna[] = [
   {
     username: 'sutrisno',
@@ -72,18 +73,8 @@ const dummyPengguna: Pengguna[] = [
   },
 ];
 
-async function fetchAppsScript<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Apps Script request failed: ${res.status}`);
-  return res.json() as Promise<T>;
-}
-
 export async function getPengguna(): Promise<Pengguna[]> {
-  const url = process.env.APPS_SCRIPT_PENGGUNA_URL;
-  if (!url) return dummyPengguna;
-
-  const json = await fetchAppsScript<{ data: Pengguna[] }>(url);
-  return json.data;
+  return ambilResource<Pengguna[]>('pengguna', dummyPengguna);
 }
 
 /** Cari perangkat desa berdasarkan email sesi Google. null jika tidak terdaftar. */
@@ -93,22 +84,8 @@ export async function getPenggunaByEmail(email: string): Promise<Pengguna | null
   return cocok ?? null;
 }
 
-async function postPengguna(body: unknown) {
-  const url = process.env.APPS_SCRIPT_PENGGUNA_URL;
-  if (!url) {
-    console.warn('[dev] postPengguna called without APPS_SCRIPT_PENGGUNA_URL — skipping', body);
-    return;
-  }
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) throw new Error(`Pengguna request failed: ${res.status}`);
-  const json = (await res.json()) as { success: boolean; error?: string };
-  if (!json.success) throw new Error(json.error ?? 'Apps Script returned success: false');
+async function postPengguna(body: object) {
+  await kirimResource('pengguna', body);
 }
 
 // Kelola pengguna hanya untuk Super Admin (SRS 2.2 & SK-F-16).

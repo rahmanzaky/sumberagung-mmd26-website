@@ -3,6 +3,23 @@
 Dokumen ini mendefinisikan kontrak JSON antara frontend (Next.js) dan backend (Google Apps Script Web App).
 Semua endpoint diakses **server-side only** dari Next.js (tidak pernah dari browser langsung).
 
+## Model koneksi (penting)
+
+Backend digabung jadi **satu Web App** (`apps-script/Code.gs`) dengan **satu env
+var** `APPS_SCRIPT_URL`. Endpoint dibedakan oleh **`resource`**:
+
+- **GET** `APPS_SCRIPT_URL?resource=<key>` → `{ data: ... }`
+- **POST** body `{ "resource":"<key>", "aksi":"...", ... }` → `{ success, ... }`
+
+`<key>`: `bukuTamu`, `surat`, `absensi`, `kependudukan`, `pengguna`, `konten`,
+`galeri`, `misi`, `sejarah`, `struktur`, `distribusiUsia`, `pendidikan`,
+`beranda`, `profilVisi`, `geografi`, `pengaturan`, `upload`.
+
+Semua pemanggilan lewat helper `web/src/lib/apps-script.ts`
+(`ambilResource` / `kirimResource`). Bagian di bawah menyebut nama env lama
+(`APPS_SCRIPT_*_URL`) hanya sebagai penanda resource; secara teknis semuanya
+memakai `APPS_SCRIPT_URL` + `resource`.
+
 ---
 
 ## GET Buku Tamu

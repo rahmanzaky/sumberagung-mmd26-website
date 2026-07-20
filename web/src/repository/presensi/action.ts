@@ -4,10 +4,11 @@ import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/guard';
 import { getPengguna } from '@/repository/pengguna/action';
 import { unggahGambar } from '@/lib/unggah-drive';
+import { ambilResource, kirimResource } from '@/lib/apps-script';
 import type { AbsensiEntry, AbsenPayload, RekapAbsensiRow, RekapKehadiran } from './dto';
 
-// Data contoh dipakai selama APPS_SCRIPT_PRESENSI_URL belum diisi. Field bukti
-// (urlFoto/latitude/longitude) dikosongkan lewat `lengkapiBukti` di bawah.
+// Data contoh dipakai selama backend belum dikonfigurasi. Field bukti
+// (urlFoto/latitude/longitude) dikosongkan lewat map di bawah.
 const dummyDasar = [
   { id: 'ab-001', username: 'sutrisno', tanggal: '2026-07-19', jamMasuk: '07:30', keterangan: '' },
   { id: 'ab-002', username: 'endang', tanggal: '2026-07-19', jamMasuk: '07:25', keterangan: '' },
@@ -36,18 +37,8 @@ const dummyAbsensi: AbsensiEntry[] = dummyDasar.map((d) => ({
   longitude: '',
 }));
 
-async function fetchAppsScript<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Apps Script request failed: ${res.status}`);
-  return res.json() as Promise<T>;
-}
-
 export async function getAbsensi(): Promise<AbsensiEntry[]> {
-  const url = process.env.APPS_SCRIPT_PRESENSI_URL;
-  if (!url) return dummyAbsensi;
-
-  const json = await fetchAppsScript<{ data: AbsensiEntry[] }>(url);
-  return json.data;
+  return ambilResource<AbsensiEntry[]>('absensi', dummyAbsensi);
 }
 
 /** Format YYYY-MM-DD mengikuti zona waktu lokal, bukan UTC. */
@@ -107,12 +98,6 @@ export async function absenSekarangAction(payload: AbsenPayload) {
     throw new Error('Lokasi belum tersedia. Izinkan akses lokasi lalu coba lagi.');
   }
 
-  const url = process.env.APPS_SCRIPT_PRESENSI_URL;
-  if (!url) {
-    console.warn('[dev] absenSekarangAction tanpa APPS_SCRIPT_PRESENSI_URL — dilewati');
-    return;
-  }
-
   // Unggah foto bukti dulu; simpan hanya tautannya ke Sheet.
   const urlFoto = await unggahGambar({
     dataBase64: payload.fotoBase64,
@@ -120,27 +105,19 @@ export async function absenSekarangAction(payload: AbsenPayload) {
     namaFile: payload.fotoNama,
   });
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      username: saya.username,
-      tanggal: tanggalHariIniISO(),
-      jamMasuk: new Date().toLocaleTimeString('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      }),
-      keterangan: payload.keterangan,
-      urlFoto,
-      latitude: payload.latitude,
-      longitude: payload.longitude,
+  await kirimResource('absensi', {
+    username: saya.username,
+    tanggal: tanggalHariIniISO(),
+    jamMasuk: new Date().toLocaleTimeString('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
     }),
+    keterangan: payload.keterangan,
+    urlFoto,
+    latitude: payload.latitude,
+    longitude: payload.longitude,
   });
-
-  if (!res.ok) throw new Error(`Absen gagal: ${res.status}`);
-  const json = (await res.json()) as { success: boolean; error?: string };
-  if (!json.success) throw new Error(json.error ?? 'Apps Script returned success: false');
 
   revalidatePath('/dashboard/presensi');
   revalidatePath('/dashboard');

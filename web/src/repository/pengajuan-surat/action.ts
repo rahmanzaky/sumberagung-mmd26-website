@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/guard';
+import { ambilResource, kirimResource } from '@/lib/apps-script';
 import type { PengajuanSurat, PengajuanSuratInput, StatusSurat } from './dto';
 
 // Data contoh tanpa alamat/noWa; diisi default oleh getPengajuanSurat().
@@ -108,62 +109,26 @@ const dummyPengajuanSurat: Omit<PengajuanSurat, 'alamat' | 'noWa'>[] = [
   },
 ];
 
-async function fetchAppsScript<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Apps Script request failed: ${res.status}`);
-  return res.json() as Promise<T>;
-}
-
 export async function getPengajuanSurat(): Promise<PengajuanSurat[]> {
-  const url = process.env.APPS_SCRIPT_SURAT_URL;
-  if (!url) return dummyPengajuanSurat.map((d) => ({ ...d, alamat: '', noWa: '' }));
-
-  const json = await fetchAppsScript<{ data: PengajuanSurat[] }>(url);
-  return json.data;
+  return ambilResource<PengajuanSurat[]>(
+    'surat',
+    dummyPengajuanSurat.map((d) => ({ ...d, alamat: '', noWa: '' })),
+  );
 }
 
 /**
  * Pengajuan surat baru dari warga (halaman publik). TIDAK butuh login — warga
- * tidak punya akun (SRS 2.2). Apps Script menyimpan baris & mengirim email
+ * tidak punya akun (SRS 2.2). Backend menyimpan baris & mengirim email
  * notifikasi ke perangkat desa (menggantikan notifikasi WhatsApp).
  */
 export async function buatPengajuanSuratAction(input: PengajuanSuratInput) {
-  const url = process.env.APPS_SCRIPT_SURAT_URL;
-  if (!url) {
-    console.warn('[dev] buatPengajuanSuratAction tanpa APPS_SCRIPT_SURAT_URL — dilewati', input);
-    return;
-  }
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ aksi: 'buat', ...input }),
-  });
-
-  if (!res.ok) throw new Error(`Pengajuan gagal: ${res.status}`);
-  const json = (await res.json()) as { success: boolean; error?: string };
-  if (!json.success) throw new Error(json.error ?? 'Apps Script returned success: false');
-
+  await kirimResource('surat', { aksi: 'buat', ...input });
   revalidatePath('/dashboard/pengajuan-surat');
   revalidatePath('/dashboard');
 }
 
 export async function updateStatusSurat(id: string, status: StatusSurat): Promise<void> {
-  const url = process.env.APPS_SCRIPT_SURAT_URL;
-  if (!url) {
-    console.warn('[dev] updateStatusSurat called without APPS_SCRIPT_SURAT_URL — skipping');
-    return;
-  }
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, status }),
-  });
-
-  if (!res.ok) throw new Error(`Update status failed: ${res.status}`);
-  const json = (await res.json()) as { success: boolean };
-  if (!json.success) throw new Error('Apps Script returned success: false');
+  await kirimResource('surat', { aksi: 'status', id, status });
 }
 
 export async function updateStatusAction(id: string, status: StatusSurat) {

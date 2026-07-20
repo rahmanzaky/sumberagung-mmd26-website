@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/guard';
+import { ambilResource, kirimResource } from '@/lib/apps-script';
 import type { BukuTamuEntry, BukuTamuInput } from './dto';
 
 const dummyBukuTamu: BukuTamuEntry[] = [
@@ -115,36 +116,13 @@ const dummyBukuTamu: BukuTamuEntry[] = [
   },
 ];
 
-async function fetchAppsScript<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Apps Script request failed: ${res.status}`);
-  return res.json() as Promise<T>;
-}
-
 export async function getBukuTamu(): Promise<BukuTamuEntry[]> {
-  const url = process.env.APPS_SCRIPT_BUKU_TAMU_URL;
-  if (!url) return dummyBukuTamu;
-
-  const json = await fetchAppsScript<{ data: BukuTamuEntry[] }>(url);
-  return json.data;
+  return ambilResource<BukuTamuEntry[]>('bukuTamu', dummyBukuTamu);
 }
 
 export async function createBukuTamu(input: BukuTamuInput): Promise<void> {
-  const url = process.env.APPS_SCRIPT_BUKU_TAMU_URL;
-  if (!url) {
-    console.warn('[dev] createBukuTamu called without APPS_SCRIPT_BUKU_TAMU_URL — skipping', input);
-    return;
-  }
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-
-  if (!res.ok) throw new Error(`Create buku tamu failed: ${res.status}`);
-  const json = (await res.json()) as { success: boolean };
-  if (!json.success) throw new Error('Apps Script returned success: false');
+  // aksi 'buat' → backend membuat id & menambah baris.
+  await kirimResource('bukuTamu', { aksi: 'buat', ...input });
 }
 
 export async function createBukuTamuAction(input: BukuTamuInput) {

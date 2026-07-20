@@ -3,11 +3,12 @@
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/guard';
 import { getKvContent, postKvContent } from '@/lib/kv-content';
+import { ambilResource, kirimResource } from '@/lib/apps-script';
 import { tukarUrutan, urutanBerikutnya } from '@/lib/ordered';
 import type { Misi, MisiInput, ProfilVisi } from './dto';
 import { PROFIL_VISI_DEFAULT } from './dto';
 
-// Data contoh dipakai selama APPS_SCRIPT_PROFIL_URL belum diisi.
+// Data contoh dipakai selama backend belum dikonfigurasi.
 const dummyMisi: Misi[] = [
   {
     id: 'ms-001',
@@ -26,21 +27,15 @@ const dummyMisi: Misi[] = [
   },
 ];
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Apps Script request failed: ${res.status}`);
-  return res.json() as Promise<T>;
-}
-
 // --- Visi (record tunggal) ---
 
 export async function getProfilVisi(): Promise<ProfilVisi> {
-  return getKvContent(process.env.APPS_SCRIPT_PROFIL_VISI_URL, PROFIL_VISI_DEFAULT);
+  return getKvContent('profilVisi', PROFIL_VISI_DEFAULT);
 }
 
 export async function simpanProfilVisiAction(input: ProfilVisi) {
   await requireAdmin();
-  await postKvContent(process.env.APPS_SCRIPT_PROFIL_VISI_URL, input);
+  await postKvContent('profilVisi', input);
   revalidatePath('/dashboard/profil');
   revalidatePath('/profil-desa');
 }
@@ -48,25 +43,12 @@ export async function simpanProfilVisiAction(input: ProfilVisi) {
 // --- Misi (daftar berurut) ---
 
 export async function getMisi(): Promise<Misi[]> {
-  const url = process.env.APPS_SCRIPT_MISI_URL;
-  const data = url ? (await fetchJson<{ data: Misi[] }>(url)).data : dummyMisi;
+  const data = await ambilResource<Misi[]>('misi', dummyMisi);
   return [...data].sort((a, b) => a.urutan - b.urutan);
 }
 
-async function postMisi(body: unknown) {
-  const url = process.env.APPS_SCRIPT_MISI_URL;
-  if (!url) {
-    console.warn('[dev] postMisi tanpa APPS_SCRIPT_MISI_URL — dilewati', body);
-    return;
-  }
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`Misi request failed: ${res.status}`);
-  const json = (await res.json()) as { success: boolean; error?: string };
-  if (!json.success) throw new Error(json.error ?? 'Apps Script returned success: false');
+async function postMisi(body: object) {
+  await kirimResource('misi', body);
 }
 
 function revalidasiProfil() {

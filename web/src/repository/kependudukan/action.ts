@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/guard';
+import { ambilResource, kirimResource } from '@/lib/apps-script';
 import { tukarUrutan, urutanBerikutnya } from '@/lib/ordered';
 import type {
   KependudukanTahun,
@@ -11,7 +12,7 @@ import type {
   TingkatPendidikanInput,
 } from './dto';
 
-// Data contoh dipakai selama APPS_SCRIPT_KEPENDUDUKAN_URL belum diisi.
+// Data contoh dipakai selama backend belum dikonfigurasi.
 // Angka di bawah ini ILUSTRATIF — ganti dengan data resmi desa sebelum publikasi.
 const dummyKependudukan: KependudukanTahun[] = [
   {
@@ -43,19 +44,9 @@ const dummyKependudukan: KependudukanTahun[] = [
   },
 ];
 
-async function fetchAppsScript<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Apps Script request failed: ${res.status}`);
-  return res.json() as Promise<T>;
-}
-
 /** Semua tahun, terbaru dulu. */
 export async function getKependudukan(): Promise<KependudukanTahun[]> {
-  const url = process.env.APPS_SCRIPT_KEPENDUDUKAN_URL;
-  const data = url
-    ? (await fetchAppsScript<{ data: KependudukanTahun[] }>(url)).data
-    : dummyKependudukan;
-
+  const data = await ambilResource<KependudukanTahun[]>('kependudukan', dummyKependudukan);
   return [...data].sort((a, b) => b.tahun - a.tahun);
 }
 
@@ -67,23 +58,8 @@ export async function getKependudukanTerbaru(): Promise<KependudukanTahun | null
 
 export async function simpanKependudukanAction(input: KependudukanTahun) {
   await requireAdmin();
-
-  const url = process.env.APPS_SCRIPT_KEPENDUDUKAN_URL;
-  if (!url) {
-    console.warn('[dev] simpanKependudukanAction tanpa APPS_SCRIPT_KEPENDUDUKAN_URL — dilewati');
-    return;
-  }
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-
-  if (!res.ok) throw new Error(`Simpan kependudukan gagal: ${res.status}`);
-  const json = (await res.json()) as { success: boolean; error?: string };
-  if (!json.success) throw new Error(json.error ?? 'Apps Script returned success: false');
-
+  // Upsert per tahun (backend memakai kolom kunci 'tahun').
+  await kirimResource('kependudukan', input);
   revalidatePath('/dashboard/kependudukan');
   revalidatePath('/'); // card angka di halaman Home ikut diperbarui
 }
@@ -152,34 +128,13 @@ const dummyPendidikan: TingkatPendidikan[] = [
 ];
 
 export async function getDistribusiUsia(): Promise<DistribusiUsia[]> {
-  const url = process.env.APPS_SCRIPT_DISTRIBUSI_USIA_URL;
-  const data = url
-    ? (await fetchAppsScript<{ data: DistribusiUsia[] }>(url)).data
-    : dummyDistribusiUsia;
+  const data = await ambilResource<DistribusiUsia[]>('distribusiUsia', dummyDistribusiUsia);
   return [...data].sort((a, b) => a.urutan - b.urutan);
 }
 
 export async function getTingkatPendidikan(): Promise<TingkatPendidikan[]> {
-  const url = process.env.APPS_SCRIPT_PENDIDIKAN_URL;
-  const data = url
-    ? (await fetchAppsScript<{ data: TingkatPendidikan[] }>(url)).data
-    : dummyPendidikan;
+  const data = await ambilResource<TingkatPendidikan[]>('pendidikan', dummyPendidikan);
   return [...data].sort((a, b) => a.urutan - b.urutan);
-}
-
-async function postDaftar(url: string | undefined, nama: string, body: unknown) {
-  if (!url) {
-    console.warn(`[dev] post ${nama} tanpa URL Apps Script — dilewati`, body);
-    return;
-  }
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`${nama} request failed: ${res.status}`);
-  const json = (await res.json()) as { success: boolean; error?: string };
-  if (!json.success) throw new Error(json.error ?? 'Apps Script returned success: false');
 }
 
 function revalidasiDemografi() {
@@ -192,28 +147,23 @@ function revalidasiDemografi() {
 
 export async function simpanDistribusiUsiaAction(input: DistribusiUsiaInput, id: string | null) {
   await requireAdmin();
-  const url = process.env.APPS_SCRIPT_DISTRIBUSI_USIA_URL;
   const urutan = id ? input.urutan : urutanBerikutnya(await getDistribusiUsia());
-  await postDaftar(url, 'DistribusiUsia', { aksi: 'simpan', id: id ?? '', ...input, urutan });
+  await kirimResource('distribusiUsia', { aksi: 'simpan', id: id ?? '', ...input, urutan });
   revalidasiDemografi();
 }
 
 export async function hapusDistribusiUsiaAction(id: string) {
   await requireAdmin();
-  await postDaftar(process.env.APPS_SCRIPT_DISTRIBUSI_USIA_URL, 'DistribusiUsia', {
-    aksi: 'hapus',
-    id,
-  });
+  await kirimResource('distribusiUsia', { aksi: 'hapus', id });
   revalidasiDemografi();
 }
 
 export async function pindahDistribusiUsiaAction(id: string, arah: 'naik' | 'turun') {
   await requireAdmin();
-  const url = process.env.APPS_SCRIPT_DISTRIBUSI_USIA_URL;
   const tukar = tukarUrutan(await getDistribusiUsia(), id, arah);
   if (!tukar) return;
-  await postDaftar(url, 'DistribusiUsia', { aksi: 'simpan', ...tukar.a });
-  await postDaftar(url, 'DistribusiUsia', { aksi: 'simpan', ...tukar.b });
+  await kirimResource('distribusiUsia', { aksi: 'simpan', ...tukar.a });
+  await kirimResource('distribusiUsia', { aksi: 'simpan', ...tukar.b });
   revalidasiDemografi();
 }
 
@@ -221,24 +171,22 @@ export async function pindahDistribusiUsiaAction(id: string, arah: 'naik' | 'tur
 
 export async function simpanPendidikanAction(input: TingkatPendidikanInput, id: string | null) {
   await requireAdmin();
-  const url = process.env.APPS_SCRIPT_PENDIDIKAN_URL;
   const urutan = id ? input.urutan : urutanBerikutnya(await getTingkatPendidikan());
-  await postDaftar(url, 'Pendidikan', { aksi: 'simpan', id: id ?? '', ...input, urutan });
+  await kirimResource('pendidikan', { aksi: 'simpan', id: id ?? '', ...input, urutan });
   revalidasiDemografi();
 }
 
 export async function hapusPendidikanAction(id: string) {
   await requireAdmin();
-  await postDaftar(process.env.APPS_SCRIPT_PENDIDIKAN_URL, 'Pendidikan', { aksi: 'hapus', id });
+  await kirimResource('pendidikan', { aksi: 'hapus', id });
   revalidasiDemografi();
 }
 
 export async function pindahPendidikanAction(id: string, arah: 'naik' | 'turun') {
   await requireAdmin();
-  const url = process.env.APPS_SCRIPT_PENDIDIKAN_URL;
   const tukar = tukarUrutan(await getTingkatPendidikan(), id, arah);
   if (!tukar) return;
-  await postDaftar(url, 'Pendidikan', { aksi: 'simpan', ...tukar.a });
-  await postDaftar(url, 'Pendidikan', { aksi: 'simpan', ...tukar.b });
+  await kirimResource('pendidikan', { aksi: 'simpan', ...tukar.a });
+  await kirimResource('pendidikan', { aksi: 'simpan', ...tukar.b });
   revalidasiDemografi();
 }

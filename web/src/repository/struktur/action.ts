@@ -2,10 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/guard';
+import { ambilResource, kirimResource } from '@/lib/apps-script';
 import { tukarUrutan, urutanBerikutnya } from '@/lib/ordered';
 import type { Jabatan, JabatanInput } from './dto';
 
-// Data contoh dipakai selama APPS_SCRIPT_STRUKTUR_URL belum diisi.
+// Data contoh dipakai selama backend belum dikonfigurasi.
 // CATATAN: mockup menulis Slamet Riyadi = Kepala Desa; sebagian data contoh
 // modul lain menulis Sutrisno. Angka & nama di sini mengikuti mockup dan perlu
 // diverifikasi ke data resmi desa (docs/cms-gap-analysis.md §5).
@@ -100,33 +101,14 @@ const dummyStruktur: Jabatan[] = [
   },
 ];
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Apps Script request failed: ${res.status}`);
-  return res.json() as Promise<T>;
-}
-
 export async function getStruktur(): Promise<Jabatan[]> {
-  const url = process.env.APPS_SCRIPT_STRUKTUR_URL;
-  const data = url ? (await fetchJson<{ data: Jabatan[] }>(url)).data : dummyStruktur;
+  const data = await ambilResource<Jabatan[]>('struktur', dummyStruktur);
   // Urut per level dulu, lalu per urutan dalam level.
   return [...data].sort((a, b) => a.level - b.level || a.urutan - b.urutan);
 }
 
-async function postStruktur(body: unknown) {
-  const url = process.env.APPS_SCRIPT_STRUKTUR_URL;
-  if (!url) {
-    console.warn('[dev] postStruktur tanpa APPS_SCRIPT_STRUKTUR_URL — dilewati', body);
-    return;
-  }
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`Struktur request failed: ${res.status}`);
-  const json = (await res.json()) as { success: boolean; error?: string };
-  if (!json.success) throw new Error(json.error ?? 'Apps Script returned success: false');
+async function postStruktur(body: object) {
+  await kirimResource('struktur', body);
 }
 
 function revalidasi() {

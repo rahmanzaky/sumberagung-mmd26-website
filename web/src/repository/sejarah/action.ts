@@ -2,10 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/guard';
+import { ambilResource, kirimResource } from '@/lib/apps-script';
 import { tukarUrutan, urutanBerikutnya } from '@/lib/ordered';
 import type { TimelineEntri, TimelineEntriInput } from './dto';
 
-// Data contoh dipakai selama APPS_SCRIPT_SEJARAH_URL belum diisi.
+// Data contoh dipakai selama backend belum dikonfigurasi.
 const dummyTimeline: TimelineEntri[] = [
   {
     id: 'sj-001',
@@ -49,32 +50,13 @@ const dummyTimeline: TimelineEntri[] = [
   },
 ];
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Apps Script request failed: ${res.status}`);
-  return res.json() as Promise<T>;
-}
-
 export async function getTimeline(): Promise<TimelineEntri[]> {
-  const url = process.env.APPS_SCRIPT_SEJARAH_URL;
-  const data = url ? (await fetchJson<{ data: TimelineEntri[] }>(url)).data : dummyTimeline;
+  const data = await ambilResource<TimelineEntri[]>('sejarah', dummyTimeline);
   return [...data].sort((a, b) => a.urutan - b.urutan);
 }
 
-async function postSejarah(body: unknown) {
-  const url = process.env.APPS_SCRIPT_SEJARAH_URL;
-  if (!url) {
-    console.warn('[dev] postSejarah tanpa APPS_SCRIPT_SEJARAH_URL — dilewati', body);
-    return;
-  }
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`Sejarah request failed: ${res.status}`);
-  const json = (await res.json()) as { success: boolean; error?: string };
-  if (!json.success) throw new Error(json.error ?? 'Apps Script returned success: false');
+async function postSejarah(body: object) {
+  await kirimResource('sejarah', body);
 }
 
 function revalidasi() {

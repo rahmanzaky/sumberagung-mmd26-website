@@ -7,12 +7,12 @@ import type { Beranda } from './dto';
 import { BERANDA_DEFAULT } from './dto';
 
 export async function getBeranda(): Promise<Beranda> {
-  return getKvContent(process.env.APPS_SCRIPT_BERANDA_URL, BERANDA_DEFAULT);
+  return getKvContent('beranda', BERANDA_DEFAULT);
 }
 
 export async function simpanBerandaAction(input: Beranda) {
   await requireAdmin();
-  await postKvContent(process.env.APPS_SCRIPT_BERANDA_URL, input);
+  await postKvContent('beranda', input);
   revalidatePath('/dashboard/beranda');
   revalidatePath('/'); // halaman Home publik ikut berubah
 }

@@ -2,9 +2,10 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/guard';
+import { ambilResource, kirimResource } from '@/lib/apps-script';
 import type { FotoGaleri, FotoGaleriInput } from './dto';
 
-// Data contoh dipakai selama APPS_SCRIPT_GALERI_URL belum diisi.
+// Data contoh dipakai selama backend belum dikonfigurasi.
 // urlFoto sengaja dikosongkan supaya UI menampilkan placeholder, bukan
 // gambar dari domain luar yang mungkin sudah tidak ada.
 const dummyGaleri: FotoGaleri[] = [
@@ -58,36 +59,14 @@ const dummyGaleri: FotoGaleri[] = [
   },
 ];
 
-async function fetchAppsScript<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Apps Script request failed: ${res.status}`);
-  return res.json() as Promise<T>;
-}
-
 /** Semua foto, terbaru dulu. */
 export async function getGaleri(): Promise<FotoGaleri[]> {
-  const url = process.env.APPS_SCRIPT_GALERI_URL;
-  const data = url ? (await fetchAppsScript<{ data: FotoGaleri[] }>(url)).data : dummyGaleri;
-
+  const data = await ambilResource<FotoGaleri[]>('galeri', dummyGaleri);
   return [...data].sort((a, b) => b.tanggalUnggah.localeCompare(a.tanggalUnggah));
 }
 
-async function postGaleri(body: unknown) {
-  const url = process.env.APPS_SCRIPT_GALERI_URL;
-  if (!url) {
-    console.warn('[dev] postGaleri tanpa APPS_SCRIPT_GALERI_URL — dilewati', body);
-    return;
-  }
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) throw new Error(`Galeri request failed: ${res.status}`);
-  const json = (await res.json()) as { success: boolean; error?: string };
-  if (!json.success) throw new Error(json.error ?? 'Apps Script returned success: false');
+async function postGaleri(body: object) {
+  await kirimResource('galeri', body);
 }
 
 export async function simpanFotoAction(input: FotoGaleriInput) {
