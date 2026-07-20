@@ -41,3 +41,17 @@ export async function requireSuperAdmin(): Promise<Pengguna> {
   }
   return pengguna;
 }
+
+/**
+ * Versi lunak requireAdmin untuk RENDER (mis. menyusun menu sesuai peran):
+ * mengembalikan null alih-alih melempar bila belum login / tidak terdaftar,
+ * supaya layout tidak error. Untuk mutasi tetap pakai requireAdmin/SuperAdmin.
+ */
+export async function penggunaSaya(): Promise<Pengguna | null> {
+  if (DEV_SKIP_AUTH) return DEV_PENGGUNA;
+
+  const session = await auth();
+  const email = session?.user?.email;
+  if (!email) return null;
+  return getPenggunaByEmail(email);
+}

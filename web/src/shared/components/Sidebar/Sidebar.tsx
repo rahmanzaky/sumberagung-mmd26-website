@@ -7,50 +7,78 @@ import {
   IconSurat,
   IconAbsensi,
   IconBukuTamu,
-  IconRumah,
   IconProfil,
   IconSejarah,
   IconStruktur,
   IconPeta,
   IconKependudukan,
   IconKonten,
-  IconGaleri,
   IconPengguna,
   IconPengaturan,
   IconKeluar,
 } from '@/shared/components/icons';
+import type { Role } from '@/repository/pengguna/dto';
 
-// Tiga kelompok menu (docs/cms-gap-analysis.md §4.1):
-// Layanan = pekerjaan harian; Isi Website = CMS halaman publik; Sistem = Super Admin.
-// Aturan: satu halaman publik = satu menu dengan nama yang sama.
-const menuGroups = [
+const SEMUA: Role[] = ['Admin', 'Super Admin'];
+const HANYA_SUPER: Role[] = ['Super Admin'];
+
+// Menu disaring per peran (permintaan desa):
+// - Admin: Layanan + hanya Kependudukan & Konten di Isi Website; tanpa Sistem.
+// - Super Admin: semua, minus Beranda & Galeri yang ditiadakan.
+const menuGroups: {
+  judul: string;
+  items: {
+    href: string;
+    label: string;
+    Icon: (p: { className?: string }) => React.JSX.Element;
+    roles: Role[];
+  }[];
+}[] = [
   {
     judul: 'Layanan',
     items: [
-      { href: '/dashboard', label: 'Dashboard', Icon: IconDashboard },
-      { href: '/dashboard/pengajuan-surat', label: 'Manajemen Surat', Icon: IconSurat },
-      { href: '/dashboard/buku-tamu', label: 'Buku Tamu', Icon: IconBukuTamu },
-      { href: '/dashboard/presensi', label: 'Absensi Staf', Icon: IconAbsensi },
+      { href: '/dashboard', label: 'Dashboard', Icon: IconDashboard, roles: SEMUA },
+      {
+        href: '/dashboard/pengajuan-surat',
+        label: 'Manajemen Surat',
+        Icon: IconSurat,
+        roles: SEMUA,
+      },
+      { href: '/dashboard/buku-tamu', label: 'Buku Tamu', Icon: IconBukuTamu, roles: SEMUA },
+      { href: '/dashboard/presensi', label: 'Absensi Staf', Icon: IconAbsensi, roles: SEMUA },
     ],
   },
   {
     judul: 'Isi Website',
     items: [
-      { href: '/dashboard/beranda', label: 'Beranda', Icon: IconRumah },
-      { href: '/dashboard/profil', label: 'Profil Desa', Icon: IconProfil },
-      { href: '/dashboard/geografi', label: 'Geografi', Icon: IconPeta },
-      { href: '/dashboard/sejarah', label: 'Sejarah Desa', Icon: IconSejarah },
-      { href: '/dashboard/struktur', label: 'Struktur Organisasi', Icon: IconStruktur },
-      { href: '/dashboard/kependudukan', label: 'Kependudukan', Icon: IconKependudukan },
-      { href: '/dashboard/konten', label: 'Konten & Berita', Icon: IconKonten },
-      { href: '/dashboard/galeri', label: 'Galeri', Icon: IconGaleri },
+      { href: '/dashboard/profil', label: 'Profil Desa', Icon: IconProfil, roles: HANYA_SUPER },
+      { href: '/dashboard/geografi', label: 'Geografi', Icon: IconPeta, roles: HANYA_SUPER },
+      { href: '/dashboard/sejarah', label: 'Sejarah Desa', Icon: IconSejarah, roles: HANYA_SUPER },
+      {
+        href: '/dashboard/struktur',
+        label: 'Struktur Organisasi',
+        Icon: IconStruktur,
+        roles: HANYA_SUPER,
+      },
+      {
+        href: '/dashboard/kependudukan',
+        label: 'Kependudukan',
+        Icon: IconKependudukan,
+        roles: SEMUA,
+      },
+      { href: '/dashboard/konten', label: 'Konten & Berita', Icon: IconKonten, roles: SEMUA },
     ],
   },
   {
     judul: 'Sistem',
     items: [
-      { href: '/dashboard/pengguna', label: 'Pengguna', Icon: IconPengguna },
-      { href: '/dashboard/pengaturan', label: 'Pengaturan', Icon: IconPengaturan },
+      { href: '/dashboard/pengguna', label: 'Pengguna', Icon: IconPengguna, roles: HANYA_SUPER },
+      {
+        href: '/dashboard/pengaturan',
+        label: 'Pengaturan',
+        Icon: IconPengaturan,
+        roles: HANYA_SUPER,
+      },
     ],
   },
 ];
@@ -59,8 +87,13 @@ function isActive(pathname: string, href: string) {
   return href === '/dashboard' ? pathname === href : pathname.startsWith(href);
 }
 
-export default function Sidebar() {
+export default function Sidebar({ role }: { role: Role }) {
   const pathname = usePathname();
+
+  // Saring item per peran, lalu buang grup yang jadi kosong (mis. Sistem utk Admin).
+  const grupTampil = menuGroups
+    .map((g) => ({ ...g, items: g.items.filter((it) => it.roles.includes(role)) }))
+    .filter((g) => g.items.length > 0);
 
   return (
     <aside className="w-64 shrink-0 bg-[var(--color-primary)] text-white flex flex-col h-full overflow-hidden">
@@ -72,7 +105,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 min-h-0 px-3 py-4 overflow-y-auto overscroll-contain space-y-5">
-        {menuGroups.map((grup) => (
+        {grupTampil.map((grup) => (
           <div key={grup.judul}>
             <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-white/40">
               {grup.judul}
