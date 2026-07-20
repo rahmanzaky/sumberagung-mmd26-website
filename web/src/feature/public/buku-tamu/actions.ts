@@ -1,6 +1,7 @@
 'use server';
 
-import type { BukuTamuFormState, BukuTamuPayload } from './types';
+import { createBukuTamu } from '@/repository/buku-tamu/action';
+import type { BukuTamuFormState } from './types';
 
 function pisahTanggalJam(nilai: string): { tanggal: string; jam: string } | null {
     const cocok = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(nilai);
@@ -42,43 +43,18 @@ export async function submitBukuTamu(
         };
     }
 
-    // --- Kirim ke Apps Script ---
-    const endpoint = process.env.APPS_SCRIPT_BUKU_TAMU_URL;
-
-    if (!endpoint) {
-        return {
-            status: 'error',
-            message: 'Konfigurasi server belum lengkap. Hubungi pengelola website.',
-            errors: {},
-        };
-    }
-
-    const payload: BukuTamuPayload = {
-        nama,
-        keperluan,
-        tanggal: waktu!.tanggal,
-        jam: waktu!.jam,
-        asal,
-        whatsapp: whatsapp.replace(/[\s-]/g, ''),
-    };
-
+    // --- Simpan lewat backend gabungan (resource 'bukuTamu') ---
+    // Buku tamu bersifat publik (warga tanpa akun), jadi memakai createBukuTamu
+    // yang tanpa guard admin. Pemetaan nama field: asal→instansi, whatsapp→noWhatsapp.
     try {
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            cache: 'no-store',
+        await createBukuTamu({
+            nama,
+            instansi: asal,
+            keperluan,
+            noWhatsapp: whatsapp.replace(/[\s-]/g, ''),
+            tanggal: waktu!.tanggal,
+            jam: waktu!.jam,
         });
-
-        if (!response.ok) {
-            throw new Error(`Apps Script menjawab ${response.status}`);
-        }
-
-        const hasil = (await response.json()) as { success?: boolean };
-
-        if (hasil.success === false) {
-            throw new Error('Apps Script menolak data.');
-        }
 
         return {
             status: 'success',
