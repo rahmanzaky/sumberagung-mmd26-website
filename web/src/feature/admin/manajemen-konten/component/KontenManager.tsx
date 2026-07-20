@@ -6,6 +6,7 @@ import { KATEGORI_KONTEN } from '@/repository/konten/dto';
 import Badge from '@/shared/components/ui/Badge';
 import Button from '@/shared/components/ui/Button';
 import Spinner from '@/shared/components/ui/Spinner';
+import ImageUploadField from '@/shared/components/cms/ImageUploadField';
 
 const TH =
   'px-4 py-3 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider';
@@ -162,18 +163,15 @@ export default function KontenManager({ data, onSimpan, onHapus, onToggleStatus 
               </select>
             </label>
 
-            <label className="block sm:col-span-2">
-              <span className="text-xs font-medium text-[var(--color-text-muted)]">
-                URL Foto (Google Drive / link publik)
-              </span>
-              <input
-                type="url"
+            <div className="sm:col-span-2">
+              <ImageUploadField
+                label="Foto Konten"
                 value={form.urlFoto}
-                onChange={(e) => setForm({ ...form, urlFoto: e.target.value })}
-                placeholder="https://drive.google.com/..."
-                className="mt-1 w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                onChange={(url) => setForm({ ...form, urlFoto: url })}
+                prefixNama="konten"
+                hint="Unggah dari perangkat (otomatis dikompres) atau tempel URL Drive."
               />
-            </label>
+            </div>
 
             <label className="block">
               <span className="text-xs font-medium text-[var(--color-text-muted)]">Status</span>

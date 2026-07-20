@@ -13,8 +13,10 @@
 // dipisah dari galeri publik).
 const FOLDER_ID = '';
 
-// true  = file bisa dilihat siapa saja yang punya link (untuk galeri publik).
-// false = file privat, hanya akun desa (untuk bukti absensi). Default privat.
+// Default sharing bila request tidak menyebut `publik`.
+// true  = file bisa dilihat siapa saja yang punya link (galeri/konten publik).
+// false = file privat, hanya akun desa (bukti absensi).
+// Tiap request boleh menimpanya lewat field body `publik`.
 const PUBLIK = false;
 
 function jsonResponse_(obj) {
@@ -45,7 +47,8 @@ function doPost(e) {
     const blob = Utilities.newBlob(bytes, mime, nama);
     const file = getFolder_().createFile(blob);
 
-    if (PUBLIK) {
+    const publik = body.publik === undefined ? PUBLIK : !!body.publik;
+    if (publik) {
       file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
     }
 

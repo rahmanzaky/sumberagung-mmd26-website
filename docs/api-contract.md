@@ -157,10 +157,13 @@ Menyimpan **file** gambar ke Drive; Sheet tetap jadi database (menyimpan URL-nya
 
 **Request:**
 ```json
-{ "namaFile": "string", "mimeType": "image/jpeg", "dataBase64": "string" }
+{ "namaFile": "string", "mimeType": "image/jpeg", "dataBase64": "string", "publik": false }
 ```
 
 `dataBase64` = isi file terkompres, tanpa prefix `data:...;base64,`.
+`publik` (opsional): `true` = file bisa dilihat via link (galeri/konten yang
+tampil di halaman publik); `false`/kosong = privat (bukti absensi). Dipakai
+lintas modul CMS lewat `unggahFotoAction` + komponen `ImageUploadField`.
 
 **Response:**
 ```json

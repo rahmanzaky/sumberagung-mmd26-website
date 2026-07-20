@@ -10,7 +10,7 @@ const seksi: Seksi<Beranda>[] = [
       'Bagian paling atas halaman utama. Judul boleh memakai <em>kata</em> untuk memberi warna emas pada kata tertentu.',
     fields: [
       { key: 'heroEyebrow', label: 'Teks Kecil di Atas Judul' },
-      { key: 'heroUrlGambar', label: 'URL Gambar Latar', type: 'url' },
+      { key: 'heroUrlGambar', label: 'Gambar Latar Hero', foto: true },
       { key: 'heroJudul', label: 'Judul Utama', multiline: true },
       { key: 'heroSubteks', label: 'Subteks', multiline: true },
       { key: 'heroCtaPrimerLabel', label: 'Tombol Utama — Teks' },

@@ -5,6 +5,7 @@ import type { FotoGaleri, FotoGaleriInput } from '@/repository/galeri/dto';
 import { KATEGORI_GALERI, urlFotoLangsung } from '@/repository/galeri/dto';
 import Button from '@/shared/components/ui/Button';
 import Spinner from '@/shared/components/ui/Spinner';
+import ImageUploadField from '@/shared/components/cms/ImageUploadField';
 import { IconGaleri } from '@/shared/components/icons';
 
 function formatTanggal(iso: string) {
@@ -131,22 +132,15 @@ export default function GaleriManager({ data, onSimpan, onHapus }: Props) {
                 ))}
               </select>
             </label>
-            <label className="block sm:col-span-2">
-              <span className="text-xs font-medium text-[var(--color-text-muted)]">
-                URL Foto (Google Drive)
-              </span>
-              <input
-                type="url"
+            <div className="sm:col-span-2">
+              <ImageUploadField
+                label="Foto Kegiatan"
                 value={form.urlFoto}
-                onChange={(e) => setForm({ ...form, urlFoto: e.target.value })}
-                placeholder="https://drive.google.com/file/d/.../view"
-                className="mt-1 w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                onChange={(url) => setForm({ ...form, urlFoto: url })}
+                prefixNama="galeri"
+                hint="Unggah dari perangkat (otomatis dikompres) atau tempel URL Drive."
               />
-              <span className="text-[10px] text-[var(--color-text-muted)]">
-                Pastikan file di Drive di-set &quot;Anyone with the link can view&quot;, kalau tidak
-                foto tidak akan tampil di halaman publik.
-              </span>
-            </label>
+            </div>
           </div>
           <div className="flex items-center gap-2 mt-4">
             <Button onClick={submit} disabled={isPending}>

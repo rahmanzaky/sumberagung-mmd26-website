@@ -3,12 +3,14 @@
 import { useState, useTransition } from 'react';
 import Button from '@/shared/components/ui/Button';
 import Spinner from '@/shared/components/ui/Spinner';
+import ImageUploadField from '@/shared/components/cms/ImageUploadField';
 
 // Definisi satu field dalam form. `key` harus salah satu kunci record T.
 export type FieldDef<T> = {
   key: keyof T;
   label: string;
   multiline?: boolean;
+  foto?: boolean; // true = field gambar (unggah + kompres), bukan teks biasa
   type?: 'text' | 'url' | 'number' | 'time';
   hint?: string;
   lebar?: 'penuh' | 'setengah'; // default: setengah
@@ -97,36 +99,53 @@ export default function RecordForm<T extends Record<string, string>>({
             <p className="text-xs text-[var(--color-text-muted)] mb-3">{s.keterangan}</p>
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {s.fields.map((f) => (
-              <label
-                key={String(f.key)}
-                className={`block ${f.lebar === 'penuh' || f.multiline ? 'sm:col-span-2' : ''}`}
-              >
-                <span className="text-xs font-medium text-[var(--color-text-muted)]">
-                  {f.label}
-                </span>
-                {f.multiline ? (
-                  <textarea
-                    rows={3}
-                    value={form[f.key]}
-                    disabled={!bolehUbah}
-                    onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-                    className="mt-1 w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] disabled:bg-gray-100 disabled:text-gray-500"
-                  />
-                ) : (
-                  <input
-                    type={f.type ?? 'text'}
-                    value={form[f.key]}
-                    disabled={!bolehUbah}
-                    onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-                    className="mt-1 w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] disabled:bg-gray-100 disabled:text-gray-500"
-                  />
-                )}
-                {f.hint && (
-                  <span className="text-[10px] text-[var(--color-text-muted)]">{f.hint}</span>
-                )}
-              </label>
-            ))}
+            {s.fields.map((f) => {
+              const rentang = f.lebar === 'penuh' || f.multiline || f.foto ? 'sm:col-span-2' : '';
+
+              // Field gambar: pakai ImageUploadField (punya label & tombol sendiri,
+              // jadi tidak dibungkus <label> agar tidak menyarangkan tombol).
+              if (f.foto) {
+                return (
+                  <div key={String(f.key)} className={rentang}>
+                    <ImageUploadField
+                      label={f.label}
+                      value={form[f.key]}
+                      onChange={(url) => setForm({ ...form, [f.key]: url })}
+                      prefixNama={String(f.key)}
+                      hint={f.hint}
+                    />
+                  </div>
+                );
+              }
+
+              return (
+                <label key={String(f.key)} className={`block ${rentang}`}>
+                  <span className="text-xs font-medium text-[var(--color-text-muted)]">
+                    {f.label}
+                  </span>
+                  {f.multiline ? (
+                    <textarea
+                      rows={3}
+                      value={form[f.key]}
+                      disabled={!bolehUbah}
+                      onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+                      className="mt-1 w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] disabled:bg-gray-100 disabled:text-gray-500"
+                    />
+                  ) : (
+                    <input
+                      type={f.type ?? 'text'}
+                      value={form[f.key]}
+                      disabled={!bolehUbah}
+                      onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+                      className="mt-1 w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] disabled:bg-gray-100 disabled:text-gray-500"
+                    />
+                  )}
+                  {f.hint && (
+                    <span className="text-[10px] text-[var(--color-text-muted)]">{f.hint}</span>
+                  )}
+                </label>
+              );
+            })}
           </div>
         </section>
       ))}

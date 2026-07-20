@@ -5,6 +5,7 @@ import type { Jabatan, JabatanInput } from '@/repository/struktur/dto';
 import { LEVEL_JABATAN } from '@/repository/struktur/dto';
 import Button from '@/shared/components/ui/Button';
 import Spinner from '@/shared/components/ui/Spinner';
+import ImageUploadField from '@/shared/components/cms/ImageUploadField';
 
 const inputCls =
   'mt-1 w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]';
@@ -112,15 +113,14 @@ export default function StrukturManager({ data, onSimpan, onHapus, onPindah }: P
                 className={inputCls}
               />
             </label>
-            <label className="block">
-              <span className="text-xs font-medium text-[var(--color-text-muted)]">URL Foto</span>
-              <input
-                type="url"
+            <div className="block">
+              <ImageUploadField
+                label="Foto Pejabat"
                 value={draft.urlFoto}
-                onChange={(e) => setDraft({ ...draft, urlFoto: e.target.value })}
-                className={inputCls}
+                onChange={(url) => setDraft({ ...draft, urlFoto: url })}
+                prefixNama="struktur"
               />
-            </label>
+            </div>
             <label className="block">
               <span className="text-xs font-medium text-[var(--color-text-muted)]">
                 Tingkatan (Level)

@@ -3,6 +3,7 @@
 import type { TimelineEntri, TimelineEntriInput, SisiTimeline } from '@/repository/sejarah/dto';
 import { SISI_TIMELINE } from '@/repository/sejarah/dto';
 import OrderedListManager from '@/shared/components/cms/OrderedListManager';
+import ImageUploadField from '@/shared/components/cms/ImageUploadField';
 
 type Props = {
   data: TimelineEntri[];
@@ -80,15 +81,14 @@ export default function TimelineManager({ data, onSimpan, onHapus, onPindah }: P
               className={inputCls}
             />
           </label>
-          <label className="block">
-            <span className="text-xs font-medium text-[var(--color-text-muted)]">URL Foto</span>
-            <input
-              type="url"
+          <div className="block">
+            <ImageUploadField
+              label="Foto"
               value={draft.urlFoto}
-              onChange={(e) => setDraft({ ...draft, urlFoto: e.target.value })}
-              className={inputCls}
+              onChange={(url) => setDraft({ ...draft, urlFoto: url })}
+              prefixNama="sejarah"
             />
-          </label>
+          </div>
           <label className="block">
             <span className="text-xs font-medium text-[var(--color-text-muted)]">Posisi Foto</span>
             <select

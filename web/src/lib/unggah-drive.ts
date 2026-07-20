@@ -6,6 +6,8 @@ export type GambarUnggah = {
   dataBase64: string;
   mimeType: string;
   namaFile: string;
+  // true = bisa dilihat publik (galeri/konten); false = privat (bukti absensi).
+  publik?: boolean;
 };
 
 /**
@@ -23,7 +25,7 @@ export async function unggahGambar(gambar: GambarUnggah): Promise<string> {
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(gambar),
+    body: JSON.stringify({ publik: false, ...gambar }),
   });
 
   if (!res.ok) throw new Error(`Unggah gambar gagal: ${res.status}`);

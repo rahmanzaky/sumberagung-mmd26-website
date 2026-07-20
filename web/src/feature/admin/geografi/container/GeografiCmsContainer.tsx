@@ -20,7 +20,7 @@ const seksi: Seksi<Geografi>[] = [
       { key: 'ketinggian', label: 'Ketinggian' },
       { key: 'posisi', label: 'Posisi' },
       { key: 'narasiTopografi', label: 'Narasi Topografi', multiline: true },
-      { key: 'urlPeta', label: 'URL Gambar Peta', type: 'url', lebar: 'penuh' },
+      { key: 'urlPeta', label: 'Gambar Peta', foto: true },
     ],
   },
   {
