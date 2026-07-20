@@ -149,8 +149,10 @@ menambah era baru seiring waktu.
 | 7 | Perluas **Pengaturan** (footer, navigasi, logo) | ✅ Selesai |
 | 8 | **6 halaman publik** dari stub → sesuai mockup | ⏳ Belum — tahap berikutnya |
 
-Di luar CMS, yang masih tertunda dari SRS: notifikasi WhatsApp otomatis
-(SK-F-06 / SRS 4.2) dan field `alamat` + `noWa` pada Pengajuan Surat.
+Di luar CMS (update 2026-07-20): notifikasi surat kini lewat **email**
+(`MailApp`, gratis) menggantikan WhatsApp; field `alamat` + `noWa` sudah
+ditambahkan ke Pengajuan Surat; absensi kini menyertakan **foto bukti +
+lokasi** dengan foto tersimpan di Drive (Sheet menyimpan tautannya).
 
 ### Pola arsitektur yang dipakai
 
@@ -237,7 +239,7 @@ flowchart TD
     A[Warga isi form pengajuan] --> B{Data lengkap?}
     B -->|Tidak| A
     B -->|Ya| C[Tersimpan ke Sheet Warga]
-    C --> D[Notifikasi WhatsApp ke perangkat desa<br/>BELUM DIBANGUN]
+    C --> D[Notifikasi EMAIL ke perangkat desa<br/>via MailApp - sudah dibangun]
     D --> E[Admin buka Manajemen Surat]
     E --> F[Admin hubungi warga via WhatsApp<br/>untuk syarat dokumen]
     F --> G[Warga datang ke kantor 08.00-13.00]

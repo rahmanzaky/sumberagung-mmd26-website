@@ -104,7 +104,10 @@ Semua endpoint diakses **server-side only** dari Next.js (tidak pernah dari brow
       "username": "string",
       "tanggal": "YYYY-MM-DD",
       "jamMasuk": "HH:mm",
-      "keterangan": "string"
+      "keterangan": "string",
+      "urlFoto": "string",
+      "latitude": "string",
+      "longitude": "string"
     }
   ]
 }
@@ -112,6 +115,7 @@ Semua endpoint diakses **server-side only** dari Next.js (tidak pernah dari brow
 
 `username` adalah foreign key ke sheet `PerangkatDesa`. Nama lengkap & jabatan
 digabungkan di sisi Next.js (`getRekapAbsensi`), bukan disimpan ulang di sini.
+`urlFoto` = tautan Drive foto bukti; `latitude`/`longitude` = lokasi saat absen.
 
 ---
 
@@ -125,7 +129,10 @@ digabungkan di sisi Next.js (`getRekapAbsensi`), bukan disimpan ulang di sini.
   "username": "string",
   "tanggal": "YYYY-MM-DD",
   "jamMasuk": "HH:mm",
-  "keterangan": "string"
+  "keterangan": "string",
+  "urlFoto": "string",
+  "latitude": "string",
+  "longitude": "string"
 }
 ```
 
@@ -136,6 +143,53 @@ digabungkan di sisi Next.js (`getRekapAbsensi`), bukan disimpan ulang di sini.
 
 Menolak absensi kedua pada tanggal yang sama untuk username yang sama
 (SK-NF-11) dengan `{ "success": false, "error": "Absensi hari ini sudah tercatat." }`.
+
+Alur bukti: browser mengompres foto → Server Action mengunggahnya lewat
+**POST Upload Gambar** (di bawah) → URL Drive yang didapat dikirim di `urlFoto`.
+
+---
+
+## POST Upload Gambar
+
+**URL:** `APPS_SCRIPT_UPLOAD_URL` (dari env) · menyimpan file ke folder Drive
+
+Menyimpan **file** gambar ke Drive; Sheet tetap jadi database (menyimpan URL-nya).
+
+**Request:**
+```json
+{ "namaFile": "string", "mimeType": "image/jpeg", "dataBase64": "string" }
+```
+
+`dataBase64` = isi file terkompres, tanpa prefix `data:...;base64,`.
+
+**Response:**
+```json
+{ "success": true, "fileId": "string", "url": "string" }
+```
+
+---
+
+## POST Pengajuan Surat (Warga)
+
+**URL:** `APPS_SCRIPT_SURAT_URL` (sama dengan GET/update-status, dibedakan `aksi`)
+
+**Request:**
+```json
+{ "aksi": "buat", "nama": "string", "nik": "string", "alamat": "string", "noWa": "string", "jenisSurat": "string", "keperluan": "string" }
+```
+
+Menyimpan baris berstatus `"Baru"` dan **mengirim email notifikasi** ke email
+desa via `MailApp` (menggantikan notifikasi WhatsApp — gratis, tanpa server
+SMTP). Kegagalan email tidak membatalkan penyimpanan data.
+
+**Response:**
+```json
+{ "success": true, "id": "string" }
+```
+
+> Field GET/response Pengajuan Surat kini menyertakan `alamat` & `noWa`
+> (SRS Sheet 1). Urutan kolom: id, nama, nik, alamat, noWa, jenisSurat,
+> keperluan, status, tanggalPengajuan, tanggalUpdate.
 
 ---
 
@@ -419,5 +473,6 @@ item lalu memanggil `aksi: "simpan"` untuk keduanya.
 
 ## Layanan yang Belum Dikerjakan
 
-- **Notifikasi WhatsApp otomatis** (SRS 3.2 A, 4.2): gateway Fonnte/Wablas belum diintegrasikan.
-- **Field `alamat` & `noWa` pada Pengajuan Surat**: SRS 3.1 Sheet 1 mensyaratkannya, kode saat ini belum punya (status juga memakai `"Baru"`, bukan `"Pending"` seperti SRS).
+- ~~Notifikasi WhatsApp otomatis~~ → **diganti email** via `MailApp` (permintaan desa). Sudah dibangun di `pengajuanSurat.gs`.
+- ~~Field `alamat` & `noWa` pada Pengajuan Surat~~ → **sudah ditambahkan** (SRS Sheet 1). Status tetap `"Baru"` (bukan `"Pending"` SRS) — deviasi disengaja, sudah dipakai di seluruh kode.
+- **Halaman publik pengajuan surat** (form warga): backend `buat` + email sudah siap, tapi UI form publiknya belum dibuat (tahap halaman publik).

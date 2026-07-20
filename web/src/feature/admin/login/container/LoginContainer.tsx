@@ -1,6 +1,12 @@
 import { signIn } from '@/lib/auth';
 
-export default function LoginContainer() {
+// Batasi callbackUrl ke path internal saja — cegah open-redirect ke domain luar.
+function tujuanAman(callbackUrl?: string) {
+  return callbackUrl && callbackUrl.startsWith('/') ? callbackUrl : '/dashboard';
+}
+
+export default function LoginContainer({ callbackUrl }: { callbackUrl?: string }) {
+  const redirectTo = tujuanAman(callbackUrl);
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--color-surface)]">
       <div className="bg-white rounded-xl shadow-lg p-10 w-full max-w-sm text-center">
@@ -16,7 +22,7 @@ export default function LoginContainer() {
         <form
           action={async () => {
             'use server';
-            await signIn('google', { redirectTo: '/dashboard' });
+            await signIn('google', { redirectTo });
           }}
         >
           <button

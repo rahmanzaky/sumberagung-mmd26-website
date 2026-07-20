@@ -7,7 +7,7 @@
 // Boleh dikosongkan jika script ini ter-bind langsung ke Spreadsheet-nya.
 const SPREADSHEET_ID = '';
 const SHEET_NAME = 'Absensi';
-const HEADERS = ['id', 'username', 'tanggal', 'jamMasuk', 'keterangan'];
+const HEADERS = ['id', 'username', 'tanggal', 'jamMasuk', 'keterangan', 'urlFoto', 'latitude', 'longitude'];
 
 function getSheet_() {
   const ss = SPREADSHEET_ID

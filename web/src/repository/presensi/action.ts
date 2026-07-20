@@ -3,10 +3,12 @@
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/guard';
 import { getPengguna } from '@/repository/pengguna/action';
-import type { AbsensiEntry, RekapAbsensiRow, RekapKehadiran } from './dto';
+import { unggahGambar } from '@/lib/unggah-drive';
+import type { AbsensiEntry, AbsenPayload, RekapAbsensiRow, RekapKehadiran } from './dto';
 
-// Data contoh dipakai selama APPS_SCRIPT_PRESENSI_URL belum diisi.
-const dummyAbsensi: AbsensiEntry[] = [
+// Data contoh dipakai selama APPS_SCRIPT_PRESENSI_URL belum diisi. Field bukti
+// (urlFoto/latitude/longitude) dikosongkan lewat `lengkapiBukti` di bawah.
+const dummyDasar = [
   { id: 'ab-001', username: 'sutrisno', tanggal: '2026-07-19', jamMasuk: '07:30', keterangan: '' },
   { id: 'ab-002', username: 'endang', tanggal: '2026-07-19', jamMasuk: '07:25', keterangan: '' },
   { id: 'ab-003', username: 'fauzi', tanggal: '2026-07-19', jamMasuk: '07:45', keterangan: '' },
@@ -26,6 +28,13 @@ const dummyAbsensi: AbsensiEntry[] = [
   { id: 'ab-011', username: 'bagus', tanggal: '2026-07-18', jamMasuk: '07:55', keterangan: '' },
   { id: 'ab-012', username: 'yuliana', tanggal: '2026-07-18', jamMasuk: '07:37', keterangan: '' },
 ];
+
+const dummyAbsensi: AbsensiEntry[] = dummyDasar.map((d) => ({
+  ...d,
+  urlFoto: '',
+  latitude: '',
+  longitude: '',
+}));
 
 async function fetchAppsScript<T>(url: string): Promise<T> {
   const res = await fetch(url, { cache: 'no-store' });
@@ -80,15 +89,22 @@ export async function sudahAbsenHariIni(username: string): Promise<boolean> {
 }
 
 /**
- * Absen mandiri. Validasi "satu kali per hari" dilakukan di dua tempat:
- * di sini (supaya UI dapat pesan jelas) dan di Apps Script (sumber kebenaran,
- * karena action ini bisa dipanggil lewat POST langsung).
+ * Absen mandiri dengan bukti foto + lokasi (permintaan desa).
+ * Urutan: validasi 1x/hari → unggah foto ke Drive → simpan baris ke Sheet.
+ * Validasi "satu kali per hari" ada di sini (pesan UI jelas) DAN di Apps Script
+ * (sumber kebenaran, karena action bisa dipanggil lewat POST langsung).
  */
-export async function absenSekarangAction(keterangan: string) {
+export async function absenSekarangAction(payload: AbsenPayload) {
   const saya = await requireAdmin();
 
   if (await sudahAbsenHariIni(saya.username)) {
     throw new Error('Absensi hari ini sudah tercatat.');
+  }
+  if (!payload.fotoBase64) {
+    throw new Error('Foto bukti wajib diambil sebelum absen.');
+  }
+  if (!payload.latitude || !payload.longitude) {
+    throw new Error('Lokasi belum tersedia. Izinkan akses lokasi lalu coba lagi.');
   }
 
   const url = process.env.APPS_SCRIPT_PRESENSI_URL;
@@ -96,6 +112,13 @@ export async function absenSekarangAction(keterangan: string) {
     console.warn('[dev] absenSekarangAction tanpa APPS_SCRIPT_PRESENSI_URL — dilewati');
     return;
   }
+
+  // Unggah foto bukti dulu; simpan hanya tautannya ke Sheet.
+  const urlFoto = await unggahGambar({
+    dataBase64: payload.fotoBase64,
+    mimeType: payload.fotoMime,
+    namaFile: payload.fotoNama,
+  });
 
   const res = await fetch(url, {
     method: 'POST',
@@ -108,7 +131,10 @@ export async function absenSekarangAction(keterangan: string) {
         minute: '2-digit',
         hour12: false,
       }),
-      keterangan,
+      keterangan: payload.keterangan,
+      urlFoto,
+      latitude: payload.latitude,
+      longitude: payload.longitude,
     }),
   });
 

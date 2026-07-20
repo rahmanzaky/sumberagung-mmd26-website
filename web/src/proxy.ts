@@ -14,7 +14,11 @@ export default auth((req) => {
   const isLoginPage = nextUrl.pathname === '/login';
 
   if (isDashboard && !isLoggedIn) {
-    return NextResponse.redirect(new URL('/login', nextUrl));
+    // Simpan tujuan asal di callbackUrl supaya setelah login diarahkan balik
+    // ke sana — mis. scan QR ke /dashboard/presensi kembali ke presensi.
+    const login = new URL('/login', nextUrl);
+    login.searchParams.set('callbackUrl', nextUrl.pathname + nextUrl.search);
+    return NextResponse.redirect(login);
   }
 
   if (isLoginPage && isLoggedIn) {

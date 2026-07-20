@@ -28,13 +28,15 @@ const HEADERS_PENGAJUAN_SURAT = [
   'id',
   'nama',
   'nik',
+  'alamat',
+  'noWa',
   'jenisSurat',
   'keperluan',
   'status',
   'tanggalPengajuan',
   'tanggalUpdate',
 ];
-const HEADERS_ABSENSI = ['id', 'username', 'tanggal', 'jamMasuk', 'keterangan'];
+const HEADERS_ABSENSI = ['id', 'username', 'tanggal', 'jamMasuk', 'keterangan', 'urlFoto', 'latitude', 'longitude'];
 const HEADERS_KEPENDUDUKAN = [
   'tahun',
   'totalPenduduk',

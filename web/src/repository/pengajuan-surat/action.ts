@@ -2,9 +2,10 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/guard';
-import type { PengajuanSurat, StatusSurat } from './dto';
+import type { PengajuanSurat, PengajuanSuratInput, StatusSurat } from './dto';
 
-const dummyPengajuanSurat: PengajuanSurat[] = [
+// Data contoh tanpa alamat/noWa; diisi default oleh getPengajuanSurat().
+const dummyPengajuanSurat: Omit<PengajuanSurat, 'alamat' | 'noWa'>[] = [
   {
     id: 'ps-001',
     nama: 'Siti Aminah',
@@ -115,10 +116,36 @@ async function fetchAppsScript<T>(url: string): Promise<T> {
 
 export async function getPengajuanSurat(): Promise<PengajuanSurat[]> {
   const url = process.env.APPS_SCRIPT_SURAT_URL;
-  if (!url) return dummyPengajuanSurat;
+  if (!url) return dummyPengajuanSurat.map((d) => ({ ...d, alamat: '', noWa: '' }));
 
   const json = await fetchAppsScript<{ data: PengajuanSurat[] }>(url);
   return json.data;
+}
+
+/**
+ * Pengajuan surat baru dari warga (halaman publik). TIDAK butuh login — warga
+ * tidak punya akun (SRS 2.2). Apps Script menyimpan baris & mengirim email
+ * notifikasi ke perangkat desa (menggantikan notifikasi WhatsApp).
+ */
+export async function buatPengajuanSuratAction(input: PengajuanSuratInput) {
+  const url = process.env.APPS_SCRIPT_SURAT_URL;
+  if (!url) {
+    console.warn('[dev] buatPengajuanSuratAction tanpa APPS_SCRIPT_SURAT_URL — dilewati', input);
+    return;
+  }
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ aksi: 'buat', ...input }),
+  });
+
+  if (!res.ok) throw new Error(`Pengajuan gagal: ${res.status}`);
+  const json = (await res.json()) as { success: boolean; error?: string };
+  if (!json.success) throw new Error(json.error ?? 'Apps Script returned success: false');
+
+  revalidatePath('/dashboard/pengajuan-surat');
+  revalidatePath('/dashboard');
 }
 
 export async function updateStatusSurat(id: string, status: StatusSurat): Promise<void> {

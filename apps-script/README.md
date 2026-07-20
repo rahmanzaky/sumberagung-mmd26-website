@@ -28,6 +28,7 @@ File `.gs` di folder ini adalah source backup untuk Web App yang digunakan sebag
 | `struktur.gs` | CMS Struktur Organisasi (GET, POST simpan/hapus, berurut) | Selesai |
 | `distribusiUsia.gs` | CMS Demografi — Distribusi Usia (GET, POST, berurut) | Selesai |
 | `pendidikan.gs` | CMS Demografi — Tingkat Pendidikan (GET, POST, berurut) | Selesai |
+| `upload.gs` | Upload gambar ke Drive (POST base64 → fileId/url) | Selesai |
 
 ## Struktur Spreadsheet (Template)
 

@@ -24,9 +24,29 @@ function selCsv(nilai: string) {
 }
 
 function unduhCsv(rows: RekapAbsensiRow[], namaFile: string) {
-  const header = ['Tanggal', 'Username', 'Nama Lengkap', 'Jabatan', 'Jam Masuk', 'Keterangan'];
+  const header = [
+    'Tanggal',
+    'Username',
+    'Nama Lengkap',
+    'Jabatan',
+    'Jam Masuk',
+    'Keterangan',
+    'Latitude',
+    'Longitude',
+    'URL Foto',
+  ];
   const isi = rows.map((r) =>
-    [r.tanggal, r.username, r.namaLengkap, r.jabatan, r.jamMasuk, r.keterangan]
+    [
+      r.tanggal,
+      r.username,
+      r.namaLengkap,
+      r.jabatan,
+      r.jamMasuk,
+      r.keterangan,
+      r.latitude,
+      r.longitude,
+      r.urlFoto,
+    ]
       .map(selCsv)
       .join(','),
   );
@@ -95,6 +115,8 @@ export default function RekapAbsensiTable({ data }: { data: RekapAbsensiRow[] })
               <th className={TH}>Nama Lengkap</th>
               <th className={TH}>Jabatan</th>
               <th className={TH}>Jam Masuk</th>
+              <th className={TH}>Bukti</th>
+              <th className={TH}>Lokasi</th>
               <th className={TH}>Keterangan</th>
             </tr>
           </thead>
@@ -102,7 +124,7 @@ export default function RekapAbsensiTable({ data }: { data: RekapAbsensiRow[] })
             {urut.length === 0 ? (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={7}
                   className="px-4 py-8 text-center text-[var(--color-text-muted)] italic"
                 >
                   Belum ada data absensi untuk filter ini.
@@ -121,8 +143,36 @@ export default function RekapAbsensiTable({ data }: { data: RekapAbsensiRow[] })
                   <td className="px-4 py-3 text-[var(--color-text-muted)] font-mono text-xs">
                     {row.jamMasuk}
                   </td>
+                  <td className="px-4 py-3">
+                    {row.urlFoto ? (
+                      <a
+                        href={row.urlFoto}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-[var(--color-primary)] hover:underline"
+                      >
+                        Lihat foto
+                      </a>
+                    ) : (
+                      <span className="text-xs text-[var(--color-text-muted)]">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    {row.latitude && row.longitude ? (
+                      <a
+                        href={`https://www.google.com/maps?q=${row.latitude},${row.longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-[var(--color-primary)] hover:underline font-mono"
+                      >
+                        {Number(row.latitude).toFixed(4)}, {Number(row.longitude).toFixed(4)}
+                      </a>
+                    ) : (
+                      <span className="text-xs text-[var(--color-text-muted)]">—</span>
+                    )}
+                  </td>
                   <td
-                    className="px-4 py-3 text-[var(--color-text-muted)] max-w-[220px] truncate"
+                    className="px-4 py-3 text-[var(--color-text-muted)] max-w-[200px] truncate"
                     title={row.keterangan}
                   >
                     {row.keterangan || '—'}
