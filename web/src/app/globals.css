@@ -1,10 +1,9 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme inline {
   --font-sans: var(--font-jakarta);
   --font-serif: var(--font-fraunces);
 
-  
   --font-lora: var(--font-fraunces);
 }
 

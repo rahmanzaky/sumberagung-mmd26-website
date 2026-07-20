@@ -20,20 +20,23 @@ export default function Reveal({
     delay = 0,
 }: RevealProps) {
     const ref = useRef<HTMLDivElement>(null);
-    const [tampil, setTampil] = useState(false);
 
-    useEffect(() => {
-        const elemen = ref.current;
-        if (!elemen) return;
-
+    // Compute fallback eagerly so we never need to call setState
+    // synchronously inside an effect.
+    const [tampil, setTampil] = useState(() => {
+        if (typeof window === 'undefined') return false;
         const kurangiGerak = window.matchMedia(
             '(prefers-reduced-motion: reduce)',
         ).matches;
+        return kurangiGerak || typeof IntersectionObserver === 'undefined';
+    });
 
-        if (kurangiGerak || typeof IntersectionObserver === 'undefined') {
-            setTampil(true);
-            return;
-        }
+    useEffect(() => {
+        // Already visible (fallback path) — nothing to observe.
+        if (tampil) return;
+
+        const elemen = ref.current;
+        if (!elemen) return;
 
         const observer = new IntersectionObserver(
             ([entry]) => {
@@ -47,7 +50,7 @@ export default function Reveal({
 
         observer.observe(elemen);
         return () => observer.disconnect();
-    }, []);
+    }, [tampil]);
 
     return (
         <div
@@ -59,4 +62,4 @@ export default function Reveal({
             {children}
         </div>
     );
-}
+}

@@ -1,12 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import {
-  contactInfo,
-  footerMotto,
-  footerTagline,
-  quickLinks,
-} from './footer-links';
+import { contactInfo, footerMotto, footerTagline, quickLinks } from './footer-links';
 
 const focusRing =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-deep)]';
@@ -49,11 +44,7 @@ function MailIcon({ className }: { className?: string }) {
 
 /** Judul kolom: kecil, kapital, berjarak lebar. */
 function ColumnHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-white">
-      {children}
-    </h2>
-  );
+  return <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-white">{children}</h2>;
 }
 
 export default function Footer() {
@@ -88,9 +79,7 @@ export default function Footer() {
               </span>
             </Link>
 
-            <p className="mt-5 max-w-md text-sm leading-relaxed text-white/75">
-              {footerTagline}
-            </p>
+            <p className="mt-5 max-w-md text-sm leading-relaxed text-white/75">{footerTagline}</p>
 
             <p className="mt-8 text-xs text-white/60">
               © {year} Pemerintah Desa Sumberagung. {footerMotto}

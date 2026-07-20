@@ -4,8 +4,7 @@ import BukuTamuPublicContainer from '@/feature/public/buku-tamu/container/BukuTa
 
 export const metadata: Metadata = {
   title: 'Buku Tamu | Desa Sumberagung',
-  description:
-    'Isi buku tamu digital Pemerintah Desa Sumberagung untuk mencatat kunjungan Anda.',
+  description: 'Isi buku tamu digital Pemerintah Desa Sumberagung untuk mencatat kunjungan Anda.',
 };
 
 export default function BukuTamuPage() {
