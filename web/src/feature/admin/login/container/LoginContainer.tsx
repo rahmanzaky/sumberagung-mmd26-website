@@ -5,7 +5,13 @@ function tujuanAman(callbackUrl?: string) {
   return callbackUrl && callbackUrl.startsWith('/') ? callbackUrl : '/dashboard';
 }
 
-export default function LoginContainer({ callbackUrl }: { callbackUrl?: string }) {
+export default function LoginContainer({
+  callbackUrl,
+  error,
+}: {
+  callbackUrl?: string;
+  error?: string;
+}) {
   const redirectTo = tujuanAman(callbackUrl);
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--color-surface)]">
@@ -16,9 +22,16 @@ export default function LoginContainer({ callbackUrl }: { callbackUrl?: string }
         <h1 className="font-[var(--font-lora)] text-2xl font-bold text-[var(--color-primary)] mb-2">
           Admin Desa Sumberagung
         </h1>
-        <p className="text-sm text-[var(--color-text-muted)] mb-8">
+        <p className="text-sm text-[var(--color-text-muted)] mb-6">
           Masuk menggunakan akun Google perangkat desa.
         </p>
+
+        {error === 'AccessDenied' && (
+          <div className="mb-6 p-3 rounded-md bg-red-50 border border-red-200 text-sm text-red-600 font-medium animate-pulse">
+            Akses Ditolak: Email Anda tidak terdaftar sebagai perangkat desa di sistem.
+          </div>
+        )}
+
         <form
           action={async () => {
             'use server';

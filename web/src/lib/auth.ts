@@ -19,14 +19,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     updateAge: 24 * 60 * 60, // perpanjang cookie maksimal sekali sehari
   },
   callbacks: {
-    signIn({ user }) {
+    async signIn({ user }) {
       const email = user.email ?? '';
       if (ALLOWED_ADMIN_EMAILS.length === 0) {
         // Saat development & whitelist kosong, izinkan semua login
         // Pastikan whitelist diisi sebelum production
         return true;
       }
-      return ALLOWED_ADMIN_EMAILS.includes(email);
+      if (!ALLOWED_ADMIN_EMAILS.includes(email)) return false;
+
+      // Pastikan email ini terdaftar di database Apps Script
+      const { getPenggunaByEmail } = await import('@/repository/pengguna/action');
+      const pengguna = await getPenggunaByEmail(email);
+      if (!pengguna) return false;
+
+      return true;
     },
   },
   pages: {

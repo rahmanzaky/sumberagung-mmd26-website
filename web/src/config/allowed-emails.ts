@@ -6,4 +6,5 @@ export const ALLOWED_ADMIN_EMAILS: string[] = [
   // Tambahkan email perangkat desa di sini, contoh:
   // 'kepala.desa@gmail.com',
   // 'sekretaris.sumberagung@gmail.com',
+  'sumberagungpanggungrejo@gmail.com',
 ];

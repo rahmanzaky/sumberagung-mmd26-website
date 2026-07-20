@@ -2,9 +2,15 @@ import Sidebar from '@/shared/components/Sidebar/Sidebar';
 import Topbar from '@/shared/components/Topbar/Topbar';
 import { auth } from '@/lib/auth';
 import { penggunaSaya } from '@/lib/guard';
+import { redirect } from 'next/navigation';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const [session, saya] = await Promise.all([auth(), penggunaSaya()]);
+
+  if (!session && !saya) {
+    redirect('/login');
+  }
+
   const name = saya?.namaLengkap ?? session?.user?.name ?? session?.user?.email ?? 'Admin Desa';
   const role = saya?.role ?? 'Admin'; // fallback aman bila belum terdaftar
 
