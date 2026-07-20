@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react';
 import { kompresGambar } from '@/lib/kompres-gambar';
-import { urlFotoLangsung } from '@/repository/galeri/dto';
+import { urlFotoLangsung } from '@/lib/foto';
 import { unggahFotoAction } from '@/repository/upload/action';
 import Spinner from '@/shared/components/ui/Spinner';
 

@@ -12,8 +12,8 @@ var** `APPS_SCRIPT_URL`. Endpoint dibedakan oleh **`resource`**:
 - **POST** body `{ "resource":"<key>", "aksi":"...", ... }` → `{ success, ... }`
 
 `<key>`: `bukuTamu`, `surat`, `absensi`, `kependudukan`, `pengguna`, `konten`,
-`galeri`, `misi`, `sejarah`, `struktur`, `distribusiUsia`, `pendidikan`,
-`beranda`, `profilVisi`, `geografi`, `pengaturan`, `upload`.
+`misi`, `sejarah`, `struktur`, `distribusiUsia`, `pendidikan`,
+`profilVisi`, `geografi`, `pengaturan`, `upload`.
 
 Semua pemanggilan lewat helper `web/src/lib/apps-script.ts`
 (`ambilResource` / `kirimResource`). Bagian di bawah menyebut nama env lama
@@ -354,50 +354,6 @@ bukan dari form.
 
 ---
 
-## GET Galeri
-
-**URL:** `APPS_SCRIPT_GALERI_URL` (dari env) · Sheet `Galeri`
-
-Tidak ada di daftar 6 sheet SRS 3.1 — skema turunan dari SK-F-15. Sheet hanya
-menyimpan **tautan** foto; file fisik ada di Google Drive desa.
-
-**Response:**
-```json
-{
-  "data": [
-    {
-      "id": "string",
-      "judul": "string",
-      "urlFoto": "string",
-      "kategori": "string",
-      "tanggalUnggah": "YYYY-MM-DD",
-      "diunggahOleh": "string"
-    }
-  ]
-}
-```
-
----
-
-## POST Galeri
-
-**URL:** `APPS_SCRIPT_GALERI_URL` (sama dengan GET, dibedakan oleh method)
-
-**Request:**
-```json
-{ "aksi": "simpan", "id": "", "judul": "string", "urlFoto": "string", "kategori": "string", "tanggalUnggah": "YYYY-MM-DD", "diunggahOleh": "string" }
-```
-```json
-{ "aksi": "hapus", "id": "string" }
-```
-
-**Response:**
-```json
-{ "success": true, "id": "string" }
-```
-
----
-
 ## GET Pengaturan
 
 **URL:** `APPS_SCRIPT_PENGATURAN_URL` (dari env) · Sheet `Pengaturan`
@@ -451,16 +407,15 @@ bentuk sheet:
 - **Daftar berurut** (kolom `id … urutan`) — banyak record.
   GET → `{ data: Item[] }`; POST `{ aksi: "simpan", id, … }` (upsert; id kosong = baru) atau `{ aksi: "hapus", id }` → `{ success, id? }`.
 
-| Env URL | Sheet | Bentuk | Kolom / kunci utama |
+| `resource` | Sheet | Bentuk | Kolom / kunci utama |
 |---|---|---|---|
-| `APPS_SCRIPT_BERANDA_URL` | `Beranda` | kunci-nilai | hero*, kegiatan*, video*, footerTagline |
-| `APPS_SCRIPT_PROFIL_VISI_URL` | `ProfilVisi` | kunci-nilai | halamanJudul, halamanSubteks, visiKutipan |
-| `APPS_SCRIPT_MISI_URL` | `Misi` | daftar | id, teks, urutan |
-| `APPS_SCRIPT_GEOGRAFI_URL` | `Geografi` | kunci-nilai | koordinat, ketinggian, batas*, luas* |
-| `APPS_SCRIPT_SEJARAH_URL` | `Sejarah` | daftar | id, era, subjudul, narasi, urlFoto, sisi, urutan |
-| `APPS_SCRIPT_STRUKTUR_URL` | `Struktur` | daftar | id, namaJabatan, namaPejabat, urlFoto, level, urutan |
-| `APPS_SCRIPT_DISTRIBUSI_USIA_URL` | `DistribusiUsia` | daftar | id, rentang, wilayah, lakiLaki, perempuan, urutan |
-| `APPS_SCRIPT_PENDIDIKAN_URL` | `Pendidikan` | daftar | id, jenjang, persentase, urutan |
+| `profilVisi` | `ProfilVisi` | kunci-nilai | halamanJudul, halamanSubteks, visiKutipan |
+| `misi` | `Misi` | daftar | id, teks, urutan |
+| `geografi` | `Geografi` | kunci-nilai | koordinat, ketinggian, batas*, luas* |
+| `sejarah` | `Sejarah` | daftar | id, era, subjudul, narasi, urlFoto, sisi, urutan |
+| `struktur` | `Struktur` | daftar | id, namaJabatan, namaPejabat, urlFoto, level, urutan |
+| `distribusiUsia` | `DistribusiUsia` | daftar | id, rentang, wilayah, lakiLaki, perempuan, urutan |
+| `pendidikan` | `Pendidikan` | daftar | id, jenjang, persentase, urutan |
 
 Reorder (tombol ↑↓) tidak punya aksi khusus: server menukar nilai `urutan` dua
 item lalu memanggil `aksi: "simpan"` untuk keduanya.
