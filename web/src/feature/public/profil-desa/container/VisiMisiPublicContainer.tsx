@@ -1,7 +1,9 @@
-import { visiMisi } from '../data';
+import { muatVisiMisi } from '../loader';
 import JudulSubHalaman from './JudulSubHalaman';
 
-export default function VisiMisiPublicContainer() {
+export default async function VisiMisiPublicContainer() {
+    const visiMisi = await muatVisiMisi();
+
     return (
         <div>
             <JudulSubHalaman judul={visiMisi.judul} deskripsi={visiMisi.deskripsi} />

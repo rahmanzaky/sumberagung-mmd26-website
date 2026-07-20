@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { geografi } from '../data';
+import { muatGeografi } from '../loader-geografi';
 import JudulSubHalaman from './JudulSubHalaman';
 
 function IkonPin({ className }: { className?: string }) {
@@ -60,7 +60,8 @@ function IkonLahan({ jenis }: { jenis: string }) {
     );
 }
 
-export default function GeografisPublicContainer() {
+export default async function GeografisPublicContainer() {
+    const geografi = await muatGeografi();
     const { letak, peta, batas, luas } = geografi;
 
     return (

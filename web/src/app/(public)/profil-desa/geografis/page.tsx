@@ -8,6 +8,9 @@ export const metadata: Metadata = {
     'Letak astronomis, topografi, batas wilayah, dan statistik pemanfaatan lahan Desa Sumberagung.',
 };
 
+// Konten dari CMS; segarkan tiap 60 detik (SRS SK-NF-04).
+export const revalidate = 60;
+
 export default function GeografisPage() {
   return <GeografisPublicContainer />;
 }

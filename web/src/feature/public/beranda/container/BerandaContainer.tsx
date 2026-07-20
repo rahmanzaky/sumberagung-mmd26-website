@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { hero, idBagianKegiatan, kegiatan, statistik, videoProfil } from '../data';
+import { hero, idBagianKegiatan, kegiatan, videoProfil } from '../data';
+import { muatStatistik, muatKartuKegiatan } from '../loader';
 import GaleriKegiatan from './GaleriKegiatan';
 import TombolGulir from './TombolGulir';
 import VideoProfil from './VideoProfil';
@@ -40,7 +41,9 @@ function IkonPutarKecil({ className }: { className?: string }) {
   );
 }
 
-export default function BerandaContainer() {
+export default async function BerandaContainer() {
+  const [statistik, kartuKegiatan] = await Promise.all([muatStatistik(), muatKartuKegiatan()]);
+
   return (
     <>
       {/* ---------- Hero ---------- */}
@@ -134,7 +137,7 @@ export default function BerandaContainer() {
             {kegiatan.deskripsi}
           </p>
 
-          <GaleriKegiatan />
+          <GaleriKegiatan kartu={kartuKegiatan} />
         </div>
       </section>
 
