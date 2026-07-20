@@ -3,15 +3,13 @@
 // Fungsi ini membuat semua tab beserta baris header yang formatnya HARUS
 // cocok dengan docs/api-contract.md.
 //
-// Nama tab mengikuti SRS 3.1 (Sheet 1–6), ditambah tab Galeri & Pengaturan
-// untuk fitur yang tidak punya sheet sendiri di SRS.
+// Nama tab mengikuti SRS 3.1 (Sheet 1–6) + tab tambahan untuk CMS & pengaturan.
 //
 // Cara pakai:
 //   1. Buka Spreadsheet Google → Extensions > Apps Script
 //   2. Paste file ini SAJA, jalankan `setupSpreadsheet`, lalu hapus lagi.
-//      (Tiap layanan .gs di-deploy sebagai project terpisah — lihat README.md)
 //   3. Pilih fungsi `setupSpreadsheet` → Run (beri izin saat diminta)
-//   4. Isi beberapa baris contoh, lalu deploy tiap Web App (lihat README.md)
+//   4. Deploy backend gabungan `Code.gs` sebagai Web App (lihat README.md)
 
 const SHEET_BUKU_TAMU = 'BukuTamu';
 const SHEET_PENGAJUAN_SURAT = 'PengajuanSurat';
@@ -19,7 +17,6 @@ const SHEET_ABSENSI = 'Absensi';
 const SHEET_KEPENDUDUKAN = 'Kependudukan';
 const SHEET_PERANGKAT_DESA = 'PerangkatDesa';
 const SHEET_KONTEN = 'Konten';
-const SHEET_GALERI = 'Galeri';
 const SHEET_PENGATURAN = 'Pengaturan';
 
 // Urutan kolom = urutan header. JANGAN diubah tanpa update dto.ts & api-contract.md.
@@ -59,11 +56,9 @@ const HEADERS_KONTEN = [
   'status',
   'dibuatOleh',
 ];
-const HEADERS_GALERI = ['id', 'judul', 'urlFoto', 'kategori', 'tanggalUnggah', 'diunggahOleh'];
 const HEADERS_PENGATURAN = ['kunci', 'nilai'];
 
 // --- Sheet CMS halaman publik ---
-const SHEET_BERANDA = 'Beranda'; // kunci-nilai
 const SHEET_PROFIL_VISI = 'ProfilVisi'; // kunci-nilai
 const SHEET_GEOGRAFI = 'Geografi'; // kunci-nilai
 const SHEET_MISI = 'Misi';
@@ -87,11 +82,9 @@ function setupSpreadsheet() {
   ensureSheet_(ss, SHEET_KEPENDUDUKAN, HEADERS_KEPENDUDUKAN);
   ensureSheet_(ss, SHEET_PERANGKAT_DESA, HEADERS_PERANGKAT_DESA);
   ensureSheet_(ss, SHEET_KONTEN, HEADERS_KONTEN);
-  ensureSheet_(ss, SHEET_GALERI, HEADERS_GALERI);
   ensureSheet_(ss, SHEET_PENGATURAN, HEADERS_PENGATURAN);
 
   // Sheet CMS halaman publik
-  ensureSheet_(ss, SHEET_BERANDA, HEADERS_KV);
   ensureSheet_(ss, SHEET_PROFIL_VISI, HEADERS_KV);
   ensureSheet_(ss, SHEET_GEOGRAFI, HEADERS_KV);
   ensureSheet_(ss, SHEET_MISI, HEADERS_MISI);
