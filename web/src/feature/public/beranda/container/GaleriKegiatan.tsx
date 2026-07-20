@@ -3,12 +3,12 @@
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { kegiatan } from '../data';
+import type { KartuKegiatan } from '../types';
 
 /** Jarak antar kartu, harus sama dengan kelas gap-6 di bawah. */
 const JARAK_KARTU = 24;
 
-export default function GaleriKegiatan() {
+export default function GaleriKegiatan({ kartu }: { kartu: KartuKegiatan[] }) {
     const wadahRef = useRef<HTMLDivElement>(null);
     const [indeksAktif, setIndeksAktif] = useState(0);
     const [jumlahTitik, setJumlahTitik] = useState(1);
@@ -78,7 +78,7 @@ export default function GaleriKegiatan() {
                 className="sembunyikan-scrollbar -mx-6 snap-x snap-mandatory scroll-px-6 overflow-x-auto px-6 py-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] sm:-mx-8 sm:scroll-px-8 sm:px-8 lg:-mx-12 lg:scroll-px-12 lg:px-12"
             >
                 <ul className="flex w-max gap-6">
-                    {kegiatan.daftar.map((item) => (
+                    {kartu.map((item) => (
                         <li
                             key={item.id}
                             data-kartu
