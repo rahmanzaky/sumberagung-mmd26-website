@@ -10,25 +10,28 @@ type StatCardProps = {
 
 const toneStyles: Record<
   StatCardTone,
-  { value: string; chip: string; iconBg: string; iconColor: string }
+  { value: string; chip: string; iconBg: string; iconColor: string; cardBorder: string }
 > = {
   default: {
-    value: 'text-[var(--color-primary)]',
-    chip: 'bg-[var(--color-surface-dark)] text-[var(--color-text-muted)]',
-    iconBg: 'bg-[var(--color-primary)]/10',
+    value: 'text-[var(--color-primary-deepdark)]',
+    chip: 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]',
+    iconBg: 'bg-gradient-to-br from-[var(--color-primary)]/20 to-blue-50/10 shadow-inner',
     iconColor: 'text-[var(--color-primary)]',
+    cardBorder: 'hover:border-[var(--color-primary)]/30',
   },
   gold: {
     value: 'text-[var(--color-gold-dark)]',
     chip: 'bg-[var(--color-gold)]/15 text-[var(--color-gold-dark)]',
-    iconBg: 'bg-[var(--color-gold)]/15',
+    iconBg: 'bg-gradient-to-br from-[var(--color-gold)]/20 to-yellow-50/10 shadow-inner',
     iconColor: 'text-[var(--color-gold-dark)]',
+    cardBorder: 'hover:border-[var(--color-gold)]/40',
   },
   danger: {
-    value: 'text-red-600',
+    value: 'text-red-700',
     chip: 'bg-red-50 text-red-600',
-    iconBg: 'bg-red-50',
+    iconBg: 'bg-gradient-to-br from-red-100 to-red-50/10 shadow-inner',
     iconColor: 'text-red-600',
+    cardBorder: 'hover:border-red-200',
   },
 };
 
@@ -42,22 +45,33 @@ export default function StatCard({
   const styles = toneStyles[tone];
 
   return (
-    <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-      <div className="flex items-start justify-between mb-4">
+    <div
+      className={`bg-white rounded-2xl p-6 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${styles.cardBorder} group relative overflow-hidden`}
+    >
+      {/* Decorative background glow */}
+      <div
+        className={`absolute -right-4 -top-4 w-24 h-24 rounded-full blur-2xl opacity-20 ${styles.iconBg} transition-transform duration-500 group-hover:scale-150`}
+      />
+
+      <div className="flex items-start justify-between mb-4 relative z-10">
         <div
-          className={`w-10 h-10 rounded-lg flex items-center justify-center ${styles.iconBg} ${styles.iconColor}`}
+          className={`w-12 h-12 rounded-xl flex items-center justify-center ${styles.iconBg} ${styles.iconColor} shadow-sm group-hover:scale-110 transition-transform duration-300`}
           aria-hidden
         >
           {icon}
         </div>
         {topLabel && (
-          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${styles.chip}`}>
+          <span
+            className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${styles.chip} uppercase tracking-wider`}
+          >
             {topLabel}
           </span>
         )}
       </div>
-      <p className={`text-3xl font-bold ${styles.value}`}>{value}</p>
-      <p className="text-sm text-[var(--color-text-muted)] mt-1">{label}</p>
+      <div className="relative z-10">
+        <p className={`text-4xl font-[var(--font-lora)] font-bold mb-1 ${styles.value}`}>{value}</p>
+        <p className="text-sm font-medium text-[var(--color-text-muted)]">{label}</p>
+      </div>
     </div>
   );
 }

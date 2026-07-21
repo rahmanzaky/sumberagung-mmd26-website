@@ -1,6 +1,5 @@
 import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
-import { ALLOWED_ADMIN_EMAILS } from '@/config/allowed-emails';
 
 const SEPULUH_HARI = 10 * 24 * 60 * 60; // detik
 
@@ -21,12 +20,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user }) {
       const email = user.email ?? '';
-      if (ALLOWED_ADMIN_EMAILS.length === 0) {
-        // Saat development & whitelist kosong, izinkan semua login
-        // Pastikan whitelist diisi sebelum production
-        return true;
-      }
-      if (!ALLOWED_ADMIN_EMAILS.includes(email)) return false;
 
       // Pastikan email ini terdaftar di database Apps Script
       const { getPenggunaByEmail } = await import('@/repository/pengguna/action');
