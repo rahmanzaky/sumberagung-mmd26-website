@@ -60,7 +60,7 @@ export default function BukuTamuPublicContainer() {
 
   return (
     <section className="bg-[var(--color-primary-deepdark)] px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mx-auto w-full max-w-xl bg-white p-8 shadow-2xl sm:p-12">
+      <div className="mx-auto w-full max-w-3xl bg-white p-8 shadow-2xl sm:p-12">
         <form action={formAction}>
           {/* Judul */}
           <div className="text-center">
