@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import type { BukuTamuInput } from '@/repository/buku-tamu/dto';
 import Button from '@/shared/components/ui/Button';
+import { waValid, normalisasiWa } from '@/lib/validasi';
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -45,10 +46,19 @@ export default function InputTamuModal({ onClose, onSubmit }: Props) {
       setError('Nama tamu wajib diisi.');
       return;
     }
+    if (form.noWhatsapp.trim() && !waValid(form.noWhatsapp)) {
+      setError('Nomor WhatsApp tidak valid (contoh: 0812xxxxxxx).');
+      return;
+    }
     setError(null);
+    // Rapikan nomor WA ke format 0… sebelum simpan.
+    const bersih: BukuTamuInput = {
+      ...form,
+      noWhatsapp: form.noWhatsapp.trim() ? normalisasiWa(form.noWhatsapp) : form.noWhatsapp,
+    };
     startTransition(async () => {
       try {
-        await onSubmit(form);
+        await onSubmit(bersih);
         onClose();
       } catch {
         setError('Gagal menyimpan data. Coba lagi.');
