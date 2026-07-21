@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { ajukanSuratHref, loginHref, navLinks } from './nav-links';
+import { ajukanSuratHref, navLinks } from './nav-links';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -88,12 +88,6 @@ export default function Navbar() {
 
         {/* Aksi kanan (desktop) */}
         <div className="hidden shrink-0 items-center gap-6 lg:flex">
-          <Link
-            href={loginHref}
-            className={`rounded-sm text-[13px] font-medium uppercase tracking-[0.14em] text-white/90 transition-colors hover:text-white ${focusRing}`}
-          >
-            Login
-          </Link>
 
           <Link
             href={ajukanSuratHref}
@@ -170,12 +164,6 @@ export default function Navbar() {
           </ul>
 
           <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4">
-            <Link
-              href={loginHref}
-              className={`rounded-md px-2 py-3 text-sm font-medium uppercase tracking-[0.14em] text-white/85 transition-colors hover:bg-white/5 hover:text-white ${focusRing}`}
-            >
-              Login
-            </Link>
 
             <Link
               href={ajukanSuratHref}

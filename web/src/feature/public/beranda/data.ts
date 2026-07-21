@@ -1,4 +1,4 @@
-import type { KartuKegiatan, StatistikBeranda } from './types';
+import type { StatistikBeranda } from './types';
 
 /** Id bagian kegiatan, dipakai tombol "Lihat Kegiatan" untuk menggulir. */
 export const idBagianKegiatan = 'kegiatan-desa';
@@ -35,53 +35,10 @@ export const kegiatan = {
     judulBawah: 'Geliat Desa',
     deskripsi:
         'Merekam setiap momen pembangunan, pelestarian budaya, dan interaksi warga yang membentuk harmoni di Sumberagung.',
-    daftar: [
-        // --- Tiga kartu pertama sesuai desain ---
-        {
-            id: 'rembuk-warga',
-            kategori: 'Musyawarah',
-            judul: 'Rembuk Warga Perencanaan Pembangunan',
-            gambar: { src: '', alt: 'Warga berkumpul dalam musyawarah desa di malam hari' },
-        },
-        {
-            id: 'panen-raya',
-            kategori: 'Pertanian',
-            judul: 'Panen Raya Padi Organik Kelompok Tani',
-            gambar: { src: '', alt: 'Hamparan sawah terasering saat matahari terbit' },
-        },
-        {
-            id: 'festival-jaranan',
-            kategori: 'Seni & Budaya',
-            judul: 'Festival Kesenian Jaranan Desa',
-            gambar: { src: '', alt: 'Penari mengenakan busana tradisional dalam festival desa' },
-        },
+};
 
-        // --- Empat kartu berikut masih isian sementara, silakan diganti ---
-        {
-            id: 'kerja-bakti',
-            kategori: 'Gotong Royong',
-            judul: 'Kerja Bakti Perbaikan Jalan Desa',
-            gambar: { src: '', alt: 'Warga bergotong royong memperbaiki jalan desa' },
-        },
-        {
-            id: 'posyandu',
-            kategori: 'Kesehatan',
-            judul: 'Posyandu Balita dan Lansia Bulanan',
-            gambar: { src: '', alt: 'Kegiatan penimbangan balita di posyandu desa' },
-        },
-        {
-            id: 'pelatihan-umkm',
-            kategori: 'Ekonomi',
-            judul: 'Pelatihan UMKM Olahan Hasil Kebun',
-            gambar: { src: '', alt: 'Warga mengikuti pelatihan pengolahan hasil kebun' },
-        },
-        {
-            id: 'hut-kemerdekaan',
-            kategori: 'Perayaan',
-            judul: 'Peringatan Hari Kemerdekaan Republik Indonesia',
-            gambar: { src: '', alt: 'Upacara dan lomba peringatan kemerdekaan di lapangan desa' },
-        },
-    ] satisfies KartuKegiatan[],
+export const berita = {
+    judul: 'Berita Desa Terbaru',
 };
 
 export const videoProfil = {

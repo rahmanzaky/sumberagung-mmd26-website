@@ -4,7 +4,7 @@ export type NavLink = {
 };
 
 /**
- * Catatan: label "Struktur Desa" mengarah ke route /struktur-organisasi
+ * Urutan menu mengikuti desain.
  */
 export const navLinks: NavLink[] = [
     { href: '/', label: 'Home' },
@@ -14,5 +14,4 @@ export const navLinks: NavLink[] = [
     { href: '/buku-tamu', label: 'Buku Tamu' },
 ];
 
-export const loginHref = '/login';
 export const ajukanSuratHref = '/pengajuan-surat';
