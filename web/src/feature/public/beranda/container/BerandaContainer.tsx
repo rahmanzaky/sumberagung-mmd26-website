@@ -1,9 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { hero, idBagianKegiatan, kegiatan, videoProfil } from '../data';
-import { muatStatistik, muatKartuKegiatan } from '../loader';
-import GaleriKegiatan from './GaleriKegiatan';
+import { daftarBerita, daftarKegiatan } from '@/feature/public/konten/data';
+
+import { berita, hero, idBagianKegiatan, kegiatan, statistik, videoProfil } from '../data';
+import KartuBerita from './KartuBerita';
+import KartuKegiatan from './KartuKegiatan';
+import Karusel from './Karusel';
 import TombolGulir from './TombolGulir';
 import VideoProfil from './VideoProfil';
 
@@ -41,9 +44,10 @@ function IkonPutarKecil({ className }: { className?: string }) {
   );
 }
 
-export default async function BerandaContainer() {
-  const [statistik, kartuKegiatan] = await Promise.all([muatStatistik(), muatKartuKegiatan()]);
+/** Lebar kartu: satu kartu penuh di ponsel, tiga kartu di layar besar. */
+const lebarKartu = 'w-[80vw] shrink-0 snap-start sm:w-[46vw] lg:w-[368px]';
 
+export default function BerandaContainer() {
   return (
     <>
       {/* ---------- Hero ---------- */}
@@ -123,7 +127,7 @@ export default async function BerandaContainer() {
       {/* ---------- Kegiatan ---------- */}
       <section
         id={idBagianKegiatan}
-        className="scroll-mt-24 bg-[var(--color-primary)] px-6 py-20 sm:px-8 lg:px-12 lg:py-24"
+        className="scroll-mt-24 bg-[var(--color-primary)] px-6 py-20 sm:px-8 lg:px-12 lg:pt-24"
       >
         <div className="mx-auto max-w-6xl">
           <h2 className="font-serif text-4xl font-bold leading-tight tracking-[-0.02em] sm:text-5xl">
@@ -137,7 +141,30 @@ export default async function BerandaContainer() {
             {kegiatan.deskripsi}
           </p>
 
-          <GaleriKegiatan kartu={kartuKegiatan} />
+          <Karusel label="Galeri kegiatan desa, dapat digeser ke samping">
+            {daftarKegiatan.map((item) => (
+              <li key={item.slug} data-kartu className={lebarKartu}>
+                <KartuKegiatan data={item} />
+              </li>
+            ))}
+          </Karusel>
+        </div>
+      </section>
+
+      {/* ---------- Berita ---------- */}
+      <section className="bg-[var(--color-primary)] px-6 pb-20 sm:px-8 lg:px-12 lg:pb-24">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="font-serif text-3xl font-bold tracking-[-0.02em] text-white sm:text-4xl">
+            {berita.judul}
+          </h2>
+
+          <Karusel label="Berita desa terbaru, dapat digeser ke samping">
+            {daftarBerita.map((item) => (
+              <li key={item.slug} data-kartu className={lebarKartu}>
+                <KartuBerita data={item} />
+              </li>
+            ))}
+          </Karusel>
         </div>
       </section>
 
