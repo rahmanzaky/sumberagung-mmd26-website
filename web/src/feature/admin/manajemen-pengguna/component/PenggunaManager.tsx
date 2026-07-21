@@ -6,6 +6,7 @@ import { ROLES } from '@/repository/pengguna/dto';
 import Badge from '@/shared/components/ui/Badge';
 import Button from '@/shared/components/ui/Button';
 import Spinner from '@/shared/components/ui/Spinner';
+import { emailValid, waValid, normalisasiWa } from '@/lib/validasi';
 
 const TH =
   'px-4 py-3 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider';
@@ -50,10 +51,26 @@ export default function PenggunaManager({ data, bolehKelola, onSimpan, onHapus }
       setError('Username, nama lengkap, dan email wajib diisi.');
       return;
     }
+    // Email dipakai mencocokkan akun saat login Google — wajib valid.
+    if (!emailValid(form.email)) {
+      setError('Format email tidak valid.');
+      return;
+    }
+    if (form.noWa.trim() && !waValid(form.noWa)) {
+      setError('Nomor WhatsApp tidak valid (contoh: 0812xxxxxxx).');
+      return;
+    }
+
+    // Simpan email & WA yang sudah dirapikan (WA dinormalisasi ke format 0…).
+    const bersih: PenggunaInput = {
+      ...form,
+      email: form.email.trim(),
+      noWa: form.noWa.trim() ? normalisasiWa(form.noWa) : form.noWa,
+    };
 
     startTransition(async () => {
       try {
-        await onSimpan(form);
+        await onSimpan(bersih);
         setForm(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Gagal menyimpan pengguna.');

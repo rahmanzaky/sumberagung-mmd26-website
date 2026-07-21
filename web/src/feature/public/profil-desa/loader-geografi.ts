@@ -1,35 +1,20 @@
 import { getGeografi } from '@/repository/geografi/action';
 import { urlFotoLangsung } from '@/lib/foto';
 import { geografi as geografiStatis } from './data';
+import { pisahKoordinat, pisahNilaiSatuan, pisahBatas } from './parse-geografi';
 
 // CMS menyimpan beberapa nilai sebagai satu string (koordinat, ketinggian, batas,
-// luas), sedangkan komponen FE butuh terpisah. Helper di bawah memecahnya;
-// label/ikon/prosa yang tak punya padanan CMS tetap memakai nilai statis.
-
-function pisahKoordinat(koordinat: string): { lintang: string; bujur: string } {
-  // Format: "…Lintang Selatan dan …Bujur Timur"
-  const bagian = koordinat.split(/\s+dan\s+/i);
-  if (bagian.length === 2) return { lintang: bagian[0].trim(), bujur: bagian[1].trim() };
-  return { lintang: geografiStatis.letak.lintang, bujur: geografiStatis.letak.bujur };
-}
-
-function pisahNilaiSatuan(s: string, fallback: { nilai: string; satuan: string }) {
-  const m = s.match(/^\s*([\d.,]+)\s*(.*)$/);
-  if (!m) return fallback;
-  return { nilai: m[1], satuan: m[2].trim() || fallback.satuan };
-}
-
-function pisahBatas(s: string): { desa: string; kecamatan: string } {
-  const koma = s.indexOf(',');
-  if (koma === -1) return { desa: s.trim(), kecamatan: '' };
-  return { desa: s.slice(0, koma).trim(), kecamatan: s.slice(koma + 1).trim() };
-}
+// luas), sedangkan komponen FE butuh terpisah. Parser di parse-geografi.ts
+// memecahnya; label/ikon/prosa yang tak punya padanan CMS tetap memakai statis.
 
 export async function muatGeografi() {
   const g = await getGeografi();
   const s = geografiStatis;
 
-  const { lintang, bujur } = pisahKoordinat(g.koordinat);
+  const { lintang, bujur } = pisahKoordinat(g.koordinat, {
+    lintang: s.letak.lintang,
+    bujur: s.letak.bujur,
+  });
   const batasCms = [
     { arah: 'Utara', ...pisahBatas(g.batasUtara) },
     { arah: 'Selatan', ...pisahBatas(g.batasSelatan) },

@@ -84,10 +84,11 @@ export const LABEL_PENGATURAN: Record<keyof Pengaturan, string> = {
 
 /** Apakah saat ini masih dalam jam layanan? Dipakai halaman pengajuan surat. */
 export function dalamJamLayanan(p: Pengaturan, sekarang = new Date()): boolean {
-  const jam = sekarang.toLocaleTimeString('id-ID', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
+  // Bentuk "HH:mm" secara manual — JANGAN pakai toLocaleTimeString('id-ID')
+  // yang memakai pemisah titik ("08.30"); titik < titik dua pada perbandingan
+  // string, sehingga jam mulai (08:xx) keliru dianggap di luar jam layanan.
+  const hh = String(sekarang.getHours()).padStart(2, '0');
+  const mm = String(sekarang.getMinutes()).padStart(2, '0');
+  const jam = `${hh}:${mm}`;
   return jam >= p.jamLayananMulai && jam <= p.jamLayananSelesai;
 }
