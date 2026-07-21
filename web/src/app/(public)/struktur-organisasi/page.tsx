@@ -8,6 +8,9 @@ export const metadata: Metadata = {
     'Susunan pemerintahan dan perangkat Desa Sumberagung, dari Kepala Desa hingga Kamituwo.',
 };
 
+// Konten dari CMS; segarkan tiap 60 detik (SRS SK-NF-04).
+export const revalidate = 60;
+
 export default function StrukturOrganisasiPage() {
   return <StrukturOrganisasiPublicContainer />;
 }

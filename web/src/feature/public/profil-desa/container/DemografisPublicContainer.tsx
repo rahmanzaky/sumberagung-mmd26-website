@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { demografi } from '../data';
+import { muatDemografi } from '../loader';
 import JudulSubHalaman from './JudulSubHalaman';
 
 function IkonStatistik({ jenis }: { jenis: string }) {
@@ -35,7 +35,9 @@ function IkonStatistik({ jenis }: { jenis: string }) {
     );
 }
 
-export default function DemografisPublicContainer() {
+export default async function DemografisPublicContainer() {
+    const demografi = await muatDemografi();
+
     return (
         <div>
             <JudulSubHalaman judul={demografi.judul} deskripsi={demografi.deskripsi} />

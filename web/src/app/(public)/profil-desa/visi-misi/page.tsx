@@ -8,6 +8,9 @@ export const metadata: Metadata = {
     'Visi dan misi Pemerintah Desa Sumberagung dalam membangun desa yang berbudaya, mandiri, dan sejahtera.',
 };
 
+// Konten dari CMS; segarkan tiap 60 detik (SRS SK-NF-04).
+export const revalidate = 60;
+
 export default function VisiMisiPage() {
   return <VisiMisiPublicContainer />;
 }

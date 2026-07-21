@@ -1,6 +1,7 @@
 import Image from 'next/image';
 
-import { sejarahHeader, sejarahTimeline } from '../data';
+import { sejarahHeader } from '../data';
+import { muatTimeline } from '../loader';
 import type { SejarahGambar } from '../types';
 import Reveal from './Reveal';
 
@@ -33,7 +34,9 @@ function FotoSejarah({ gambar }: { gambar: SejarahGambar }) {
   );
 }
 
-export default function SejarahDesaContainer() {
+export default async function SejarahDesaContainer() {
+  const sejarahTimeline = await muatTimeline();
+
   return (
     <section className="bg-[var(--color-primary-deepdark)] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       {/* Kepala halaman */}
