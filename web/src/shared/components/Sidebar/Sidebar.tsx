@@ -99,9 +99,14 @@ export default function Sidebar({ role }: { role: Role }) {
   return (
     <aside className="w-64 shrink-0 bg-[var(--color-primary)] text-white flex flex-col h-full overflow-hidden">
       {/* Wordmark */}
-      <div className="px-5 py-5 border-b border-white/10">
+      <div className="px-5 py-5 border-b border-white/10 flex items-center gap-3">
+        <img
+          src="/sumberagung-logo.png"
+          alt="Logo Sumberagung"
+          className="w-8 h-8 object-contain"
+        />
         <p className="font-[var(--font-lora)] text-xl font-bold text-[var(--color-gold)]">
-          Sumberagung <span className="text-[var(--color-gold-light)]">✓</span>
+          Sumberagung
         </p>
       </div>
 

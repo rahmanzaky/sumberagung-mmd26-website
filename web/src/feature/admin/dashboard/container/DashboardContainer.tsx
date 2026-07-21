@@ -1,10 +1,10 @@
 import { getBukuTamu } from '@/repository/buku-tamu/action';
 import { getPengajuanSurat } from '@/repository/pengajuan-surat/action';
-import { getRekapKehadiran, getAbsensi, absenSekarangAction } from '@/repository/presensi/action';
+import { getRekapKehadiran, getAbsensi } from '@/repository/presensi/action';
 import { requireAdmin } from '@/lib/guard';
 import StatCard from '../component/StatCard';
 import { IconMasuk, IconPengguna, IconPeringatan } from '@/shared/components/icons';
-import TombolAbsen from '@/feature/admin/presensi/component/TombolAbsen';
+import NoticeAbsen from '../component/NoticeAbsen';
 import PengajuanTerbaru from '../component/PengajuanTerbaru';
 import KunjunganChart from '../component/KunjunganChart';
 import PengajuanChart from '../component/PengajuanChart';
@@ -45,11 +45,10 @@ export default async function DashboardContainer() {
 
       {/* Shortcut absen + notif sudah/belum absen hari ini */}
       <div className="mb-8">
-        <TombolAbsen
+        <NoticeAbsen
           namaLengkap={saya.namaLengkap}
           sudahAbsen={!!absenSaya}
           jamAbsen={absenSaya?.jamMasuk ?? null}
-          onAbsen={absenSekarangAction}
         />
       </div>
 

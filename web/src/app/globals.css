@@ -8,21 +8,26 @@
 }
 
 @theme {
-  /* Biru */
+  /* Biru Utama */
   --color-primary: #1e3f8f;
   --color-primary-dark: #142a6b;
   --color-primary-light: #2f55a7;
   --color-primary-deepdark: #1a2d5d;
 
-  /* Emas */
+  /* Emas / Aksen */
   --color-accent: #f7c948;
   --color-accent-light: #fbd97a;
   --color-accent-dark: #d9a92b;
 
-  /* Navy paling gelap — latar footer */
-  --color-surface-deep: #111f47;
+  /* Alias untuk komponen lama yang memakai nama gold */
+  --color-gold: var(--color-accent);
+  --color-gold-dark: var(--color-accent-dark);
 
-  /* Teks sekunder di atas latar terang */
+  /* Latar belakang */
+  --color-surface: #f8fafc; /* Slate 50 - Latar utama admin yang lembut */
+  --color-surface-deep: #111f47; /* Navy gelap untuk sidebar/footer */
+
+  /* Teks sekunder */
   --color-text-muted: #64748b;
 }
 
