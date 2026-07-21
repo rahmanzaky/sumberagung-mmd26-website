@@ -3,18 +3,21 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { cariKonten, formatTanggal, semuaKonten } from '@/feature/public/konten/data';
+import { formatTanggal } from '@/feature/public/konten/data';
+import { muatKontenDinamis } from '@/feature/public/beranda/loader';
 
 type Params = { params: Promise<{ slug: string }> };
 
 /** Semua slug dibuat saat build agar halamannya statis. */
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const semuaKonten = await muatKontenDinamis();
   return semuaKonten.map((konten) => ({ slug: konten.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const konten = cariKonten(slug);
+  const semuaKonten = await muatKontenDinamis();
+  const konten = semuaKonten.find((k) => k.slug === slug);
 
   if (!konten) return { title: 'Halaman tidak ditemukan' };
 
@@ -26,7 +29,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function DetailPage({ params }: Params) {
   const { slug } = await params;
-  const konten = cariKonten(slug);
+  const semuaKonten = await muatKontenDinamis();
+  const konten = semuaKonten.find((k) => k.slug === slug);
 
   if (!konten) notFound();
 

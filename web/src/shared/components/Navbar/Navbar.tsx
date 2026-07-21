@@ -5,10 +5,24 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { ajukanSuratHref, navLinks } from './nav-links';
+import { ajukanSuratHref, navLinks as defaultNavLinks } from './nav-links';
+import type { Pengaturan } from '@/repository/pengaturan/dto';
 
-export default function Navbar() {
+export default function Navbar({ pengaturan }: { pengaturan?: Pengaturan }) {
   const pathname = usePathname();
+
+  const namaSitus = pengaturan?.namaSitus || 'Sumberagung';
+  const logo = pengaturan?.urlLogo || '/sumberagung-logo.png';
+
+  const navLinks = pengaturan
+    ? [
+        { href: '/', label: pengaturan.navHome || 'Home' },
+        { href: '/profil-desa', label: pengaturan.navProfil || 'Profil Desa' },
+        { href: '/sejarah-desa', label: pengaturan.navSejarah || 'Sejarah Desa' },
+        { href: '/struktur-organisasi', label: pengaturan.navStruktur || 'Struktur Desa' },
+        { href: '/buku-tamu', label: pengaturan.navBukuTamu || 'Buku Tamu' },
+      ]
+    : defaultNavLinks;
 
   // Store the pathname the menu was opened on. When pathname changes
   // (navigation), the derived `isMenuOpen` becomes false automatically
@@ -47,7 +61,7 @@ export default function Navbar() {
           className={`flex shrink-0 items-center gap-2.5 rounded-md ${focusRing}`}
         >
           <Image
-            src="/sumberagung-logo.png"
+            src={logo}
             alt=""
             width={512}
             height={512}
@@ -55,7 +69,7 @@ export default function Navbar() {
             className="h-9 w-auto lg:h-11"
           />
           <span className="font-serif text-2xl font-semibold leading-[1.25] tracking-[-0.05em] text-[var(--color-accent)] lg:text-[2rem]">
-            Sumberagung
+            {namaSitus}
           </span>
         </Link>
 

@@ -2,7 +2,8 @@ import { getKependudukanTerbaru } from '@/repository/kependudukan/action';
 import { getKontenPublik } from '@/repository/konten/action';
 import { urlFotoLangsung } from '@/lib/foto';
 import { statistik as statistikStatis } from './data';
-import type { KartuKegiatan, StatistikBeranda } from './types';
+import type { StatistikBeranda } from './types';
+import type { Konten as PublicKonten } from '@/feature/public/konten/types';
 
 function angka(n: number) {
   return n.toLocaleString('id-ID');
@@ -20,13 +21,20 @@ export async function muatStatistik(): Promise<StatistikBeranda[]> {
   ];
 }
 
-/** Kartu "Jejak Langkah & Geliat Desa" dari konten berstatus Tampil. */
-export async function muatKartuKegiatan(): Promise<KartuKegiatan[]> {
-  const konten = await getKontenPublik(7);
-  return konten.map((k) => ({
-    id: k.id,
-    kategori: k.kategori,
-    judul: k.judul,
-    gambar: { src: k.urlFoto ? urlFotoLangsung(k.urlFoto) : '', alt: k.judul },
-  }));
+/** Ambil seluruh konten untuk publik dan petakan ke tipe Konten publik */
+export async function muatKontenDinamis(): Promise<PublicKonten[]> {
+  const konten = await getKontenPublik(10);
+  return konten.map((k) => {
+    const isKegiatan = k.kategori.toLowerCase().includes('kegiatan');
+    return {
+      slug: k.id,
+      jenis: isKegiatan ? 'kegiatan' : 'berita',
+      kategori: k.kategori,
+      judul: k.judul,
+      tanggal: k.tanggalKegiatan,
+      ringkasan: k.deskripsi.length > 150 ? k.deskripsi.substring(0, 150) + '...' : k.deskripsi,
+      isi: k.deskripsi.split('\n').filter((text) => text.trim() !== ''),
+      gambar: { src: k.urlFoto ? urlFotoLangsung(k.urlFoto) : '', alt: k.judul },
+    };
+  });
 }

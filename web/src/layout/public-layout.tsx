@@ -1,12 +1,15 @@
 import Navbar from '@/shared/components/Navbar/Navbar';
 import Footer from '@/shared/components/Footer/Footer';
+import { getPengaturan } from '@/repository/pengaturan/action';
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
+export default async function PublicLayout({ children }: { children: React.ReactNode }) {
+  const pengaturan = await getPengaturan();
+
   return (
     <>
-      <Navbar />
+      <Navbar pengaturan={pengaturan} />
       <main className="flex-1">{children}</main>
-      <Footer />
+      <Footer pengaturan={pengaturan} />
     </>
   );
 }

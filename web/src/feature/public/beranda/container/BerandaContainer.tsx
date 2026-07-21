@@ -1,9 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { daftarBerita, daftarKegiatan } from '@/feature/public/konten/data';
-
-import { berita, hero, idBagianKegiatan, kegiatan, statistik, videoProfil } from '../data';
+import { berita, hero, idBagianKegiatan, kegiatan, videoProfil } from '../data';
+import { muatStatistik, muatKontenDinamis } from '../loader';
 import KartuBerita from './KartuBerita';
 import KartuKegiatan from './KartuKegiatan';
 import Karusel from './Karusel';
@@ -47,7 +46,13 @@ function IkonPutarKecil({ className }: { className?: string }) {
 /** Lebar kartu: satu kartu penuh di ponsel, tiga kartu di layar besar. */
 const lebarKartu = 'w-[80vw] shrink-0 snap-start sm:w-[46vw] lg:w-[368px]';
 
-export default function BerandaContainer() {
+export default async function BerandaContainer() {
+  const statistikDinamis = await muatStatistik();
+  const kontenPublik = await muatKontenDinamis();
+  
+  const daftarKegiatanDinamis = kontenPublik.filter((k) => k.jenis === 'kegiatan');
+  const daftarBeritaDinamis = kontenPublik.filter((k) => k.jenis === 'berita');
+
   return (
     <>
       {/* ---------- Hero ---------- */}
@@ -111,7 +116,7 @@ export default function BerandaContainer() {
           di layar besar (4 kolom) semua kecuali yang pertama.
         */}
         <dl className="mx-auto grid max-w-6xl grid-cols-2 gap-y-8 border-white/15 [&>*:nth-child(even)]:border-l lg:grid-cols-4 lg:[&>*]:border-l lg:[&>*:first-child]:border-l-0">
-          {statistik.map((item) => (
+          {statistikDinamis.map((item) => (
             <div key={item.id} className="border-white/15 text-center">
               <dd className="font-serif text-3xl font-bold text-[var(--color-accent)] sm:text-4xl">
                 {item.nilai}
@@ -142,7 +147,7 @@ export default function BerandaContainer() {
           </p>
 
           <Karusel label="Galeri kegiatan desa, dapat digeser ke samping">
-            {daftarKegiatan.map((item) => (
+            {daftarKegiatanDinamis.map((item) => (
               <li key={item.slug} data-kartu className={lebarKartu}>
                 <KartuKegiatan data={item} />
               </li>
@@ -159,7 +164,7 @@ export default function BerandaContainer() {
           </h2>
 
           <Karusel label="Berita desa terbaru, dapat digeser ke samping">
-            {daftarBerita.map((item) => (
+            {daftarBeritaDinamis.map((item) => (
               <li key={item.slug} data-kartu className={lebarKartu}>
                 <KartuBerita data={item} />
               </li>
