@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { kegiatan } from '../data';
@@ -84,7 +85,10 @@ export default function GaleriKegiatan() {
                             data-kartu
                             className="w-[80vw] shrink-0 snap-start sm:w-[46vw] lg:w-[368px]"
                         >
-                            <article className="relative aspect-[3/4] overflow-hidden rounded-lg transition-transform duration-300 ease-out hover:-translate-y-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                            <Link
+                                href={`/kegiatan-desa/${item.id}`}
+                                className="group relative block aspect-[3/4] overflow-hidden rounded-lg transition-transform duration-300 ease-out hover:-translate-y-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                            >
                                 {item.gambar.src ? (
                                     <Image
                                         src={item.gambar.src}
@@ -114,7 +118,7 @@ export default function GaleriKegiatan() {
                                         {item.judul}
                                     </h3>
                                 </div>
-                            </article>
+                            </Link>
                         </li>
                     ))}
                 </ul>

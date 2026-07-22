@@ -12,7 +12,7 @@ export type StatistikBeranda = {
     label: string;
 };
 
-/** Kartu kegiatan hanya tampilan, tidak menuju halaman mana pun. */
+/** Kartu kegiatan; `id` dipakai sebagai slug menuju /kegiatan-desa/[id]. */
 export type KartuKegiatan = {
     id: string;
     kategori: string;
