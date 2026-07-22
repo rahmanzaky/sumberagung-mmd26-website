@@ -177,6 +177,9 @@ export default async function BerandaContainer() {
         </div>
       </section>
 
+      {/* ---------- Berita desa ---------- */}
+      <BeritaDesaSection />
+
       {/* ---------- Video profil ---------- */}
       <section className="bg-[var(--color-primary)] px-6 pb-24 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-4xl text-center">
