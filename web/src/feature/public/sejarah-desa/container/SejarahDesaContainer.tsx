@@ -35,7 +35,7 @@ function FotoSejarah({ gambar }: { gambar: SejarahGambar }) {
 }
 
 export default async function SejarahDesaContainer() {
-  const sejarahTimeline = await muatTimeline();
+  const timeline = await muatTimeline();
 
   return (
     <section className="bg-[var(--color-primary-deepdark)] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
@@ -57,7 +57,8 @@ export default async function SejarahDesaContainer() {
           className="absolute inset-y-0 left-2 w-px bg-white/15 lg:left-1/2"
         />
 
-        {sejarahTimeline.map((item, index) => {
+        {timeline.map((item, index) => {
+          // Tata letak selang-seling: entri genap teksnya di kiri, foto di kanan.
           const teksDiKiri = index % 2 === 0;
 
           return (
