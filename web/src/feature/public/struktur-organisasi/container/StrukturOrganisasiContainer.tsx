@@ -1,4 +1,5 @@
-import { kelompokPerangkat, struktur, strukturHeader } from '../data';
+import { strukturHeader } from '../data';
+import { muatStruktur } from '../loader';
 import type { Perangkat } from '../types';
 import { KartuMendatar, KartuMenegak } from './KartuPerangkat';
 
@@ -46,7 +47,9 @@ function GrupKartu({
   );
 }
 
-export default function StrukturOrganisasiContainer() {
+export default async function StrukturOrganisasiContainer() {
+  const { struktur, kelompokPerangkat } = await muatStruktur();
+
   return (
     <section className="bg-[var(--color-primary-deepdark)] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       {/* Kepala halaman */}

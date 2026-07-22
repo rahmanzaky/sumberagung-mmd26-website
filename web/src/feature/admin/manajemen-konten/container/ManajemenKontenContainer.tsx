@@ -1,4 +1,14 @@
-export default function ManajemenKontenContainer() {
+import {
+  getKonten,
+  simpanKontenAction,
+  hapusKontenAction,
+  toggleStatusKontenAction,
+} from '@/repository/konten/action';
+import KontenManager from '../component/KontenManager';
+
+export default async function ManajemenKontenContainer() {
+  const data = await getKonten();
+
   return (
     <div>
       <div className="mb-6">
@@ -6,13 +16,16 @@ export default function ManajemenKontenContainer() {
           Manajemen Konten
         </h1>
         <p className="text-[var(--color-text-muted)] text-sm">
-          Kelola konten halaman profil, sejarah, dan berita/informasi publik.
+          Kelola berita dan kegiatan desa yang tampil di halaman publik.
         </p>
       </div>
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <p className="text-sm text-gray-500 italic">
-          Modul manajemen konten sedang dalam pengembangan...
-        </p>
+        <KontenManager
+          data={data}
+          onSimpan={simpanKontenAction}
+          onHapus={hapusKontenAction}
+          onToggleStatus={toggleStatusKontenAction}
+        />
       </div>
     </div>
   );

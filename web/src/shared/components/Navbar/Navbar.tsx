@@ -5,21 +5,36 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { ajukanSuratHref, loginHref, navLinks } from './nav-links';
+import { ajukanSuratHref, navLinks as defaultNavLinks } from './nav-links';
+import type { Pengaturan } from '@/repository/pengaturan/dto';
 
-export default function Navbar() {
+export default function Navbar({ pengaturan }: { pengaturan?: Pengaturan }) {
   const pathname = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [pathname]);
+  const namaSitus = pengaturan?.namaSitus || 'Sumberagung';
+  const logo = pengaturan?.urlLogo || '/sumberagung-logo.png';
+
+  const navLinks = pengaturan
+    ? [
+        { href: '/', label: pengaturan.navHome || 'Home' },
+        { href: '/profil-desa', label: pengaturan.navProfil || 'Profil Desa' },
+        { href: '/sejarah-desa', label: pengaturan.navSejarah || 'Sejarah Desa' },
+        { href: '/struktur-organisasi', label: pengaturan.navStruktur || 'Struktur Desa' },
+        { href: '/buku-tamu', label: pengaturan.navBukuTamu || 'Buku Tamu' },
+      ]
+    : defaultNavLinks;
+
+  // Store the pathname the menu was opened on. When pathname changes
+  // (navigation), the derived `isMenuOpen` becomes false automatically
+  // — no effect or ref needed.
+  const [menuOpenPathname, setMenuOpenPathname] = useState<string | null>(null);
+  const isMenuOpen = menuOpenPathname !== null && menuOpenPathname === pathname;
 
   useEffect(() => {
     if (!isMenuOpen) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setIsMenuOpen(false);
+      if (event.key === 'Escape') setMenuOpenPathname(null);
     };
 
     document.addEventListener('keydown', handleKeyDown);
@@ -31,8 +46,7 @@ export default function Navbar() {
     };
   }, [isMenuOpen]);
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
 
   const focusRing =
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-primary-dark)]';
@@ -47,7 +61,7 @@ export default function Navbar() {
           className={`flex shrink-0 items-center gap-2.5 rounded-md ${focusRing}`}
         >
           <Image
-            src="/sumberagung-logo.png"
+            src={logo}
             alt=""
             width={512}
             height={512}
@@ -55,7 +69,7 @@ export default function Navbar() {
             className="h-9 w-auto lg:h-11"
           />
           <span className="font-serif text-2xl font-semibold leading-[1.25] tracking-[-0.05em] text-[var(--color-accent)] lg:text-[2rem]">
-            Sumberagung
+            {namaSitus}
           </span>
         </Link>
 
@@ -70,14 +84,16 @@ export default function Navbar() {
                   <Link
                     href={link.href}
                     aria-current={active ? 'page' : undefined}
-                    className={`group relative block rounded-sm py-2 text-[13px] font-medium uppercase tracking-[0.14em] transition-colors ${focusRing} ${active ? 'text-white' : 'text-white/80 hover:text-white'
-                      }`}
+                    className={`group relative block rounded-sm py-2 text-[13px] font-medium uppercase tracking-[0.14em] transition-colors ${focusRing} ${
+                      active ? 'text-white' : 'text-white/80 hover:text-white'
+                    }`}
                   >
                     {link.label}
                     <span
                       aria-hidden="true"
-                      className={`absolute inset-x-0 -bottom-0.5 h-0.5 origin-left rounded-full bg-[var(--color-accent)] transition-transform duration-300 motion-reduce:transition-none ${active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                        }`}
+                      className={`absolute inset-x-0 -bottom-0.5 h-0.5 origin-left rounded-full bg-[var(--color-accent)] transition-transform duration-300 motion-reduce:transition-none ${
+                        active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                      }`}
                     />
                   </Link>
                 </li>
@@ -89,31 +105,18 @@ export default function Navbar() {
         {/* Aksi kanan (desktop) */}
         <div className="hidden shrink-0 items-center gap-6 lg:flex">
           <Link
-            href={loginHref}
-            className={`rounded-sm text-[13px] font-medium uppercase tracking-[0.14em] text-white/90 transition-colors hover:text-white ${focusRing}`}
-          >
-            Login
-          </Link>
-
-          <Link
             href={ajukanSuratHref}
             className={`inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] px-6 py-3 text-[13px] font-bold uppercase tracking-[0.12em] text-[var(--color-primary-dark)] shadow-md transition duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-accent-light)] hover:shadow-lg active:translate-y-0 motion-reduce:transform-none motion-reduce:transition-none ${focusRing}`}
           >
             Ajukan Surat
-            <Image
-              src="/ajukan-surat-logo.svg"
-              alt=""
-              width={18}
-              height={18}
-              className="h-4 w-4"
-            />
+            <Image src="/ajukan-surat-logo.svg" alt="" width={18} height={18} className="h-4 w-4" />
           </Link>
         </div>
 
         {/* Tombol menu mobile */}
         <button
           type="button"
-          onClick={() => setIsMenuOpen((open) => !open)}
+          onClick={() => setMenuOpenPathname((prev) => (prev !== null ? null : pathname))}
           aria-expanded={isMenuOpen}
           aria-controls="menu-mobile"
           aria-label={isMenuOpen ? 'Tutup menu' : 'Buka menu'}
@@ -121,16 +124,19 @@ export default function Navbar() {
         >
           <span aria-hidden="true" className="relative block h-4 w-6">
             <span
-              className={`absolute left-0 block h-0.5 w-6 rounded-full bg-current transition-transform duration-300 motion-reduce:transition-none ${isMenuOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0'
-                }`}
+              className={`absolute left-0 block h-0.5 w-6 rounded-full bg-current transition-transform duration-300 motion-reduce:transition-none ${
+                isMenuOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0'
+              }`}
             />
             <span
-              className={`absolute top-1/2 left-0 block h-0.5 w-6 -translate-y-1/2 rounded-full bg-current transition-opacity duration-200 motion-reduce:transition-none ${isMenuOpen ? 'opacity-0' : 'opacity-100'
-                }`}
+              className={`absolute top-1/2 left-0 block h-0.5 w-6 -translate-y-1/2 rounded-full bg-current transition-opacity duration-200 motion-reduce:transition-none ${
+                isMenuOpen ? 'opacity-0' : 'opacity-100'
+              }`}
             />
             <span
-              className={`absolute left-0 block h-0.5 w-6 rounded-full bg-current transition-transform duration-300 motion-reduce:transition-none ${isMenuOpen ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'bottom-0'
-                }`}
+              className={`absolute left-0 block h-0.5 w-6 rounded-full bg-current transition-transform duration-300 motion-reduce:transition-none ${
+                isMenuOpen ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'bottom-0'
+              }`}
             />
           </span>
         </button>
@@ -152,15 +158,17 @@ export default function Navbar() {
                   <Link
                     href={link.href}
                     aria-current={active ? 'page' : undefined}
-                    className={`flex items-center gap-3 rounded-md px-2 py-3.5 text-sm font-medium uppercase tracking-[0.14em] transition-colors ${focusRing} ${active
-                      ? 'text-[var(--color-accent)]'
-                      : 'text-white/85 hover:bg-white/5 hover:text-white'
-                      }`}
+                    className={`flex items-center gap-3 rounded-md px-2 py-3.5 text-sm font-medium uppercase tracking-[0.14em] transition-colors ${focusRing} ${
+                      active
+                        ? 'text-[var(--color-accent)]'
+                        : 'text-white/85 hover:bg-white/5 hover:text-white'
+                    }`}
                   >
                     <span
                       aria-hidden="true"
-                      className={`h-4 w-0.5 rounded-full transition-colors ${active ? 'bg-[var(--color-accent)]' : 'bg-transparent'
-                        }`}
+                      className={`h-4 w-0.5 rounded-full transition-colors ${
+                        active ? 'bg-[var(--color-accent)]' : 'bg-transparent'
+                      }`}
                     />
                     {link.label}
                   </Link>
@@ -170,13 +178,6 @@ export default function Navbar() {
           </ul>
 
           <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4">
-            <Link
-              href={loginHref}
-              className={`rounded-md px-2 py-3 text-sm font-medium uppercase tracking-[0.14em] text-white/85 transition-colors hover:bg-white/5 hover:text-white ${focusRing}`}
-            >
-              Login
-            </Link>
-
             <Link
               href={ajukanSuratHref}
               className={`inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-accent)] px-6 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-primary-dark)] shadow-md transition-colors hover:bg-[var(--color-accent-light)] ${focusRing}`}

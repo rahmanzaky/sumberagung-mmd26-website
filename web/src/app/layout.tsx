@@ -37,7 +37,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${fraunces.variable} ${jakarta.variable} h-full antialiased`}>
+    <html
+      lang="id"
+      className={`${inter.variable} ${lora.variable} ${fraunces.variable} ${jakarta.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col font-[var(--font-inter)]">{children}</body>
     </html>
   );

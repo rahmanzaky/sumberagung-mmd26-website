@@ -1,14 +1,15 @@
 import { ButtonHTMLAttributes } from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'gold';
 type ButtonSize = 'sm' | 'md';
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-light)]',
   secondary:
-    'bg-white text-[var(--color-primary)] border border-[var(--color-primary)] hover:bg-[var(--color-surface)]',
+    'bg-white text-[var(--color-primary)] border border-gray-200 hover:border-[var(--color-primary)] hover:bg-[var(--color-surface)]',
   ghost: 'bg-transparent text-[var(--color-text-muted)] hover:bg-gray-100',
   danger: 'bg-red-600 text-white hover:bg-red-700',
+  gold: 'bg-[var(--color-gold)] text-[var(--color-primary-dark)] font-semibold hover:bg-[var(--color-gold-light)]',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

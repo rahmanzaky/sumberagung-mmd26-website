@@ -31,6 +31,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files — .env.example boleh di-commit, .env.local TIDAK
+.env
 .env.local
 .env.*.local
 
