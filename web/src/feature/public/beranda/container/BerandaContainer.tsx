@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import BeritaDesaSection from '@/feature/public/berita-desa/container/BeritaDesaSection';
+
 import { hero, idBagianKegiatan, kegiatan, statistik, videoProfil } from '../data';
 import GaleriKegiatan from './GaleriKegiatan';
 import TombolGulir from './TombolGulir';
@@ -137,6 +139,9 @@ export default function BerandaContainer() {
           <GaleriKegiatan />
         </div>
       </section>
+
+      {/* ---------- Berita desa ---------- */}
+      <BeritaDesaSection />
 
       {/* ---------- Video profil ---------- */}
       <section className="bg-[var(--color-primary)] px-6 pb-24 sm:px-8 lg:px-12">
