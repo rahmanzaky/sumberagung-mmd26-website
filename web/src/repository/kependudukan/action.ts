@@ -12,48 +12,38 @@ import type {
   TingkatPendidikanInput,
 } from './dto';
 
+// Cache 60 detik untuk halaman publik. Setiap aksi admin memanggil
+// revalidatePath sehingga perubahan tetap langsung terlihat.
+const PUBLIK = { revalidate: 60 } as const;
+
 // Data contoh dipakai selama backend belum dikonfigurasi.
 // Angka di bawah ini ILUSTRATIF — ganti dengan data resmi desa sebelum publikasi.
 const dummyKependudukan: KependudukanTahun[] = [
-  {
-    tahun: 2026,
-    totalPenduduk: 4364,
-    lakiLaki: 2154,
-    perempuan: 2210,
-    jumlahKK: 1300,
-    jumlahRt: 28,
-    jumlahRw: 7,
-  },
-  {
-    tahun: 2025,
-    totalPenduduk: 4318,
-    lakiLaki: 2131,
-    perempuan: 2187,
-    jumlahKK: 1284,
-    jumlahRt: 28,
-    jumlahRw: 7,
-  },
-  {
-    tahun: 2024,
-    totalPenduduk: 4270,
-    lakiLaki: 2108,
-    perempuan: 2162,
-    jumlahKK: 1265,
-    jumlahRt: 27,
-    jumlahRw: 7,
-  },
+  { tahun: 2026, totalPenduduk: 4364, lakiLaki: 2154, perempuan: 2210, jumlahKK: 1300, jumlahRt: 28, jumlahRw: 7 },
+  { tahun: 2025, totalPenduduk: 4318, lakiLaki: 2131, perempuan: 2187, jumlahKK: 1284, jumlahRt: 28, jumlahRw: 7 },
+  { tahun: 2024, totalPenduduk: 4270, lakiLaki: 2108, perempuan: 2162, jumlahKK: 1265, jumlahRt: 27, jumlahRw: 7 },
 ];
 
-/** Semua tahun, terbaru dulu. */
+/** Semua tahun, terbaru dulu. Khusus panel admin — selalu data terbaru. */
 export async function getKependudukan(): Promise<KependudukanTahun[]> {
   const data = await ambilResource<KependudukanTahun[]>('kependudukan', dummyKependudukan);
   return [...data].sort((a, b) => b.tahun - a.tahun);
 }
 
-/** Statistik tahun terbaru — dipakai card angka di halaman Home publik (SK-F-02). */
+/**
+ * Statistik tahun terbaru — kartu angka di halaman Home publik (SK-F-02).
+ * Cache 60 detik dan tahan gagal: memakai fetch tersendiri (bukan lewat
+ * getKependudukan) agar tidak ikut no-store, dan jatuh ke data contoh
+ * bila backend lambat/error.
+ */
 export async function getKependudukanTerbaru(): Promise<KependudukanTahun | null> {
-  const semua = await getKependudukan();
-  return semua[0] ?? null;
+  try {
+    const data = await ambilResource<KependudukanTahun[]>('kependudukan', dummyKependudukan, PUBLIK);
+    return [...data].sort((a, b) => b.tahun - a.tahun)[0] ?? null;
+  } catch (error) {
+    console.error('Gagal memuat kependudukan, memakai data contoh:', error);
+    return [...dummyKependudukan].sort((a, b) => b.tahun - a.tahun)[0] ?? null;
+  }
 }
 
 export async function simpanKependudukanAction(input: KependudukanTahun) {
@@ -67,57 +57,19 @@ export async function simpanKependudukanAction(input: KependudukanTahun) {
 // ==========================================================================
 // Distribusi Usia & Gender + Tingkat Pendidikan (halaman Demografi)
 // Disimpan sebagai daftar berurut, terpisah dari statistik per tahun.
+//
+// Kedua tabel ini dipakai halaman publik DAN admin. Keduanya diberi cache
+// 60 detik karena jarang berubah; aksi admin memanggil revalidasiDemografi
+// sehingga suntingan tetap langsung tampil.
 // ==========================================================================
 
 const dummyDistribusiUsia: DistribusiUsia[] = [
-  {
-    id: 'du-001',
-    rentang: '0 - 5 Tahun',
-    wilayah: 'Sumberagung',
-    lakiLaki: 10,
-    perempuan: 17,
-    urutan: 1,
-  },
-  {
-    id: 'du-002',
-    rentang: '6 - 12 Tahun',
-    wilayah: 'Sumberagung',
-    lakiLaki: 11,
-    perempuan: 21,
-    urutan: 2,
-  },
-  {
-    id: 'du-003',
-    rentang: '13 - 17 Tahun',
-    wilayah: 'Sumberagung',
-    lakiLaki: 12,
-    perempuan: 15,
-    urutan: 3,
-  },
-  {
-    id: 'du-004',
-    rentang: '18 - 25 Tahun',
-    wilayah: 'Sumberagung',
-    lakiLaki: 22,
-    perempuan: 19,
-    urutan: 4,
-  },
-  {
-    id: 'du-005',
-    rentang: '26 - 45 Tahun',
-    wilayah: 'Sumberagung',
-    lakiLaki: 45,
-    perempuan: 42,
-    urutan: 5,
-  },
-  {
-    id: 'du-006',
-    rentang: '46+ Tahun',
-    wilayah: 'Sumberagung',
-    lakiLaki: 38,
-    perempuan: 35,
-    urutan: 6,
-  },
+  { id: 'du-001', rentang: '0 - 5 Tahun', wilayah: 'Sumberagung', lakiLaki: 10, perempuan: 17, urutan: 1 },
+  { id: 'du-002', rentang: '6 - 12 Tahun', wilayah: 'Sumberagung', lakiLaki: 11, perempuan: 21, urutan: 2 },
+  { id: 'du-003', rentang: '13 - 17 Tahun', wilayah: 'Sumberagung', lakiLaki: 12, perempuan: 15, urutan: 3 },
+  { id: 'du-004', rentang: '18 - 25 Tahun', wilayah: 'Sumberagung', lakiLaki: 22, perempuan: 19, urutan: 4 },
+  { id: 'du-005', rentang: '26 - 45 Tahun', wilayah: 'Sumberagung', lakiLaki: 45, perempuan: 42, urutan: 5 },
+  { id: 'du-006', rentang: '46+ Tahun', wilayah: 'Sumberagung', lakiLaki: 38, perempuan: 35, urutan: 6 },
 ];
 
 const dummyPendidikan: TingkatPendidikan[] = [
@@ -128,13 +80,23 @@ const dummyPendidikan: TingkatPendidikan[] = [
 ];
 
 export async function getDistribusiUsia(): Promise<DistribusiUsia[]> {
-  const data = await ambilResource<DistribusiUsia[]>('distribusiUsia', dummyDistribusiUsia);
-  return [...data].sort((a, b) => a.urutan - b.urutan);
+  try {
+    const data = await ambilResource<DistribusiUsia[]>('distribusiUsia', dummyDistribusiUsia, PUBLIK);
+    return [...data].sort((a, b) => a.urutan - b.urutan);
+  } catch (error) {
+    console.error('Gagal memuat distribusi usia, memakai data contoh:', error);
+    return [...dummyDistribusiUsia].sort((a, b) => a.urutan - b.urutan);
+  }
 }
 
 export async function getTingkatPendidikan(): Promise<TingkatPendidikan[]> {
-  const data = await ambilResource<TingkatPendidikan[]>('pendidikan', dummyPendidikan);
-  return [...data].sort((a, b) => a.urutan - b.urutan);
+  try {
+    const data = await ambilResource<TingkatPendidikan[]>('pendidikan', dummyPendidikan, PUBLIK);
+    return [...data].sort((a, b) => a.urutan - b.urutan);
+  } catch (error) {
+    console.error('Gagal memuat tingkat pendidikan, memakai data contoh:', error);
+    return [...dummyPendidikan].sort((a, b) => a.urutan - b.urutan);
+  }
 }
 
 function revalidasiDemografi() {

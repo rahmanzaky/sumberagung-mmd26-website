@@ -52,19 +52,38 @@ const dummyKonten: Konten[] = [
   },
 ];
 
-/** Semua konten, terbaru dulu. Khusus panel admin. */
+/**
+ * Pembantu internal. `opsi.revalidate` diisi untuk pemakaian publik
+ * (boleh basi 60 detik) dan dikosongkan untuk admin (harus terbaru).
+ */
+async function ambilKonten(opsi?: { revalidate?: number }): Promise<Konten[]> {
+  const data = await ambilResource<Konten[]>('konten', dummyKonten, opsi);
+  return [...data].sort((a, b) =>
+    b.tanggalKegiatan.localeCompare(a.tanggalKegiatan),
+  );
+}
+
+/** Semua konten, terbaru dulu. Khusus panel admin — selalu data terbaru. */
 export async function getKonten(): Promise<Konten[]> {
-  const data = await ambilResource<Konten[]>('konten', dummyKonten);
-  return [...data].sort((a, b) => b.tanggalKegiatan.localeCompare(a.tanggalKegiatan));
+  return ambilKonten();
 }
 
 /**
- * Konten untuk halaman publik — hanya yang berstatus "Tampil" (SK-F-12).
- * Filter dilakukan di server supaya draf tidak pernah terkirim ke browser.
+ * Konten untuk halaman publik — hanya berstatus "Tampil" (SK-F-12).
+ * Disegarkan tiap 60 detik, bukan tiap kunjungan, dan tahan gagal:
+ * bila backend lambat/error, memakai data contoh alih-alih menumbangkan
+ * halaman. Filter status tetap di server agar draf tak terkirim ke browser.
  */
 export async function getKontenPublik(batas = 6): Promise<Konten[]> {
-  const semua = await getKonten();
-  return semua.filter((k) => k.status === 'Tampil').slice(0, batas);
+  try {
+    const semua = await ambilKonten({ revalidate: 60 });
+    return semua.filter((k) => k.status === 'Tampil').slice(0, batas);
+  } catch (error) {
+    console.error('Gagal memuat konten publik, memakai data contoh:', error);
+    return dummyKonten
+      .filter((k) => k.status === 'Tampil')
+      .slice(0, batas);
+  }
 }
 
 async function postKonten(body: object) {
