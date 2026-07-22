@@ -3,7 +3,7 @@ import { getPengajuanSurat } from '@/repository/pengajuan-surat/action';
 import { getRekapKehadiran, getAbsensi } from '@/repository/presensi/action';
 import { requireAdmin } from '@/lib/guard';
 import StatCard from '../component/StatCard';
-import { IconMasuk, IconPengguna, IconPeringatan } from '@/shared/components/icons';
+import { IconMasuk, IconPengguna, IconSurat } from '@/shared/components/icons';
 import NoticeAbsen from '../component/NoticeAbsen';
 import PengajuanTerbaru from '../component/PengajuanTerbaru';
 import KunjunganChart from '../component/KunjunganChart';
@@ -31,10 +31,9 @@ export default async function DashboardContainer() {
   const absenSaya = absensi.find((a) => a.username === saya.username && a.tanggal === hariIni);
   const pengajuanBaru = pengajuan.filter((p) => p.status === 'Baru').length;
   const kehadiran = `${rekap.sudahAbsen}/${rekap.totalPerangkat}`;
-  // Peringatan sistem = hal yang butuh perhatian admin hari ini:
-  // perangkat yang belum absen + pengajuan surat yang masih berstatus "Baru".
-  const belumAbsen = rekap.totalPerangkat - rekap.sudahAbsen;
-  const peringatanSistem = belumAbsen + pengajuanBaru;
+  // Surat "Diproses" = sedang ditindaklanjuti & warga menunggu diselesaikan.
+  // Status ini disjoint dari "Baru" (kartu pertama), jadi tidak tumpang tindih.
+  const suratDiproses = pengajuan.filter((p) => p.status === 'Diproses').length;
 
   return (
     <div>
@@ -69,10 +68,10 @@ export default async function DashboardContainer() {
           tone="gold"
         />
         <StatCard
-          icon={<IconPeringatan className="w-5 h-5" />}
-          label="Peringatan Sistem Baru"
-          value={peringatanSistem}
-          topLabel="Penting"
+          icon={<IconSurat className="w-5 h-5" />}
+          label="Surat Sedang Diproses"
+          value={suratDiproses}
+          topLabel="Tindak Lanjut"
           tone="danger"
         />
       </div>
