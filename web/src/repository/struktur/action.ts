@@ -10,29 +10,31 @@ import type { Jabatan, JabatanInput } from './dto';
 // CATATAN: mockup menulis Slamet Riyadi = Kepala Desa; sebagian data contoh
 // modul lain menulis Sutrisno. Angka & nama di sini mengikuti mockup dan perlu
 // diverifikasi ke data resmi desa (docs/cms-gap-analysis.md §5).
+// Data contoh (mode dev tanpa backend). Skema slot: 1=Kepala Desa, 2=BPD,
+// 3=Sekretaris, 4=Kasi, 5=Kaur, 6=Kamituwo. Sama dengan yang diisikan ke Sheet.
 const dummyStruktur: Jabatan[] = [
   {
     id: 'jb-001',
-    namaJabatan: 'BPD',
-    namaPejabat: 'Badan Permusyawaratan Desa',
+    namaJabatan: 'Kepala Desa',
+    namaPejabat: 'Slamet Riyadi',
     urlFoto: '',
     level: 1,
     urutan: 1,
   },
   {
     id: 'jb-002',
-    namaJabatan: 'Kepala Desa',
-    namaPejabat: 'Slamet Riyadi',
+    namaJabatan: 'BPD',
+    namaPejabat: 'Badan Permusyawaratan Desa',
     urlFoto: '',
-    level: 1,
-    urutan: 2,
+    level: 2,
+    urutan: 1,
   },
   {
     id: 'jb-003',
     namaJabatan: 'Sekretaris Desa',
     namaPejabat: 'Dewi Lestari',
     urlFoto: '',
-    level: 2,
+    level: 3,
     urutan: 1,
   },
   {
@@ -40,7 +42,7 @@ const dummyStruktur: Jabatan[] = [
     namaJabatan: 'Kasi Pelayanan',
     namaPejabat: 'Agus Setiawan',
     urlFoto: '',
-    level: 3,
+    level: 4,
     urutan: 1,
   },
   {
@@ -48,7 +50,7 @@ const dummyStruktur: Jabatan[] = [
     namaJabatan: 'Kasi Pemerintahan',
     namaPejabat: 'Andi Pratama',
     urlFoto: '',
-    level: 3,
+    level: 4,
     urutan: 2,
   },
   {
@@ -56,7 +58,7 @@ const dummyStruktur: Jabatan[] = [
     namaJabatan: 'Kasi Kesejahteraan',
     namaPejabat: 'Sutrisno',
     urlFoto: '',
-    level: 3,
+    level: 4,
     urutan: 3,
   },
   {
@@ -64,31 +66,31 @@ const dummyStruktur: Jabatan[] = [
     namaJabatan: 'Kaur Keuangan',
     namaPejabat: 'Rina Wulandari',
     urlFoto: '',
-    level: 3,
-    urutan: 4,
+    level: 5,
+    urutan: 1,
   },
   {
     id: 'jb-008',
     namaJabatan: 'Kaur Perencanaan',
     namaPejabat: 'Novi Rahmawati',
     urlFoto: '',
-    level: 3,
-    urutan: 5,
+    level: 5,
+    urutan: 2,
   },
   {
     id: 'jb-009',
     namaJabatan: 'Kaur Tata Usaha dan Umum',
     namaPejabat: 'Lilis Setyowati',
     urlFoto: '',
-    level: 3,
-    urutan: 6,
+    level: 5,
+    urutan: 3,
   },
   {
     id: 'jb-010',
     namaJabatan: 'Kamituwo Dusun Sumbersoko',
     namaPejabat: 'Budi Santoso',
     urlFoto: '',
-    level: 4,
+    level: 6,
     urutan: 1,
   },
   {
@@ -96,7 +98,7 @@ const dummyStruktur: Jabatan[] = [
     namaJabatan: 'Kamituwo Dusun Panggungwinong',
     namaPejabat: 'Mulyono',
     urlFoto: '',
-    level: 4,
+    level: 6,
     urutan: 2,
   },
 ];

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import type { Jabatan, JabatanInput } from '@/repository/struktur/dto';
-import { LEVEL_JABATAN } from '@/repository/struktur/dto';
+import { KELOMPOK_JABATAN, SLOT } from '@/repository/struktur/dto';
 import Button from '@/shared/components/ui/Button';
 import Spinner from '@/shared/components/ui/Spinner';
 import ImageUploadField from '@/shared/components/cms/ImageUploadField';
@@ -11,11 +11,11 @@ const inputCls =
   'mt-1 w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]';
 
 function kosong(): JabatanInput {
-  return { namaJabatan: '', namaPejabat: '', urlFoto: '', level: 3, urutan: 0 };
+  return { namaJabatan: '', namaPejabat: '', urlFoto: '', level: SLOT.KASI, urutan: 0 };
 }
 
-function labelLevel(level: number) {
-  return LEVEL_JABATAN.find((l) => l.nilai === level)?.label ?? `Level ${level}`;
+function labelKelompok(level: number) {
+  return KELOMPOK_JABATAN.find((l) => l.nilai === level)?.label ?? `Slot ${level}`;
 }
 
 type Props = {
@@ -123,14 +123,14 @@ export default function StrukturManager({ data, onSimpan, onHapus, onPindah }: P
             </div>
             <label className="block">
               <span className="text-xs font-medium text-[var(--color-text-muted)]">
-                Tingkatan (Level)
+                Kelompok / Posisi di Bagan
               </span>
               <select
                 value={draft.level}
                 onChange={(e) => setDraft({ ...draft, level: Number(e.target.value) })}
                 className={inputCls}
               >
-                {LEVEL_JABATAN.map((l) => (
+                {KELOMPOK_JABATAN.map((l) => (
                   <option key={l.nilai} value={l.nilai}>
                     {l.label}
                   </option>
@@ -166,7 +166,7 @@ export default function StrukturManager({ data, onSimpan, onHapus, onPindah }: P
           {[...perLevel.entries()].map(([level, orang]) => (
             <div key={level}>
               <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-2">
-                {labelLevel(level)}
+                {labelKelompok(level)}
               </p>
               <ul className="space-y-2">
                 {orang.map((j, i) => (
