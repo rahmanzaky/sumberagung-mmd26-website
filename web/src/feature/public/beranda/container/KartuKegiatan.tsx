@@ -6,7 +6,7 @@ import type { Konten } from '@/feature/public/konten/types';
 export default function KartuKegiatan({ data }: { data: Konten }) {
     return (
         <Link
-            href={`/detail/${data.slug}`}
+            href={`/kegiatan-desa/${data.id ?? data.slug}`}
             className="group relative block aspect-[3/4] overflow-hidden rounded-lg transition-transform duration-300 ease-out hover:-translate-y-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-primary)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
         >
             {data.gambar.src ? (
