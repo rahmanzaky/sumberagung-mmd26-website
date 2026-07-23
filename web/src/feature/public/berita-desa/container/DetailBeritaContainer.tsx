@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
 
+import { muatBerita } from '../loader';
 import { daftarBerita } from '../data';
 import type { Berita, KotakFitur } from '../types';
 import BagikanBerita from './BagikanBerita';
@@ -139,8 +140,8 @@ function GambarBerita({
     );
 }
 
-export default function DetailBeritaContainer({ id }: { id: string }) {
-    const berita = daftarBerita.find((item) => item.id === id);
+export default async function DetailBeritaContainer({ id }: { id: string }) {
+    const berita = await muatBerita(id);
     if (!berita) notFound();
 
     const beritaTerkait = ambilBeritaTerkait(berita);

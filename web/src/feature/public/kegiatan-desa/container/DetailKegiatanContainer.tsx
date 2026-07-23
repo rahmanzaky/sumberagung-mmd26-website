@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
 
+import { muatKegiatan } from '../loader';
 import { daftarKegiatan } from '../data';
 import type { DampakHasil, Gambar } from '../types';
 import HeroKegiatan from './HeroKegiatan';
@@ -193,8 +194,8 @@ function FotoProfil({ foto }: { foto: Gambar }) {
     );
 }
 
-export default function DetailKegiatanContainer({ id }: { id: string }) {
-    const kegiatan = daftarKegiatan.find((item) => item.id === id);
+export default async function DetailKegiatanContainer({ id }: { id: string }) {
+    const kegiatan = await muatKegiatan(id);
     if (!kegiatan) notFound();
 
     return (

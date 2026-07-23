@@ -27,7 +27,6 @@ function tag(resource: string) {
 export function backendAktif(): boolean {
   return !!BASE;
 }
-
 type OpsiAmbil = {
   /**
    * Detik penyegaran cache. Diisi untuk halaman publik agar tidak
@@ -51,7 +50,7 @@ export async function ambilResource<T>(
 
   const res = await fetch(url.toString(), {
     ...(opsi.revalidate
-      ? { next: { revalidate: opsi.revalidate } }
+      ? { next: { revalidate: opsi.revalidate, tags: [tag(resource)] } }
       : { cache: 'no-store' as const }),
   });
 

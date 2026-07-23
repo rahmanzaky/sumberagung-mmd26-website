@@ -1,10 +1,12 @@
 import Link from 'next/link';
 
-import { daftarBerita } from '../data';
+import { muatSemuaBerita } from '../loader';
 import BeritaCard from './BeritaCard';
 import KepalaBeritaDesa from './KepalaBeritaDesa';
 
-export default function DaftarBeritaContainer() {
+export default async function DaftarBeritaContainer() {
+    const daftar = await muatSemuaBerita();
+
     return (
         <>
             <KepalaBeritaDesa />
@@ -22,11 +24,17 @@ export default function DaftarBeritaContainer() {
                         <span className="font-medium text-[var(--color-accent)]">Berita Desa</span>
                     </nav>
 
-                    <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                        {daftarBerita.map((item) => (
-                            <BeritaCard key={item.id} berita={item} />
-                        ))}
-                    </div>
+                    {daftar.length === 0 ? (
+                        <p className="mt-12 text-center text-sm text-white/60">
+                            Belum ada berita yang dipublikasikan.
+                        </p>
+                    ) : (
+                        <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                            {daftar.map((item) => (
+                                <BeritaCard key={item.id} berita={item} />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </section>
         </>
