@@ -1,10 +1,8 @@
 'use server';
 
+import { buatPengajuanSuratAction } from '@/repository/pengajuan-surat/action';
 import { jenisSurat as daftarJenisSurat } from './data';
-import type {
-    PengajuanSuratFormState,
-    PengajuanSuratPayload,
-} from './types';
+import type { PengajuanSuratFormState } from './types';
 
 /**
  * Menormalkan nomor WhatsApp ke format 62xxxxxxxxxx.
@@ -67,43 +65,20 @@ export async function submitPengajuanSurat(
         };
     }
 
-    // --- Kirim ke Apps Script ---
-    const endpoint = process.env.APPS_SCRIPT_SURAT_URL;
-
-    if (!endpoint) {
-        return {
-            status: 'error',
-            message: 'Konfigurasi server belum lengkap. Hubungi pengelola website.',
-            errors: {},
-        };
-    }
-
-    const payload: PengajuanSuratPayload = {
-        nama,
-        nik,
-        alamat,
-        whatsapp,
-        jenisSurat,
-        maksud,
-    };
-
+    // --- Simpan lewat backend gabungan (resource 'surat', aksi 'buat') ---
+    // Pemetaan field ke skema backend: whatsapp→noWa, maksud→keperluan.
+    // Apps Script menyimpan baris berstatus "Baru" & mengirim email notifikasi
+    // ke perangkat desa. Pengajuan di luar jam kerja tetap diterima & masuk
+    // antrian (SRS: diproses hari kerja berikutnya), jadi tidak diblokir di sini.
     try {
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            cache: 'no-store',
+        await buatPengajuanSuratAction({
+            nama,
+            nik,
+            alamat,
+            noWa: whatsapp,
+            jenisSurat,
+            keperluan: maksud,
         });
-
-        if (!response.ok) {
-            throw new Error(`Apps Script menjawab ${response.status}`);
-        }
-
-        const hasil = (await response.json()) as { success?: boolean };
-
-        if (hasil.success === false) {
-            throw new Error('Apps Script menolak data.');
-        }
 
         return {
             status: 'success',
