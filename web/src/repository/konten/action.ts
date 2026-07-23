@@ -4,7 +4,6 @@ import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/guard';
 import { ambilResource, kirimResource } from '@/lib/apps-script';
 import { daftarKegiatan } from '@/feature/public/kegiatan-desa/data';
-import { daftarBerita } from '@/feature/public/berita-desa/data';
 import type { Konten, KontenInput } from './dto';
 
 /**
@@ -29,16 +28,6 @@ const dummyKonten: Konten[] = [
     urlFoto: k.gambar.src,
     status: 'Tampil' as const,
     dibuatOleh: k.fasilitator,
-  })),
-  ...daftarBerita.map((b) => ({
-    id: b.id,
-    judul: b.judul,
-    deskripsi: b.excerpt,
-    tanggalKegiatan: b.tanggal,
-    kategori: b.kategori,
-    urlFoto: b.gambar.src,
-    status: 'Tampil' as const,
-    dibuatOleh: b.penulis,
   })),
 ];
 
