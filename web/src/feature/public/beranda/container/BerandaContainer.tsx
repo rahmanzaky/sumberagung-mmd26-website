@@ -1,13 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
-import { berita, hero, idBagianKegiatan, kegiatan, videoProfil } from '../data';
-import { muatStatistik, muatKontenDinamis } from '../loader';
-import KartuBerita from './KartuBerita';
-import KartuKegiatan from './KartuKegiatan';
-import Karusel from './Karusel';
+import { hero, idBagianKegiatan, videoProfil } from '../data';
 import TombolGulir from './TombolGulir';
 import VideoProfil from './VideoProfil';
+import StatistikDinamis from '../component/StatistikDinamis';
+import StatistikSkeleton from '../component/StatistikSkeleton';
+import BerandaKontenDinamis from '../component/BerandaKontenDinamis';
+import BerandaKontenSkeleton from '../component/BerandaKontenSkeleton';
 
 function IkonPanahKanan({ className }: { className?: string }) {
   return (
@@ -43,20 +44,7 @@ function IkonPutarKecil({ className }: { className?: string }) {
   );
 }
 
-/** Lebar kartu: satu kartu penuh di ponsel, tiga kartu di layar besar. */
-const lebarKartu = 'w-[80vw] shrink-0 snap-start sm:w-[46vw] lg:w-[368px]';
-
-export default async function BerandaContainer() {
-  // Dua pemuatan ini tidak saling bergantung, jadi dijalankan bersamaan.
-  // Berurutan: total = jumlah kedua waktu. Paralel: total = yang terlama.
-  const [statistikDinamis, kontenPublik] = await Promise.all([
-    muatStatistik(),
-    muatKontenDinamis(),
-  ]);
-
-  const daftarKegiatanDinamis = kontenPublik.filter((k) => k.jenis === 'kegiatan');
-  const daftarBeritaDinamis = kontenPublik.filter((k) => k.jenis === 'berita');
-
+export default function BerandaContainer() {
   return (
     <>
       {/* ---------- Hero ---------- */}
@@ -115,77 +103,15 @@ export default async function BerandaContainer() {
         aria-label="Statistik Desa Sumberagung"
         className="bg-[var(--color-primary-dark)] px-6 py-8 sm:px-8 lg:px-12"
       >
-        {/*
-          Pembatas antar kolom: di layar kecil (2 kolom) hanya kolom genap,
-          di layar besar (4 kolom) semua kecuali yang pertama.
-        */}
-        <dl className="mx-auto grid max-w-6xl grid-cols-2 gap-y-8 border-white/15 [&>*:nth-child(even)]:border-l lg:grid-cols-4 lg:[&>*]:border-l lg:[&>*:first-child]:border-l-0">
-          {statistikDinamis.map((item) => (
-            <div key={item.id} className="border-white/15 text-center">
-              <dd className="font-serif text-3xl font-bold text-[var(--color-accent)] sm:text-4xl">
-                {item.nilai}
-              </dd>
-              <dt className="mt-2 text-[11px] font-medium uppercase tracking-[0.16em] text-white/80">
-                {item.label}
-              </dt>
-            </div>
-          ))}
-        </dl>
+        <Suspense fallback={<StatistikSkeleton />}>
+          <StatistikDinamis />
+        </Suspense>
       </section>
 
-      {/* ---------- Kegiatan ---------- */}
-      <section
-        id={idBagianKegiatan}
-        className="scroll-mt-24 bg-[var(--color-primary)] px-6 py-20 sm:px-8 lg:px-12 lg:pt-24"
-      >
-        <div className="mx-auto max-w-6xl">
-          <h2 className="font-serif text-4xl font-bold leading-tight tracking-[-0.02em] sm:text-5xl">
-            <span className="block text-white">{kegiatan.judulAtas}</span>
-            <span className="block text-[var(--color-accent)]">
-              {kegiatan.judulBawah}
-            </span>
-          </h2>
-
-          <p className="mt-5 max-w-md text-sm leading-relaxed text-white/70">
-            {kegiatan.deskripsi}
-          </p>
-
-          <Karusel label="Galeri kegiatan desa, dapat digeser ke samping">
-            {daftarKegiatanDinamis.map((item) => (
-              <li key={item.slug} data-kartu className={lebarKartu}>
-                <KartuKegiatan data={item} />
-              </li>
-            ))}
-          </Karusel>
-        </div>
-      </section>
-
-      {/* ---------- Berita ---------- */}
-      <section className="bg-[var(--color-primary)] px-6 pb-20 sm:px-8 lg:px-12 lg:pb-24">
-        <div className="mx-auto max-w-6xl">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="font-serif text-3xl font-bold tracking-[-0.02em] text-white sm:text-4xl">
-              {berita.judul}
-            </h2>
-
-            <Link
-              href="/berita-desa"
-              className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-accent)] transition-colors hover:text-[var(--color-accent-light)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
-            >
-              Lihat Semua Berita
-              <IkonPanahKanan className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 motion-reduce:transition-none" />
-            </Link>
-          </div>
-
-          <Karusel label="Berita desa terbaru, dapat digeser ke samping">
-            {daftarBeritaDinamis.map((item) => (
-              <li key={item.slug} data-kartu className={lebarKartu}>
-                <KartuBerita data={item} />
-              </li>
-            ))}
-          </Karusel>
-        </div>
-      </section>
+      {/* ---------- Kegiatan & Berita ---------- */}
+      <Suspense fallback={<BerandaKontenSkeleton />}>
+        <BerandaKontenDinamis />
+      </Suspense>
 
       {/* ---------- Video profil ---------- */}
       <section className="bg-[var(--color-primary)] px-6 pb-24 sm:px-8 lg:px-12">

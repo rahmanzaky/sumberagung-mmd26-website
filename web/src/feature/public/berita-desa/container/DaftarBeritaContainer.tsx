@@ -1,12 +1,11 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 
-import { muatDaftarBerita } from '../loader';
-import BeritaCard from './BeritaCard';
 import KepalaBeritaDesa from './KepalaBeritaDesa';
+import BeritaGridDinamis from '../component/BeritaGridDinamis';
+import BeritaGridSkeleton from '../component/BeritaGridSkeleton';
 
-export default async function DaftarBeritaContainer() {
-    const daftarBerita = await muatDaftarBerita();
-
+export default function DaftarBeritaContainer() {
     return (
         <>
             <KepalaBeritaDesa />
@@ -24,17 +23,9 @@ export default async function DaftarBeritaContainer() {
                         <span className="font-medium text-[var(--color-accent)]">Berita Desa</span>
                     </nav>
 
-                    {daftarBerita.length === 0 ? (
-                        <p className="mt-10 text-center text-sm text-white/60">
-                            Belum ada berita untuk ditampilkan.
-                        </p>
-                    ) : (
-                        <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                            {daftarBerita.map((item) => (
-                                <BeritaCard key={item.id} berita={item} />
-                            ))}
-                        </div>
-                    )}
+                    <Suspense fallback={<BeritaGridSkeleton />}>
+                        <BeritaGridDinamis />
+                    </Suspense>
                 </div>
             </section>
         </>

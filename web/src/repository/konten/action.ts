@@ -29,6 +29,28 @@ const dummyKonten: Konten[] = [
     status: 'Tampil' as const,
     dibuatOleh: k.fasilitator,
   })),
+  {
+    id: 'kt-1784699960278', // User's requested ID
+    judul: 'Aplikasi Pelayanan Desa Resmi Diluncurkan',
+    deskripsi:
+      'Pemerintah Desa Sumberagung resmi meluncurkan aplikasi pelayanan terpadu berbasis web untuk mempermudah administrasi warga.',
+    tanggalKegiatan: '10 Okt 2023',
+    kategori: 'Berita',
+    urlFoto: '',
+    status: 'Tampil' as const,
+    dibuatOleh: 'Admin Desa',
+  },
+  {
+    id: 'sukses-panen-raya-hasil-pertanian-organik',
+    judul: 'Sukses Panen Raya: Hasil Pertanian Organik Meningkat Pesat',
+    deskripsi:
+      'Kelompok tani Desa Sumberagung mencatatkan hasil panen raya padi organik yang melimpah pada musim ini.',
+    tanggalKegiatan: '08 Okt 2023',
+    kategori: 'Pertanian',
+    urlFoto: '',
+    status: 'Tampil' as const,
+    dibuatOleh: 'Admin Desa',
+  },
 ];
 
 /**

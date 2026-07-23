@@ -1,7 +1,10 @@
 import { getKontenPublik } from '@/repository/konten/action';
 import type { Konten } from '@/repository/konten/dto';
 import { urlFotoLangsung } from '@/lib/foto';
+import { daftarKegiatan } from '@/feature/public/kegiatan-desa/data';
 import type { Berita } from './types';
+
+const idKegiatan = new Set(daftarKegiatan.map((k) => k.id));
 
 // Memetakan konten CMS (Sheet "Konten") → Berita untuk halaman publik.
 // "Berita" = konten Tampil yang BUKAN kegiatan (kategori tak mengandung
@@ -36,7 +39,7 @@ function keBerita(k: Konten): Berita {
 }
 
 function isBerita(k: Konten): boolean {
-  return !k.kategori.toLowerCase().includes('kegiatan');
+  return !idKegiatan.has(k.id);
 }
 
 /** Semua berita publik (Tampil), terbaru dulu (getKontenPublik sudah terurut). */
