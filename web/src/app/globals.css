@@ -1,29 +1,56 @@
 @import 'tailwindcss';
 
-@theme {
-  /* Primary: hijau tua pemerintahan */
-  --color-primary: #2d6a4f;
-  --color-primary-light: #40916c;
-  --color-primary-dark: #1b4332;
+@theme inline {
+  --font-sans: var(--font-jakarta);
+  --font-serif: var(--font-fraunces);
 
-  /* Accent: hijau muda */
-  --color-accent: #74c69d;
-  --color-accent-light: #b7e4c7;
-
-  /* Earth: coklat tanah */
-  --color-earth: #b5835a;
-  --color-earth-light: #d4a373;
-
-  /* Surface: latar netral krem */
-  --color-surface: #f8f5f0;
-  --color-surface-dark: #ede9e2;
-
-  /* Text */
-  --color-text-base: #1a1a1a;
-  --color-text-muted: #6b7280;
+  --font-lora: var(--font-fraunces);
 }
 
-body {
-  background-color: var(--color-surface);
-  color: var(--color-text-base);
+@theme {
+  /* Biru Utama */
+  --color-primary: #1e3f8f;
+  --color-primary-dark: #142a6b;
+  --color-primary-light: #2f55a7;
+  --color-primary-deepdark: #1a2d5d;
+
+  /* Emas / Aksen */
+  --color-accent: #f7c948;
+  --color-accent-light: #fbd97a;
+  --color-accent-dark: #d9a92b;
+
+  /* Alias untuk komponen lama yang memakai nama gold */
+  --color-gold: var(--color-accent);
+  --color-gold-dark: var(--color-accent-dark);
+
+  /* Latar belakang */
+  --color-surface: #f8fafc; /* Slate 50 - Latar utama admin yang lembut */
+  --color-surface-deep: #111f47; /* Navy gelap untuk sidebar/footer */
+
+  /* Teks sekunder */
+  --color-text-muted: #64748b;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.sembunyikan-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sembunyikan-scrollbar::-webkit-scrollbar {
+  display: none;
 }

@@ -1,12 +1,5 @@
-import Navbar from '@/components/public/Navbar';
-import Footer from '@/components/public/Footer';
+import PublicLayout from '@/layout/public-layout';
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Navbar />
-      <main className="flex-1">{children}</main>
-      <Footer />
-    </>
-  );
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return <PublicLayout>{children}</PublicLayout>;
 }

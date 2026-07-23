@@ -1,33 +1,45 @@
-# Google Apps Script — Panduan Deploy Manual
+# Google Apps Script — Backend Desa Sumberagung
 
-File `.gs` di folder ini adalah source backup untuk dua Web App yang digunakan sebagai REST API backend.
+Backend memakai **satu Web App** (`Code.gs`) yang merutekan semua endpoint lewat
+parameter `resource`. Sebelumnya ada 17 file terpisah; kini digabung supaya
+cukup **sekali deploy** dan **satu URL**.
 
 ## File
 
 | File | Fungsi |
 |---|---|
-| `bukuTamu.gs` | Endpoint Buku Tamu Digital |
-| `pengajuanSurat.gs` | Endpoint Pengajuan Surat + Update Status |
+| `setup.gs` | Utility sekali-jalan: membuat semua tab + baris header. Dijalankan dari dalam Spreadsheet (Extensions → Apps Script). |
+| `Code.gs` | Backend gabungan: satu `doGet`/`doPost` untuk semua resource + upload Drive + email. Ini yang di-deploy sebagai Web App. |
 
-## Cara Deploy
+## Cara pakai
 
-1. Buka [script.google.com](https://script.google.com)
-2. Klik **New project**
-3. Paste isi file `.gs` ke editor
-4. Klik **Deploy > New deployment**
-5. Pilih type: **Web App**
-6. Atur:
-   - **Execute as**: Me (akun Google desa)
-   - **Who has access**: Anyone
-7. Klik **Deploy** → salin URL Web App yang muncul
-8. Tempel URL tersebut ke file `.env.local` di folder `web/`:
-   ```
-   APPS_SCRIPT_BUKU_TAMU_URL=https://script.google.com/macros/s/...
-   APPS_SCRIPT_SURAT_URL=https://script.google.com/macros/s/...
-   ```
+Panduan lengkap (langkah-demi-langkah, Bahasa Indonesia) ada di
+[`docs/panduan-deploy-appscript.md`](../docs/panduan-deploy-appscript.md).
 
-## Catatan
+Ringkas:
 
-- Setiap kali kode `.gs` diubah, harus buat **New deployment** (bukan edit deployment lama)
-- URL Web App berubah setiap deployment baru — update `.env.local` jika URL berubah
-- Format request/response harus sesuai dengan `docs/api-contract.md`
+1. Buat Spreadsheet → Extensions → Apps Script → tempel `setup.gs` → run
+   `setupSpreadsheet` (membuat 16 tab).
+2. Buat folder Drive untuk foto, catat ID-nya.
+3. script.google.com → New project → tempel `Code.gs` → isi `SPREADSHEET_ID`,
+   `FOLDER_ID`, `EMAIL_DESA` → **Deploy → New deployment → Web App**
+   (Execute as: **Me**, Who has access: **Anyone**).
+4. Salin URL `/exec` ke `web/.env.local` pada `APPS_SCRIPT_URL`.
+
+> `APPS_SCRIPT_URL` kosong → seluruh modul memakai **data contoh** (website tetap
+> jalan tanpa backend).
+
+## Kontrak
+
+- **GET** `?resource=<key>` → `{ data: ... }`
+- **POST** `{ "resource":"<key>", "aksi":"...", ... }` → `{ success, ... }`
+
+Daftar `resource` & bentuk datanya ada di objek `RESOURCES` dalam `Code.gs` dan
+di [`docs/api-contract.md`](../docs/api-contract.md). Resource khusus:
+`upload` (simpan foto ke Drive), `surat` (buat + email / update status),
+`absensi` (absen 1×/hari).
+
+## Update kode
+
+Setelah mengubah `Code.gs`: **Deploy → Manage deployments → Edit → Version: New
+version → Deploy.** URL tetap sama, jadi `.env.local` tidak perlu diubah.
