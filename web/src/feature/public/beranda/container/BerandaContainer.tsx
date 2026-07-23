@@ -47,9 +47,13 @@ function IkonPutarKecil({ className }: { className?: string }) {
 const lebarKartu = 'w-[80vw] shrink-0 snap-start sm:w-[46vw] lg:w-[368px]';
 
 export default async function BerandaContainer() {
-  const statistikDinamis = await muatStatistik();
-  const kontenPublik = await muatKontenDinamis();
-  
+  // Dua pemuatan ini tidak saling bergantung, jadi dijalankan bersamaan.
+  // Berurutan: total = jumlah kedua waktu. Paralel: total = yang terlama.
+  const [statistikDinamis, kontenPublik] = await Promise.all([
+    muatStatistik(),
+    muatKontenDinamis(),
+  ]);
+
   const daftarKegiatanDinamis = kontenPublik.filter((k) => k.jenis === 'kegiatan');
   const daftarBeritaDinamis = kontenPublik.filter((k) => k.jenis === 'berita');
 

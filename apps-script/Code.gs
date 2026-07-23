@@ -340,3 +340,83 @@ function doPost(e) {
     return json_({ success: false, error: String(err) });
   }
 }
+
+// =====================================================================
+// TAMBALAN KEAMANAN untuk Code.gs
+// Tujuan: resource berisi data pribadi hanya bisa dibaca oleh server
+// Next.js, bukan siapa pun yang menebak URL.
+//
+// Cara pasang: tempel blok ini ke Code.gs, lalu ubah tiga tempat yang
+// ditandai LANGKAH 2, 3, dan 4 di bawah.
+// =====================================================================
+
+
+// ------------------- LANGKAH 1: tempel blok ini -------------------
+
+// Isi dengan string acak panjang. Contoh cara membuatnya di terminal:
+//   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+// Nilai yang sama dipasang di web/.env.local sebagai APPS_SCRIPT_TOKEN.
+// Selama masih kosong, pemeriksaan dilewati supaya tidak memutus
+// pengembangan yang sedang berjalan.
+const TOKEN_INTERNAL = '509c43c9db87986f37f158fd494da9ee5e041aee75593302643a2c17c82936c4';
+
+// Resource yang boleh dibaca tanpa token: seluruhnya konten halaman publik.
+const RESOURCE_PUBLIK = [
+  'sejarah',
+  'misi',
+  'struktur',
+  'konten',
+  'kependudukan',
+  'distribusiUsia',
+  'pendidikan',
+  'profilVisi',
+  'geografi',
+  'pengaturan',
+];
+
+function butuhToken_(resource) {
+  return RESOURCE_PUBLIK.indexOf(resource) === -1;
+}
+
+function tokenValid_(tokenMasuk) {
+  if (!TOKEN_INTERNAL) return true; // belum diaktifkan
+  return String(tokenMasuk || '') === TOKEN_INTERNAL;
+}
+
+function tolak_() {
+  return json_({ success: false, error: 'Akses ditolak.' });
+}
+
+
+// ------------------- LANGKAH 2: di dalam doGet -------------------
+//
+// Setelah baris:
+//     if (!cfg) return json_({ success: false, error: 'resource tidak dikenal: ' + r });
+//
+// tambahkan:
+//
+//     if (butuhToken_(r) && !tokenValid_(e.parameter.token)) return tolak_();
+
+
+// ------------------- LANGKAH 3: di dalam doPost -------------------
+//
+// Setelah baris:
+//     const r = body.resource;
+//
+// tambahkan:
+//
+//     if (butuhToken_(r) && !tokenValid_(body.token)) return tolak_();
+//
+// Catatan: 'upload' juga tidak ada di RESOURCE_PUBLIK, jadi ikut terlindungi.
+
+
+// ------------------- LANGKAH 4: perbaiki kvUpsert_ -------------------
+//
+// Fungsi kvUpsert_ menulis SEMUA field body ke sheet. Tanpa perubahan,
+// token akan ikut tersimpan sebagai baris. Ubah baris:
+//
+//     if (key === 'resource' || key === 'aksi') return;
+//
+// menjadi:
+//
+//     if (key === 'resource' || key === 'aksi' || key === 'token') return;
