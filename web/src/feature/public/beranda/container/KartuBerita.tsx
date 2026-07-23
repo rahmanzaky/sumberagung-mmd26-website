@@ -58,7 +58,7 @@ export default function KartuBerita({ data }: { data: Konten }) {
             sehingga area kliknya luas tetapi tetap satu tautan.
           */}
                     <Link
-                        href={`/detail/${data.slug}`}
+                        href={`/berita-desa/${data.id ?? data.slug}`}
                         className="after:absolute after:inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-primary)]"
                     >
                         {data.judul}

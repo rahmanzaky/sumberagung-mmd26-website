@@ -14,11 +14,6 @@ import { revalidateTag } from 'next/cache';
 const BASE = process.env.APPS_SCRIPT_URL;
 const TOKEN = process.env.APPS_SCRIPT_TOKEN;
 
-// Umur cache maksimal (detik) sebelum data dianggap basi & disegarkan. Sejalan
-// dengan SRS SK-NF-04 (jeda maksimal 60 detik). Penulisan tetap menyegarkan
-// seketika lewat revalidateTag, jadi angka ini hanya batas atas saat tak ada edit.
-const UMUR_CACHE = 60;
-
 /** Tag cache untuk satu resource — dipakai membaca & membatalkan bersama. */
 function tag(resource: string) {
   return `apps-script:${resource}`;
@@ -27,7 +22,6 @@ function tag(resource: string) {
 export function backendAktif(): boolean {
   return !!BASE;
 }
-
 type OpsiAmbil = {
   /**
    * Detik penyegaran cache. Diisi untuk halaman publik agar tidak
@@ -51,7 +45,7 @@ export async function ambilResource<T>(
 
   const res = await fetch(url.toString(), {
     ...(opsi.revalidate
-      ? { next: { revalidate: opsi.revalidate } }
+      ? { next: { revalidate: opsi.revalidate, tags: [tag(resource)] } }
       : { cache: 'no-store' as const }),
   });
 

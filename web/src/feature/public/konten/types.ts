@@ -1,6 +1,6 @@
 /**
  * Konten bersama untuk kegiatan dan berita.
- * Keduanya memakai satu rute detail: /detail/[slug]
+ * Kegiatan -> /kegiatan-desa/[id], berita -> /berita-desa/[id].
  */
 
 export type Gambar = {
@@ -12,7 +12,9 @@ export type Gambar = {
 export type JenisKonten = 'kegiatan' | 'berita';
 
 export type Konten = {
-    /** Bagian akhir URL, mis. /detail/rembuk-warga */
+    /** Pengenal utama, dipakai pada rute detail. */
+    id?: string;
+    /** Cadangan bila id belum tersedia. */
     slug: string;
     jenis: JenisKonten;
     /** Label kecil di atas judul, mis. "Musyawarah". */

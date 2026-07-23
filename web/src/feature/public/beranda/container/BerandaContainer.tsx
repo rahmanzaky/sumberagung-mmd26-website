@@ -163,9 +163,19 @@ export default async function BerandaContainer() {
       {/* ---------- Berita ---------- */}
       <section className="bg-[var(--color-primary)] px-6 pb-20 sm:px-8 lg:px-12 lg:pb-24">
         <div className="mx-auto max-w-6xl">
-          <h2 className="font-serif text-3xl font-bold tracking-[-0.02em] text-white sm:text-4xl">
-            {berita.judul}
-          </h2>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 className="font-serif text-3xl font-bold tracking-[-0.02em] text-white sm:text-4xl">
+              {berita.judul}
+            </h2>
+
+            <Link
+              href="/berita-desa"
+              className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-accent)] transition-colors hover:text-[var(--color-accent-light)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
+            >
+              Lihat Semua Berita
+              <IkonPanahKanan className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 motion-reduce:transition-none" />
+            </Link>
+          </div>
 
           <Karusel label="Berita desa terbaru, dapat digeser ke samping">
             {daftarBeritaDinamis.map((item) => (

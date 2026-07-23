@@ -3,53 +3,43 @@
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/guard';
 import { ambilResource, kirimResource } from '@/lib/apps-script';
+import { daftarKegiatan } from '@/feature/public/kegiatan-desa/data';
+import { daftarBerita } from '@/feature/public/berita-desa/data';
 import type { Konten, KontenInput } from './dto';
 
-// Data contoh dipakai selama backend belum dikonfigurasi.
+/**
+ * Data contoh (mode pengembangan, saat APPS_SCRIPT_URL kosong).
+ *
+ * Diturunkan langsung dari data statis kegiatan & berita agar `id`-nya
+ * SAMA dengan yang dicari halaman detail (DetailKegiatanContainer /
+ * DetailBeritaContainer). Dengan begitu, klik kartu di beranda → halaman
+ * detail ketemu datanya, tidak lagi 404.
+ *
+ * CATATAN untuk mode BACKEND: halaman detail & daftar berita masih membaca
+ * data statis ini, bukan dari Apps Script. Selama itu, id dari backend
+ * (mis. "kt-001") tidak akan cocok. Lihat catatan di bawah file.
+ */
 const dummyKonten: Konten[] = [
-  {
-    id: 'kt-001',
-    judul: 'Musyawarah Desa Penetapan APBDes 2026',
-    deskripsi:
-      'Musyawarah desa dihadiri BPD, perangkat desa, dan perwakilan warga untuk menetapkan Anggaran Pendapatan dan Belanja Desa tahun 2026.',
-    tanggalKegiatan: '2026-07-15',
-    kategori: 'Kegiatan',
-    urlFoto: '',
-    status: 'Tampil',
-    dibuatOleh: 'endang',
-  },
-  {
-    id: 'kt-002',
-    judul: 'Posyandu Balita Dusun Krajan',
-    deskripsi:
-      'Kegiatan penimbangan dan pemberian vitamin A untuk balita bersama kader Posyandu dan bidan desa.',
-    tanggalKegiatan: '2026-07-10',
-    kategori: 'Kesehatan',
-    urlFoto: '',
-    status: 'Tampil',
-    dibuatOleh: 'yuliana',
-  },
-  {
-    id: 'kt-003',
-    judul: 'Pembangunan Jalan Usaha Tani Tahap II',
-    deskripsi:
-      'Pengerasan jalan usaha tani sepanjang 800 meter yang menghubungkan Dusun Sumber dengan area persawahan.',
-    tanggalKegiatan: '2026-07-05',
-    kategori: 'Pembangunan',
-    urlFoto: '',
-    status: 'Tampil',
-    dibuatOleh: 'slamet',
-  },
-  {
-    id: 'kt-004',
-    judul: 'Persiapan Lomba Desa Tingkat Kabupaten',
-    deskripsi: 'Rapat koordinasi persiapan lomba desa. Draf materi masih disusun.',
-    tanggalKegiatan: '2026-07-20',
-    kategori: 'Pengumuman',
-    urlFoto: '',
-    status: 'Tersembunyi',
-    dibuatOleh: 'sutrisno',
-  },
+  ...daftarKegiatan.map((k) => ({
+    id: k.id,
+    judul: k.judul,
+    deskripsi: k.deskripsi.join('\n'),
+    tanggalKegiatan: k.tanggal,
+    kategori: k.kategori,
+    urlFoto: k.gambar.src,
+    status: 'Tampil' as const,
+    dibuatOleh: k.fasilitator,
+  })),
+  ...daftarBerita.map((b) => ({
+    id: b.id,
+    judul: b.judul,
+    deskripsi: b.excerpt,
+    tanggalKegiatan: b.tanggal,
+    kategori: b.kategori,
+    urlFoto: b.gambar.src,
+    status: 'Tampil' as const,
+    dibuatOleh: b.penulis,
+  })),
 ];
 
 /**
@@ -58,9 +48,7 @@ const dummyKonten: Konten[] = [
  */
 async function ambilKonten(opsi?: { revalidate?: number }): Promise<Konten[]> {
   const data = await ambilResource<Konten[]>('konten', dummyKonten, opsi);
-  return [...data].sort((a, b) =>
-    b.tanggalKegiatan.localeCompare(a.tanggalKegiatan),
-  );
+  return [...data].sort((a, b) => b.tanggalKegiatan.localeCompare(a.tanggalKegiatan));
 }
 
 /** Semua konten, terbaru dulu. Khusus panel admin — selalu data terbaru. */
@@ -70,9 +58,7 @@ export async function getKonten(): Promise<Konten[]> {
 
 /**
  * Konten untuk halaman publik — hanya berstatus "Tampil" (SK-F-12).
- * Disegarkan tiap 60 detik, bukan tiap kunjungan, dan tahan gagal:
- * bila backend lambat/error, memakai data contoh alih-alih menumbangkan
- * halaman. Filter status tetap di server agar draf tak terkirim ke browser.
+ * Disegarkan tiap 60 detik dan tahan gagal.
  */
 export async function getKontenPublik(batas = 6): Promise<Konten[]> {
   try {
@@ -80,9 +66,7 @@ export async function getKontenPublik(batas = 6): Promise<Konten[]> {
     return semua.filter((k) => k.status === 'Tampil').slice(0, batas);
   } catch (error) {
     console.error('Gagal memuat konten publik, memakai data contoh:', error);
-    return dummyKonten
-      .filter((k) => k.status === 'Tampil')
-      .slice(0, batas);
+    return dummyKonten.filter((k) => k.status === 'Tampil').slice(0, batas);
   }
 }
 
