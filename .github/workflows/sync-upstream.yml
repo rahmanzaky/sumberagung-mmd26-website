@@ -1,0 +1,17 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Menjalankan sync otomatis setiap hari jam 00:00 UTC
+  workflow_dispatch: # Mengizinkan sync manual melalui tombol "Run workflow" di tab Actions
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Diperlukan untuk push perubahan ke fork ini
+    steps:
+      - name: Sync dengan repository asal (upstream)
+        run: gh repo sync ${{ github.repository }} --source rahmanzaky/sumberagung-mmd26-website
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

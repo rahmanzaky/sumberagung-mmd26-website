@@ -66,16 +66,20 @@ export default async function StrukturOrganisasiContainer() {
         {/* ---------- Bagan untuk layar besar ---------- */}
         <div className="hidden lg:flex lg:flex-col lg:items-center">
           {/* Kepala Desa di tengah, BPD menempel di kiri */}
-          <div className="relative flex w-full justify-center">
-            <KartuMendatar data={struktur.kepalaDesa} />
-
-            <div className="absolute right-1/2 top-1/2 mr-[120px] flex -translate-y-1/2 items-center">
+          <div className="flex w-full items-center justify-center">
+            <div className="flex flex-1 items-center justify-end">
               <KartuMendatar data={struktur.bpd} />
               <div
                 aria-hidden="true"
-                className="w-14 border-t-2 border-dashed border-[var(--color-accent)]/70"
+                className="mx-5 w-10 border-t-2 border-dashed border-[var(--color-accent)]/70"
               />
             </div>
+
+            <div className="shrink-0">
+              <KartuMendatar data={struktur.kepalaDesa} />
+            </div>
+
+            <div className="flex-1" />
           </div>
 
           {/* Turun dari Kepala Desa menuju titik percabangan */}
@@ -130,7 +134,13 @@ export default async function StrukturOrganisasiContainer() {
               <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--color-accent)]">
                 {kelompok.label}
               </h2>
-              <div className="mt-4 flex flex-col gap-3 border-l-2 border-[var(--color-accent)]/40 pl-4">
+              <div
+                className={`mt-4 flex flex-col gap-3 border-l-2 pl-4 ${
+                  kelompok.label === 'Badan Permusyawaratan Desa'
+                    ? 'border-dashed border-[var(--color-accent)]/70'
+                    : 'border-[var(--color-accent)]/40'
+                }`}
+              >
                 {kelompok.anggota.map((orang) => (
                   <KartuMendatar key={orang.id} data={orang} />
                 ))}

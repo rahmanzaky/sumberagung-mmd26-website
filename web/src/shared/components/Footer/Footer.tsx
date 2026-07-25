@@ -92,7 +92,7 @@ export default function Footer({ pengaturan }: { pengaturan?: Pengaturan }) {
   const year = new Date().getFullYear();
 
   const namaSitus = pengaturan?.namaSitus || 'Sumberagung';
-  const logo = pengaturan?.urlLogo || '/sumberagung-logo.png';
+  const logo = pengaturan?.urlLogo || '/desa_sumberagung_logo.jpeg';
   const namaDesa = pengaturan?.namaDesa || 'Sumberagung';
 
   const quickLinks = pengaturan
@@ -134,7 +134,13 @@ export default function Footer({ pengaturan }: { pengaturan?: Pengaturan }) {
               aria-label="Beranda Desa Sumberagung"
               className={`inline-flex items-center gap-2.5 rounded-md ${focusRing}`}
             >
-              <Image src={logo} alt="" width={512} height={512} className="h-9 w-auto" />
+              <Image
+                src={logo}
+                alt=""
+                width={512}
+                height={512}
+                className="h-9 w-9 rounded-full object-cover bg-white"
+              />
               <span className="font-serif text-2xl font-semibold leading-[1.25] tracking-[-0.05em] text-[var(--color-accent)] lg:text-3xl">
                 {namaSitus}
               </span>

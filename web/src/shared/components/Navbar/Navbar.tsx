@@ -12,7 +12,7 @@ export default function Navbar({ pengaturan }: { pengaturan?: Pengaturan }) {
   const pathname = usePathname();
 
   const namaSitus = pengaturan?.namaSitus || 'Sumberagung';
-  const logo = pengaturan?.urlLogo || '/sumberagung-logo.png';
+  const logo = pengaturan?.urlLogo || '/desa_sumberagung_logo.jpeg';
 
   const navLinks = pengaturan
     ? [
@@ -66,7 +66,7 @@ export default function Navbar({ pengaturan }: { pengaturan?: Pengaturan }) {
             width={512}
             height={512}
             priority
-            className="h-9 w-auto lg:h-11"
+            className="h-9 w-9 rounded-full object-cover lg:h-11 lg:w-11 bg-white"
           />
           <span className="font-serif text-2xl font-semibold leading-[1.25] tracking-[-0.05em] text-[var(--color-accent)] lg:text-[2rem]">
             {namaSitus}

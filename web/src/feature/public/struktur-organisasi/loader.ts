@@ -56,7 +56,8 @@ export async function muatStruktur(): Promise<{
   };
 
   const kelompokPerangkat: KelompokPerangkat[] = [
-    { label: 'Pimpinan Desa', anggota: [s.kepalaDesa, s.bpd] },
+    { label: 'Pimpinan Desa', anggota: [s.kepalaDesa] },
+    { label: 'Badan Permusyawaratan Desa', anggota: [s.bpd] },
     { label: 'Sekretariat', anggota: [s.sekretaris] },
     { label: 'Kepala Seksi', anggota: s.kasi },
     { label: 'Kepala Urusan', anggota: s.kaur },

@@ -1,32 +1,13 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { Suspense } from 'react';
 
-import { hero, idBagianKegiatan, videoProfil } from '../data';
-import TombolGulir from './TombolGulir';
+import { videoProfil } from '../data';
 import VideoProfil from './VideoProfil';
 import StatistikDinamis from '../component/StatistikDinamis';
 import StatistikSkeleton from '../component/StatistikSkeleton';
 import BerandaKontenDinamis from '../component/BerandaKontenDinamis';
 import BerandaKontenSkeleton from '../component/BerandaKontenSkeleton';
-
-function IkonPanahKanan({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M5 12h14" />
-      <path d="m13 6 6 6-6 6" />
-    </svg>
-  );
-}
+import BerandaHero from './BerandaHero';
 
 function IkonPutarKecil({ className }: { className?: string }) {
   return (
@@ -48,55 +29,7 @@ export default function BerandaContainer() {
   return (
     <>
       {/* ---------- Hero ---------- */}
-      <section className="relative isolate min-h-[560px] overflow-hidden lg:min-h-[640px]">
-        <Image
-          src={hero.gambar.src}
-          alt={hero.gambar.alt}
-          fill
-          priority
-          sizes="100vw"
-          className="-z-10 object-cover"
-        />
-        {/* Peredup agar teks tetap terbaca di atas langit terang */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-gradient-to-r from-black/55 via-black/25 to-transparent"
-        />
-
-        <div className="mx-auto flex min-h-[560px] max-w-6xl flex-col justify-center px-6 py-20 sm:px-8 lg:min-h-[640px] lg:px-12">
-          <p className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-accent)]">
-            <span aria-hidden="true" className="h-px w-8 bg-[var(--color-accent)]" />
-            {hero.label}
-          </p>
-
-          <h1 className="mt-6 max-w-2xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.02em] text-white sm:text-5xl lg:text-6xl">
-            {hero.judulAwal}
-            <em className="text-[var(--color-accent)]">{hero.judulSorot}</em>
-            {hero.judulAkhir}
-          </h1>
-
-          <p className="mt-6 max-w-lg text-sm leading-relaxed text-white/85 sm:text-base">
-            {hero.deskripsi}
-          </p>
-
-          <div className="mt-9 flex flex-wrap gap-4">
-            <Link
-              href={hero.tombolUtama.href}
-              className="inline-flex items-center gap-2 rounded-md bg-[var(--color-accent)] px-6 py-3.5 text-xs font-bold uppercase tracking-[0.12em] text-[var(--color-primary-dark)] transition-colors hover:bg-[var(--color-accent-light)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-            >
-              {hero.tombolUtama.label}
-              <IkonPanahKanan className="h-4 w-4" />
-            </Link>
-
-            <TombolGulir
-              targetId={idBagianKegiatan}
-              className="inline-flex items-center rounded-md border border-[var(--color-accent)] px-6 py-3.5 text-xs font-bold uppercase tracking-[0.12em] text-[var(--color-accent)] transition-colors hover:bg-[var(--color-accent)]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-            >
-              {hero.tombolKedua.label}
-            </TombolGulir>
-          </div>
-        </div>
-      </section>
+      <BerandaHero />
 
       {/* ---------- Statistik ---------- */}
       <section
@@ -112,6 +45,93 @@ export default function BerandaContainer() {
       <Suspense fallback={<BerandaKontenSkeleton />}>
         <BerandaKontenDinamis />
       </Suspense>
+
+      {/* ---------- Kolaborasi Logo ---------- */}
+      <section className="relative overflow-hidden bg-[var(--color-primary-dark)] px-6 py-20 sm:px-8 lg:px-12 lg:py-28">
+        {/* Latar Belakang Dekoratif */}
+        <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 opacity-20 blur-[100px]">
+          <div className="h-[400px] w-[800px] rounded-full bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-primary-light)]" />
+        </div>
+
+        <div className="relative mx-auto max-w-5xl">
+          <div className="text-center">
+            <p className="flex items-center justify-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-accent)]">
+              <span aria-hidden="true" className="h-px w-6 bg-[var(--color-accent)]" />
+              Sinergi Membangun Desa
+              <span aria-hidden="true" className="h-px w-6 bg-[var(--color-accent)]" />
+            </p>
+            <h2 className="mt-5 font-serif text-3xl font-bold tracking-[-0.02em] text-white sm:text-4xl lg:text-5xl">
+              Identitas & Kolaborasi
+            </h2>
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-white/70 sm:text-base">
+              Kolaborasi harmonis antara Tim Mahasiswa Membangun Desa (MMD) 
+              dengan Pemerintah Desa Sumberagung, bersatu padu memajukan potensi dan kesejahteraan desa.
+            </p>
+          </div>
+
+          <div className="mt-16 flex flex-col items-center justify-center gap-8 md:flex-row md:gap-12 lg:gap-16">
+            
+            {/* Card Logo KKN */}
+            <div className="group relative w-full max-w-xs shrink-0 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-md transition duration-500 hover:-translate-y-2 hover:bg-white/10">
+              <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-b from-white/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              
+              <div className="relative mx-auto h-36 w-36 sm:h-44 sm:w-44">
+                <Image
+                  src="/sumberagung-logo.png"
+                  alt="Logo MMD Kelompok 48"
+                  fill
+                  className="object-contain drop-shadow-xl transition-transform duration-700 group-hover:scale-110"
+                />
+              </div>
+              
+              <div className="mt-8 text-center">
+                <h3 className="font-serif text-xl font-semibold text-white">MMD KELOMPOK 48</h3>
+                <p className="mt-2 text-xs font-medium uppercase tracking-widest text-[var(--color-accent)]">
+                  FILKOM UB
+                </p>
+              </div>
+            </div>
+
+            {/* Ikon Penghubung (Plus) */}
+            <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[#d4af37] shadow-[0_0_30px_rgba(212,175,55,0.4)] md:h-16 md:w-16">
+              <svg 
+                className="h-6 w-6 text-[var(--color-primary-dark)] md:h-8 md:w-8" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth={2.5} 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </div>
+
+            {/* Card Logo Desa */}
+            <div className="group relative w-full max-w-xs shrink-0 rounded-3xl border border-[var(--color-accent)]/30 bg-white/5 p-8 backdrop-blur-md transition duration-500 hover:-translate-y-2 hover:bg-white/10 hover:shadow-[0_0_40px_rgba(212,175,55,0.15)]">
+              <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-b from-[var(--color-accent)]/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              
+              <div className="relative mx-auto h-36 w-36 overflow-hidden rounded-full border-4 border-white sm:h-44 sm:w-44">
+                <Image
+                  src="/desa_sumberagung_logo.jpeg"
+                  alt="Logo Desa Sumberagung"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+              </div>
+              
+              <div className="mt-8 text-center">
+                <h3 className="font-serif text-xl font-semibold text-white">Desa Sumberagung</h3>
+                <p className="mt-2 text-xs font-medium uppercase tracking-widest text-[var(--color-accent)]">
+                  Pemerintah Desa
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
 
       {/* ---------- Video profil ---------- */}
       <section className="bg-[var(--color-primary)] px-6 pb-24 sm:px-8 lg:px-12">
