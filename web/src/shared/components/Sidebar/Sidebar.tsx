@@ -101,9 +101,9 @@ export default function Sidebar({ role }: { role: Role }) {
       {/* Wordmark */}
       <div className="px-5 py-5 border-b border-white/10 flex items-center gap-3">
         <img
-          src="/sumberagung-logo.png"
+          src="/desa_sumberagung_logo.jpeg"
           alt="Logo Sumberagung"
-          className="w-8 h-8 object-contain"
+          className="w-8 h-8 object-contain rounded-full"
         />
         <p className="font-[var(--font-lora)] text-xl font-bold text-[var(--color-gold)]">
           Sumberagung
