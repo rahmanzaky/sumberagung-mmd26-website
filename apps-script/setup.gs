@@ -66,6 +66,7 @@ const SHEET_SEJARAH = 'Sejarah';
 const SHEET_STRUKTUR = 'Struktur';
 const SHEET_DISTRIBUSI_USIA = 'DistribusiUsia';
 const SHEET_PENDIDIKAN = 'Pendidikan';
+const SHEET_HERO_SLIDER = 'HeroSlider';
 
 const HEADERS_KV = ['kunci', 'nilai'];
 const HEADERS_MISI = ['id', 'teks', 'urutan'];
@@ -73,6 +74,7 @@ const HEADERS_SEJARAH = ['id', 'era', 'subjudul', 'narasi', 'urlFoto', 'sisi', '
 const HEADERS_STRUKTUR = ['id', 'namaJabatan', 'namaPejabat', 'urlFoto', 'level', 'urutan'];
 const HEADERS_DISTRIBUSI_USIA = ['id', 'rentang', 'wilayah', 'lakiLaki', 'perempuan', 'urutan'];
 const HEADERS_PENDIDIKAN = ['id', 'jenjang', 'persentase', 'urutan'];
+const HEADERS_HERO_SLIDER = ['id', 'judulAwal', 'judulSorot', 'judulAkhir', 'deskripsi', 'urlGambar', 'tombolTeks', 'tombolTautan', 'urutan'];
 
 function setupSpreadsheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -92,6 +94,7 @@ function setupSpreadsheet() {
   ensureSheet_(ss, SHEET_STRUKTUR, HEADERS_STRUKTUR);
   ensureSheet_(ss, SHEET_DISTRIBUSI_USIA, HEADERS_DISTRIBUSI_USIA);
   ensureSheet_(ss, SHEET_PENDIDIKAN, HEADERS_PENDIDIKAN);
+  ensureSheet_(ss, SHEET_HERO_SLIDER, HEADERS_HERO_SLIDER);
 
   isiPengaturanAwal_(ss);
   SpreadsheetApp.getActiveSpreadsheet().toast('Setup selesai — tab & header siap.', 'Sumberagung', 5);

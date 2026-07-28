@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 
 import { submitPengajuanSurat } from '../actions';
 import {
@@ -113,6 +113,8 @@ export default function PengajuanSuratPublicContainer() {
     submitPengajuanSurat,
     initialFormState,
   );
+  
+  const [selectedJenis, setSelectedJenis] = useState('');
 
   const { errors } = state;
   const jenisSuratKosong = jenisSurat.length === 0;
@@ -217,7 +219,7 @@ export default function PengajuanSuratPublicContainer() {
                 <FieldError id="whatsapp-error" pesan={errors.whatsapp} />
               </div>
 
-              <div>
+              <div className={selectedJenis === 'Lainnya' ? 'col-span-full sm:col-span-1' : ''}>
                 <label htmlFor="jenisSurat" className={labelClass}>
                   Jenis Surat
                 </label>
@@ -225,7 +227,8 @@ export default function PengajuanSuratPublicContainer() {
                   <select
                     id="jenisSurat"
                     name="jenisSurat"
-                    defaultValue=""
+                    value={selectedJenis}
+                    onChange={(e) => setSelectedJenis(e.target.value)}
                     disabled={jenisSuratKosong}
                     aria-invalid={Boolean(errors.jenisSurat)}
                     aria-describedby={
@@ -249,6 +252,23 @@ export default function PengajuanSuratPublicContainer() {
                   />
                 </div>
                 <FieldError id="jenisSurat-error" pesan={errors.jenisSurat} />
+                
+                {selectedJenis === 'Lainnya' && (
+                  <div className="mt-4 animate-in fade-in slide-in-from-top-2">
+                    <label htmlFor="jenisSuratLainnya" className={labelClass}>
+                      Sebutkan Jenis Surat
+                    </label>
+                    <input
+                      id="jenisSuratLainnya"
+                      name="jenisSuratLainnya"
+                      type="text"
+                      maxLength={100}
+                      placeholder="Contoh: Surat Izin Keramaian"
+                      aria-invalid={Boolean(errors.jenisSurat)}
+                      className={`mt-2 ${fieldClass(Boolean(errors.jenisSurat))}`}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

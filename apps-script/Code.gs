@@ -13,7 +13,7 @@
 // Header tiap tab dibuat oleh setup.gs (jalankan sekali dari dalam Spreadsheet).
 
 // ====== KONFIGURASI (isi sebelum deploy) ======
-const SPREADSHEET_ID = ''; // ID Spreadsheet database (bagian /d/<ID>/edit)
+const SPREADSHEET_ID = '11h2POo-ZcLlnRpU9t1nMU65fBWGQVe7nLU3wa4o3U3I'; // ID Spreadsheet database (bagian /d/<ID>/edit)
 const FOLDER_ID = ''; // ID folder Drive untuk foto (upload)
 const EMAIL_DESA = 'desasumberagung@gmail.com'; // tujuan notifikasi surat baru
 const PUBLIK_DEFAULT = false; // sharing default file upload bila tak disebut
@@ -37,6 +37,7 @@ const RESOURCES = {
   profilVisi: { sheet: 'ProfilVisi', type: 'kv' },
   geografi: { sheet: 'Geografi', type: 'kv' },
   pengaturan: { sheet: 'Pengaturan', type: 'kv' },
+  heroSlider: { sheet: 'HeroSlider', type: 'list', key: 'id', prefix: 'hs-', num: ['urutan'] },
 };
 
 // ====== UTILITAS ======
@@ -372,6 +373,7 @@ const RESOURCE_PUBLIK = [
   'profilVisi',
   'geografi',
   'pengaturan',
+  'heroSlider',
 ];
 
 function butuhToken_(resource) {

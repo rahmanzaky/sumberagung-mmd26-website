@@ -59,7 +59,8 @@ const dummyKonten: Konten[] = [
  */
 async function ambilKonten(opsi?: { revalidate?: number }): Promise<Konten[]> {
   const data = await ambilResource<Konten[]>('konten', dummyKonten, opsi);
-  return [...data].sort((a, b) => b.tanggalKegiatan.localeCompare(a.tanggalKegiatan));
+  const arr = Array.isArray(data) ? data : dummyKonten;
+  return [...arr].sort((a, b) => b.tanggalKegiatan.localeCompare(a.tanggalKegiatan));
 }
 
 /** Semua konten, terbaru dulu. Khusus panel admin — selalu data terbaru. */

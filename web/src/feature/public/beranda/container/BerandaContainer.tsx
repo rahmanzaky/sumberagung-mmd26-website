@@ -7,7 +7,8 @@ import StatistikDinamis from '../component/StatistikDinamis';
 import StatistikSkeleton from '../component/StatistikSkeleton';
 import BerandaKontenDinamis from '../component/BerandaKontenDinamis';
 import BerandaKontenSkeleton from '../component/BerandaKontenSkeleton';
-import BerandaHero from './BerandaHero';
+import BerandaHeroDinamis from '../component/BerandaHeroDinamis';
+import BerandaHeroSkeleton from '../component/BerandaHeroSkeleton';
 
 function IkonPutarKecil({ className }: { className?: string }) {
   return (
@@ -29,7 +30,9 @@ export default function BerandaContainer() {
   return (
     <>
       {/* ---------- Hero ---------- */}
-      <BerandaHero />
+      <Suspense fallback={<BerandaHeroSkeleton />}>
+        <BerandaHeroDinamis />
+      </Suspense>
 
       {/* ---------- Statistik ---------- */}
       <section

@@ -16,7 +16,16 @@ export const pengajuanHeader = {
  *     'Surat Keterangan Tidak Mampu',
  *   ];
  */
-export const jenisSurat: string[] = [];
+export const jenisSurat: string[] = [
+    'Surat Keterangan Domisili',
+    'Surat Keterangan Tidak Mampu (SKTM)',
+    'Surat Keterangan Usaha (SKU)',
+    'Surat Pengantar SKCK',
+    'Surat Keterangan Kematian',
+    'Surat Keterangan Kelahiran',
+    'Surat Keterangan Belum Menikah',
+    'Lainnya'
+];
 
 export const catatanArsip =
     'Data ini akan tercatat dalam arsip digital pemerintah desa.';
