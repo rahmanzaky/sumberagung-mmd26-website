@@ -52,7 +52,8 @@ const dummyTimeline: TimelineEntri[] = [
 
 export async function getTimeline(): Promise<TimelineEntri[]> {
   const data = await ambilResource<TimelineEntri[]>('sejarah', dummyTimeline);
-  return [...data].sort((a, b) => a.urutan - b.urutan);
+  const arr = Array.isArray(data) ? data : dummyTimeline;
+  return [...arr].sort((a, b) => a.urutan - b.urutan);
 }
 
 async function postSejarah(body: object) {

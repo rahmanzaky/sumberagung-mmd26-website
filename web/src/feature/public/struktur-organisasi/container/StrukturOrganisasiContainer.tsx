@@ -92,17 +92,24 @@ export default async function StrukturOrganisasiContainer() {
               aria-hidden="true"
               className={`absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2 ${garis}`}
             />
-            {/* Palang pemisah dua rumpun */}
+            {/* Palang pemisah dua rumpun (DIBUAT TIDAK SEJAJAR) */}
+            {/* 1. Palang ke Kanan (Sekretaris Desa) - Di Atas */}
             <div
               aria-hidden="true"
-              className={`absolute left-1/4 right-1/4 top-0 h-0.5 ${garis}`}
+              className={`absolute left-1/2 right-1/4 top-0 h-0.5 ${garis}`}
+            />
+            {/* 2. Palang ke Kiri (Kepala Seksi) - Jauh Di Bawah */}
+            <div
+              aria-hidden="true"
+              className={`absolute left-1/4 right-1/2 top-[160px] h-0.5 ${garis}`}
             />
 
             {/* Rumpun kiri: langsung ke Kasi */}
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center w-full">
+              {/* Garis vertikal mulai dari titik palang kiri */}
               <div
                 aria-hidden="true"
-                className={`min-h-10 w-0.5 flex-1 ${garis}`}
+                className={`mt-[160px] min-h-[60px] w-0.5 flex-1 ${garis}`}
               />
               <GrupKartu anggota={struktur.kasi} varian="menegak" />
             </div>

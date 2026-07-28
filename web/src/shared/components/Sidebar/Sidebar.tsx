@@ -67,6 +67,12 @@ const menuGroups: {
         Icon: IconKependudukan,
         roles: SEMUA,
       },
+      {
+        href: '/dashboard/hero-slider',
+        label: 'Hero Slider',
+        Icon: IconKonten,
+        roles: HANYA_SUPER,
+      },
       { href: '/dashboard/konten', label: 'Konten & Berita', Icon: IconKonten, roles: SEMUA },
     ],
   },

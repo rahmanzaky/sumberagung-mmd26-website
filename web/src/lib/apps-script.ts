@@ -51,7 +51,13 @@ export async function ambilResource<T>(
 
   if (!res.ok) throw new Error(`Apps Script GET ${resource} gagal: ${res.status}`);
 
-  const json = (await res.json()) as { data: T };
+  const json = (await res.json()) as { data?: T; success?: boolean; error?: string };
+  if (json.data === undefined) {
+    console.warn(
+      `[apps-script] GET ${resource} tidak memiliki data (error: ${json.error}). Memakai fallback.`,
+    );
+    return fallback;
+  }
   return json.data;
 }
 

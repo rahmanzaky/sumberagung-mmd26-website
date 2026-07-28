@@ -24,7 +24,8 @@ export async function submitPengajuanSurat(
     const nik = String(formData.get('nik') ?? '').replace(/\D/g, '');
     const alamat = String(formData.get('alamat') ?? '').trim();
     const whatsappMentah = String(formData.get('whatsapp') ?? '').trim();
-    const jenisSurat = String(formData.get('jenisSurat') ?? '').trim();
+    let jenisSurat = String(formData.get('jenisSurat') ?? '').trim();
+    const jenisSuratLainnya = String(formData.get('jenisSuratLainnya') ?? '').trim();
     const maksud = String(formData.get('maksud') ?? '').trim();
 
     // --- Validasi ---
@@ -50,6 +51,12 @@ export async function submitPengajuanSurat(
 
     if (!jenisSurat) {
         errors.jenisSurat = 'Jenis surat wajib dipilih.';
+    } else if (jenisSurat === 'Lainnya') {
+        if (!jenisSuratLainnya) {
+            errors.jenisSurat = 'Harap sebutkan jenis surat Anda.';
+        } else {
+            jenisSurat = jenisSuratLainnya;
+        }
     } else if (
         daftarJenisSurat.length > 0 &&
         !daftarJenisSurat.includes(jenisSurat)

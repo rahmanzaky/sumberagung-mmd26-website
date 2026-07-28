@@ -16,6 +16,14 @@ const dummyPengguna: Pengguna[] = [
     role: 'Super Admin',
   },
   {
+    username: 'sumberagung',
+    namaLengkap: 'Admin Sumberagung',
+    jabatan: 'Administrator',
+    noWa: '-',
+    email: 'sumberagungpanggungrejo@gmail.com',
+    role: 'Super Admin',
+  },
+  {
     username: 'endang',
     namaLengkap: 'Endang Sulistyowati',
     jabatan: 'Sekretaris Desa',
@@ -80,7 +88,9 @@ export async function getPengguna(): Promise<Pengguna[]> {
 /** Cari perangkat desa berdasarkan email sesi Google. null jika tidak terdaftar. */
 export async function getPenggunaByEmail(email: string): Promise<Pengguna | null> {
   const semua = await getPengguna();
-  const cocok = semua.find((p) => p.email.toLowerCase() === email.toLowerCase());
+  const cocok = semua.find(
+    (p) => (p.email || '').trim().toLowerCase() === (email || '').trim().toLowerCase(),
+  );
   return cocok ?? null;
 }
 

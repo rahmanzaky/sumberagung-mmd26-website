@@ -44,7 +44,8 @@ export async function simpanProfilVisiAction(input: ProfilVisi) {
 
 export async function getMisi(): Promise<Misi[]> {
   const data = await ambilResource<Misi[]>('misi', dummyMisi);
-  return [...data].sort((a, b) => a.urutan - b.urutan);
+  const arr = Array.isArray(data) ? data : dummyMisi;
+  return [...arr].sort((a, b) => a.urutan - b.urutan);
 }
 
 async function postMisi(body: object) {
