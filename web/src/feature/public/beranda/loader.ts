@@ -1,7 +1,7 @@
 import { getKependudukanTerbaru } from '@/repository/kependudukan/action';
 import { getKontenPublik } from '@/repository/konten/action';
 import { urlFotoLangsung } from '@/lib/foto';
-import { daftarKegiatan } from '@/feature/public/kegiatan-desa/data';
+
 import { statistik as statistikStatis } from './data';
 import type { StatistikBeranda } from './types';
 import type { Konten as PublicKonten } from '@/feature/public/konten/types';
@@ -10,14 +10,7 @@ function angka(n: number) {
   return n.toLocaleString('id-ID');
 }
 
-/**
- * Himpunan id kegiatan, dipakai untuk memilah kegiatan vs berita secara andal.
- * Sebelumnya pemilahan memakai kecocokan string kategori ("...kegiatan..."),
- * yang keliru untuk data nyata: kategori kegiatan berbunyi "Geliat Desa • …"
- * (tanpa kata "kegiatan"), sedangkan sebuah berita berkategori "Kegiatan".
- * Memilah berdasarkan sumber id jauh lebih tepat.
- */
-const idKegiatan = new Set(daftarKegiatan.map((k) => k.id));
+
 
 /** Bar statistik hero: penduduk, KK, RT, RW dari data kependudukan terbaru. */
 export async function muatStatistik(): Promise<StatistikBeranda[]> {
@@ -36,7 +29,7 @@ export async function muatKontenDinamis(): Promise<PublicKonten[]> {
   const konten = await getKontenPublik(10);
   return konten.map((k) => ({
     slug: k.id,
-    jenis: idKegiatan.has(k.id) ? 'kegiatan' : 'berita',
+    jenis: k.kategori.toLowerCase() !== 'berita' ? 'kegiatan' : 'berita',
     kategori: k.kategori,
     judul: k.judul,
     tanggal: k.tanggalKegiatan,
